@@ -1,3 +1,29 @@
+# SafeCar application - Smart Car
+
+
+## ABSTRACT
+SafeCar is an application that has been designed for helping the driver in improving its driving style.
+On one side it offers an *after trip* inspection of the data reports about past trips, and on the other side provides an *during trip* hint generation engine for correcting the driving style during the driving experience.
+In order to provide this service, the application uses two smart object, a *Plug* and a *Wearable*.
+
+## APPLICATION 
+
+### REGISTRATION AND LOGIN
+In order to use this application, the driver has to register as an user of the service. 
+The Registration and Login procedures can be performed by using the custom application functionality or by using the Facebook, Twitter 
+and Google Plus APIs.
+
+
+### APPLICATION FLOW
+At this point the application flow develops in two different ways:if the user is not in the radio scan area of the Plug, she can only navigate data about her history trips or about her profile.
+Instead if the user's smartphone is near the Plug, the application automatically notifies the user of being detected; this feature is called Automatic Presence Detection. 
+Once the user has been detected the application asks him if she is actually driving. This check is done in order to avoid the application to register the trip of person if she is not actually driving, for example is near the plug of a friend. If the user answers "Yes" the app understands that the trip is beginning and the *Driving Experience* actually begins. 
+After this moment the driver will be provided of several hints about how to improve her driving style.
+
+As previously told, the application is built of two main features:
+
+1. **After Trip data presentation:**
+The user can inspect these data from a screen generated after the trip has been finished. In this screen the user can see:
 
  * A GPS trip tracking of his movements during the trip, shown in a custom a google maps widget.
  * A general report about the just finished trip, along with a Driver Safety Index (DSI) that estimates the quality of the drive.
