@@ -22,8 +22,17 @@
             </intent-filter>
         </activity>
 
+        <!-- Login activity-->
+        <activity
+            android:name=".activity.LoginActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
+
         <!-- Main activity -->
-        <activity android:name=".activity.MainActivity"></activity>
+        <activity
+            android:name=".activity.MainActivity">
+        </activity>
     </application>
 
 </manifest>

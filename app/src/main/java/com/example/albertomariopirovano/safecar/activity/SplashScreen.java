@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.example.albertomariopirovano.safecar.R;
 
@@ -37,7 +41,8 @@ public class SplashScreen extends Activity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent i = new Intent(SplashScreen.this, MainActivity.class);
+
+                Intent i = new Intent(SplashScreen.this, LoginActivity.class);
                 startActivity(i);
 
                 // close this activity
@@ -46,4 +51,12 @@ public class SplashScreen extends Activity {
         }, SPLASH_TIME_OUT);
     }
 
+    private void resizeFragment(Fragment f, int newWidth, int newHeight) {
+        if (f != null) {
+            View view = f.getView();
+            RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(newWidth, newHeight);
+            view.setLayoutParams(p);
+            view.requestLayout();
+        }
+    }
 }
