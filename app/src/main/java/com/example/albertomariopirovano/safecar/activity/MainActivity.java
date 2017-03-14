@@ -1,13 +1,11 @@
 package com.example.albertomariopirovano.safecar.activity;
 
-import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,141 +13,116 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
+import com.example.albertomariopirovano.safecar.adapters.NavListAdapter;
+import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
+import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
+import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
+import com.example.albertomariopirovano.safecar.models.NavItem;
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.adapter.SlidingMenuAdapter;
-import com.example.albertomariopirovano.safecar.fragment.FragmentHome;
-import com.example.albertomariopirovano.safecar.fragment.FragmentProfile;
-import com.example.albertomariopirovano.safecar.fragment.FragmentSettings;
-import com.example.albertomariopirovano.safecar.fragment.FragmentShare;
-import com.example.albertomariopirovano.safecar.model.ItemSlideMenu;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<ItemSlideMenu> listSliding;
-    private SlidingMenuAdapter adapter;
-    private ListView listViewSliding;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
+    DrawerLayout drawerLayout;
+    RelativeLayout drawerPane;
+    ListView lvNav;
+
+    List<NavItem> listNavItems;
+    List<Fragment> listFragments;
+
+    ActionBarDrawerToggle actionBarDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.activity_main);
 
-        //Init component
-        listViewSliding = (ListView)findViewById(R.id.lv_sliding_menu);
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        listSliding = new ArrayList<>();
-
-        //Add item for sliding list
-        listSliding.add(new ItemSlideMenu(R.drawable.ic_home_black_24dp, "Home"));
-        listSliding.add(new ItemSlideMenu(R.drawable.ic_person_black_24dp, "Profile"));
-        listSliding.add(new ItemSlideMenu(R.drawable.ic_share_black_24dp, "Share"));
-        listSliding.add(new ItemSlideMenu(R.drawable.ic_settings_black_24dp, "Settings"));
-        adapter = new SlidingMenuAdapter(this, listSliding);
-        listViewSliding.setAdapter(adapter);
-
-        //Display icon to open/close sliding list
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //Set title
-        setTitle(listSliding.get(0).getTitle());
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
+        lvNav = (ListView) findViewById(R.id.nav_list);
 
-        //Item selected
-        listViewSliding.setItemChecked(0, true);
+        listNavItems = new ArrayList<NavItem>();
 
-        //Close menu
-        drawerLayout.closeDrawer(listViewSliding);
+        listNavItems.add(new NavItem("Home", "Home page", R.drawable.ic_person_black_24dp));
+        listNavItems.add(new NavItem("Share", "Share app", R.drawable.ic_share_black_24dp));
+        listNavItems.add(new NavItem("Settings", "Change settings", R.drawable.ic_settings_black_24dp));
 
-        //Display home fragment when start
-        replaceFragment(0);
+        NavListAdapter navListAdapter = new NavListAdapter(getApplicationContext(), R.layout.item_nav_list, listNavItems);
 
-        //Handle on item click
-        listViewSliding.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvNav.setAdapter(navListAdapter);
+
+        listFragments = new ArrayList<Fragment>();
+        listFragments.add(new HomeFragment());
+        listFragments.add(new ShareFragment());
+        listFragments.add(new SettingsFragment());
+
+        //Load first fragment as default
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
+
+        setTitle(listNavItems.get(0).getTitle());
+        lvNav.setItemChecked(0, true);
+        drawerLayout.closeDrawer(drawerPane);
+
+        //Set listener for navigation items
+        lvNav.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Set title
-                setTitle(listSliding.get(position).getTitle());
 
-                //Item selected
-                listViewSliding.setItemChecked(position,true);
+                //Replace the fragment with the selection correspondingly
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
 
-                //Replace fragment
-                replaceFragment(position);
-
-                //Close menu
-                drawerLayout.closeDrawer(listViewSliding);
+                setTitle(listNavItems.get(position).getTitle());
+                lvNav.setItemChecked(position, true);
+                drawerLayout.closeDrawer(drawerPane);
             }
         });
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_opened, R.string.drawer_closed){
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
+        //Create listener for drawer layout
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_opened, R.string.drawer_closed) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
                 invalidateOptionsMenu();
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu();
+                super.onDrawerOpened(drawerView);
             }
         };
 
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
+        getMenuInflater().inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
+    public void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         actionBarDrawerToggle.syncState();
     }
 
-    //Create method replace fragment
-    private void replaceFragment(int pos){
-        Fragment fragment = null;
-        switch (pos) {
-            case 0:
-                fragment = new FragmentHome();
-                break;
-            case 1:
-                fragment = new FragmentProfile();
-                break;
-            case 2:
-                fragment = new FragmentShare();
-                break;
-            case 3:
-                fragment = new FragmentSettings();
-                break;
-            default:
-                fragment = new FragmentHome();
-        }
-
-        if (null != fragment) {
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.main_content, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-        }
-    }
 }
