@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Generali">
+
+        <EditTextPreference
+            android:id="@+id/sharing"
+            android:title="Condivisione"
+            android:summary="this is edit text"
+            android:onClick="load_fragment">
+        </EditTextPreference>
+
+        <EditTextPreference
+            android:id="@+id/nofitications"
+            android:title="Notifiche"
+            android:summary="this is edit text"
+            android:onClick="load_fragment">
+        </EditTextPreference>
+
+        <EditTextPreference
+            android:id="@+id/smart_objects"
+            android:title="Smart Objects"
+            android:summary="this is edit text"
+            android:onClick="load_fragment">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

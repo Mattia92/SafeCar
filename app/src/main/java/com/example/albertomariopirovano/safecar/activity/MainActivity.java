@@ -23,7 +23,7 @@ import com.example.albertomariopirovano.safecar.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     DrawerLayout drawerLayout;
     RelativeLayout drawerPane;
@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
         listFragments = new ArrayList<Fragment>();
         listFragments.add(new HomeFragment());
         listFragments.add(new ShareFragment());
-        listFragments.add(new SettingsFragment());
+        final SettingsFragment settingsFragment = new SettingsFragment();
+        //listFragments.add(new SettingsFragment());
 
         //Load first fragment as default
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -75,7 +76,14 @@ public class MainActivity extends AppCompatActivity {
 
                 //Replace the fragment with the selection correspondingly
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
+
+                if (position == 2) {
+                    fragmentManager.beginTransaction().replace(R.id.main_content, settingsFragment).commit();
+
+                }
+                else {
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
+                }
 
                 setTitle(listNavItems.get(position).getTitle());
                 lvNav.setItemChecked(position, true);
