@@ -1,5 +1,6 @@
 package com.example.albertomariopirovano.safecar.activity;
 
+import android.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -78,10 +79,12 @@ public class MainActivity extends AppCompatActivity{
                 FragmentManager fragmentManager = getSupportFragmentManager();
 
                 if (position == 2) {
+                    System.out.println(position);
                     fragmentManager.beginTransaction().replace(R.id.main_content, settingsFragment).commit();
 
                 }
                 else {
+                    System.out.println(position);
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
                 }
 
