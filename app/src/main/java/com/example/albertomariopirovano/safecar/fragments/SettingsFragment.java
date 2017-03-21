@@ -4,11 +4,13 @@ import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.View;
-import android.support.v7.preference.Preference.OnPreferenceClickListener;
 
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.settings.fragments.*;
 import com.example.albertomariopirovano.safecar.R;
 
@@ -34,52 +36,41 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
 
-        listFragments = new ArrayList<Fragment>();
+        listFragments = new ArrayList<>();
         listFragments.add(new SettingsShareFragment());
         listFragments.add(new SettingsNotificationFragment());
         listFragments.add(new SettingsSmartObjectsFragment());
 
         fragmentManager = getFragmentManager();
 
-        OnPreferenceClickListener preferenceListener = new Preference.OnPreferenceClickListener(){
+        Preference.OnPreferenceClickListener l = new Preference.OnPreferenceClickListener(){
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                /*switch (preference.getKey()) {
-                    case R.string.button_sharing:
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
-                        break;
-                    case R.id.nofitications:
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
-                        break;
-                    case R.id.smart_objects:
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).commit();
-                        break;
-                }*/
-                System.out.println("ciao");
+
+                getActivity().setTitle(preference.getKey());
+
+                if(preference.getKey().equals("Condivisione")) {
+                    ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).addToBackStack(null).commit();
+                } else if (preference.getKey().equals("Notifiche")) {
+                    ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).addToBackStack(null).commit();
+                } else if (preference.getKey().equals("Smart Objects")) {
+                    ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).addToBackStack(null).commit();
+                }
+
                 return true;
             }
         };
 
+        Preference preference_sharing = findPreference(getString(R.string.button_sharing));
+        Preference preference_notifications = findPreference(getString(R.string.button_notifications));
+        Preference preference_smartobj = findPreference(getString(R.string.button_smartobj));
 
-        Preference button = findPreference(getString(R.string.button_sharing));
-        button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                /*switch (preference.getKey()) {
-                    case R.string.button_sharing:
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
-                        break;
-                    case R.id.nofitications:
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
-                        break;
-                    case R.id.smart_objects:
-                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).commit();
-                        break;
-                }*/
-                System.out.println("ciao");
-                return true;
-            }
-        });
+        preference_sharing.setOnPreferenceClickListener(l);
+        preference_notifications.setOnPreferenceClickListener(l);
+        preference_smartobj.setOnPreferenceClickListener(l);
 
     }
 

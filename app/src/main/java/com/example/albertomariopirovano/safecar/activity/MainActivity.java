@@ -1,6 +1,5 @@
 package com.example.albertomariopirovano.safecar.activity;
 
-import android.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -24,7 +23,7 @@ import com.example.albertomariopirovano.safecar.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
     RelativeLayout drawerPane;
@@ -56,11 +55,10 @@ public class MainActivity extends AppCompatActivity{
 
         lvNav.setAdapter(navListAdapter);
 
-        listFragments = new ArrayList<Fragment>();
+        listFragments = new ArrayList<>();
         listFragments.add(new HomeFragment());
         listFragments.add(new ShareFragment());
-        final SettingsFragment settingsFragment = new SettingsFragment();
-        //listFragments.add(new SettingsFragment());
+        listFragments.add(new SettingsFragment());
 
         //Load first fragment as default
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -78,15 +76,7 @@ public class MainActivity extends AppCompatActivity{
                 //Replace the fragment with the selection correspondingly
                 FragmentManager fragmentManager = getSupportFragmentManager();
 
-                if (position == 2) {
-                    System.out.println(position);
-                    fragmentManager.beginTransaction().replace(R.id.main_content, settingsFragment).commit();
-
-                }
-                else {
-                    System.out.println(position);
-                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
-                }
+                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
 
                 setTitle(listNavItems.get(position).getTitle());
                 lvNav.setItemChecked(position, true);
@@ -114,6 +104,10 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    public void setEnabledNavigationDrawer(boolean isEnabled) {
+        actionBarDrawerToggle.setDrawerIndicatorEnabled(isEnabled);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -126,6 +120,9 @@ public class MainActivity extends AppCompatActivity{
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        onBackPressed();
+        setEnabledNavigationDrawer(true);
+        setTitle(getString(R.string.action_settings));
 
         return super.onOptionsItemSelected(item);
     }
