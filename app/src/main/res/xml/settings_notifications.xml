@@ -2,8 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreference>
-
-    </SwitchPreference>
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="notifiche"
+        android:title="Attiva notifiche push">
+    </CheckBoxPreference>
 
 </PreferenceScreen>

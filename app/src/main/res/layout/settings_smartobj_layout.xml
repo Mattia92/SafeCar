@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Clickable title -->
+    <TextView
+        android:id="@+id/pairing_speakers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pairing Speakers"
+        android:clickable="true"
+        android:onClick="toggle_content"/>
+
+    <!--content to hide/show -->
+    <TextView
+        android:id="@+id/pairing_speakers_hidden"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="testo nascosto per pairing"/>
+
+    <!-- Clickable title -->
+    <TextView
+        android:id="@+id/gestione_plug"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gestione dei plug"
+        android:clickable="true" />
+
+    <!--content to hide/show -->
+    <TextView
+        android:id="@+id/gestione_plug_hidden"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="testo nascosto per plug"/>
+
+</LinearLayout>
