@@ -4,6 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pairing Speakers"
+        style="?android:attr/listSeparatorTextViewStyle"/>
+
     <!-- Clickable title -->
     <TextView
         android:id="@+id/pairing_speakers"
@@ -20,6 +26,12 @@
         android:layout_height="wrap_content"
         android:text="testo nascosto per pairing"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Managing Plugs"
+        style="?android:attr/listSeparatorTextViewStyle"/>
+
     <!-- Clickable title -->
     <TextView
         android:id="@+id/gestione_plug"
@@ -29,10 +41,10 @@
         android:clickable="true" />
 
     <!--content to hide/show -->
-    <TextView
+    <ListView
         android:id="@+id/gestione_plug_hidden"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="testo nascosto per plug"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:dividerHeight="3dp"/>
 
 </LinearLayout>
