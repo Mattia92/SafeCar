@@ -4,11 +4,10 @@ import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.ListFragment;
+import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.preference.Preference.OnPreferenceClickListener;
 
 import com.example.albertomariopirovano.safecar.settings.fragments.*;
 import com.example.albertomariopirovano.safecar.R;
@@ -42,6 +41,46 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         fragmentManager = getFragmentManager();
 
+        OnPreferenceClickListener preferenceListener = new Preference.OnPreferenceClickListener(){
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                /*switch (preference.getKey()) {
+                    case R.string.button_sharing:
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
+                        break;
+                    case R.id.nofitications:
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
+                        break;
+                    case R.id.smart_objects:
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).commit();
+                        break;
+                }*/
+                System.out.println("ciao");
+                return true;
+            }
+        };
+
+
+        Preference button = findPreference(getString(R.string.button_sharing));
+        button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                /*switch (preference.getKey()) {
+                    case R.string.button_sharing:
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
+                        break;
+                    case R.id.nofitications:
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
+                        break;
+                    case R.id.smart_objects:
+                        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).commit();
+                        break;
+                }*/
+                System.out.println("ciao");
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -49,19 +88,4 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     }
 
-    public void load_fragment(View view) {
-
-        switch (view.getId()) {
-            case R.id.sharing:
-                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
-                break;
-            case R.id.nofitications:
-                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).commit();
-                break;
-            case R.id.smart_objects:
-                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).commit();
-                break;
-        }
-
-    }
 }

@@ -1,8 +1,16 @@
 <resources>
 
     <string name="app_name">Safe Car</string>
+
     <string name="action_settings">Settings</string>
+
     <string name="drawer_opened">Drawer Opened</string>
     <string name="drawer_closed">Drawer Closed</string>
+
+    <string name="button_sharing">Condivisione</string>
+    <string name="button_notifications">Notifiche</string>
+    <string name="button_smartobj">Smart Objects</string>
+
+    <string name="button_info">Info e Feedback</string>
 
 </resources>
