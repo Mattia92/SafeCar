@@ -12,21 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.example.albertomariopirovano.safecar.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.example.albertomariopirovano.safecar.adapters.RecyclerAdapter;
-import com.podcopic.animationlib.library.AnimationType;
-import com.podcopic.animationlib.library.StartSmartAnimation;
 
 /**
  * Created by mattiacrippa on 15/03/17.

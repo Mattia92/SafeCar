@@ -17,6 +17,7 @@ import com.example.albertomariopirovano.safecar.adapters.NavListAdapter;
 import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
 import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
+import com.example.albertomariopirovano.safecar.fragments.ProfileFragment;
 import com.example.albertomariopirovano.safecar.models.NavItem;
 import com.example.albertomariopirovano.safecar.R;
 
@@ -47,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         listNavItems = new ArrayList<NavItem>();
 
-        listNavItems.add(new NavItem("Home", "Home page", R.drawable.ic_person_black_24dp));
+        listNavItems.add(new NavItem("Home", "Home page", R.drawable.ic_home_black_24dp));
+        listNavItems.add(new NavItem("Profile", "Modify your profile", R.drawable.ic_person_black_24dp));
         listNavItems.add(new NavItem("Share", "Share app", R.drawable.ic_share_black_24dp));
         listNavItems.add(new NavItem("Settings", "Change settings", R.drawable.ic_settings_black_24dp));
 
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         listFragments = new ArrayList<>();
         listFragments.add(new HomeFragment());
+        listFragments.add(new ProfileFragment());
         listFragments.add(new ShareFragment());
         listFragments.add(new SettingsFragment());
 
