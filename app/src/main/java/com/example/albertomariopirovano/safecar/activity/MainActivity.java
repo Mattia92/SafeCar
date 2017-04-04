@@ -24,6 +24,8 @@ import com.example.albertomariopirovano.safecar.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+
 public class MainActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
