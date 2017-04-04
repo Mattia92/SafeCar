@@ -15,6 +15,7 @@ import com.example.albertomariopirovano.safecar.model.Trip;
 import com.example.albertomariopirovano.safecar.model.User;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by albertomariopirovano on 03/04/17.
@@ -22,13 +23,21 @@ import io.realm.Realm;
 
 public class ProfileFragment extends Fragment {
 
-    private Realm realm = Realm.getDefaultInstance();;
+    private Realm realm;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("default2")
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+
+        realm = Realm.getInstance(config);
 
         Button insertButton = (Button) v.findViewById(R.id.insert);
         insertButton.setOnClickListener( new View.OnClickListener() {

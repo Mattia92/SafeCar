@@ -15,11 +15,14 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
-import com.example.albertomariopirovano.safecar.inner.fragments.Fragment1;
-import com.example.albertomariopirovano.safecar.inner.fragments.Fragment2;
-import com.example.albertomariopirovano.safecar.inner.fragments.Fragment3;
 import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabFragment;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabHome;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDSI;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDate;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDuration;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderKM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     private ViewPager viewPager;
     private TabHost tabHost;
     private AppFragmentPagerAdapter appFragmentPagerAdapter;
+    private List<Fragment> listFragments;
     int i = 0;
     View v;
 
@@ -44,11 +48,11 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
         //We put TabHostView Pager here
         i++;
 
-        //init TabHost
-        this.initTabHost(savedInstanceState);
-
         //init ViewPager
         this.initViewPager();
+
+        //init TabHost
+        this.initTabHost(savedInstanceState);
 
         return v;
     }
@@ -73,14 +77,13 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
 
     private void initViewPager() {
 
-        List<Fragment> listFragments = new ArrayList<Fragment>();
-        listFragments.add(new Fragment1());
-        listFragments.add(new Fragment2());
-        listFragments.add(new Fragment3());
+        listFragments = new ArrayList<Fragment>();
+        listFragments.add(new TabHome());
+        listFragments.add(new TabOrderDate());
+        listFragments.add(new TabOrderDSI());
 
-        listFragments.add(new Fragment1());
-        listFragments.add(new Fragment2());
-        listFragments.add(new Fragment3());
+        listFragments.add(new TabOrderDuration());
+        listFragments.add(new TabOrderKM());
 
         this.appFragmentPagerAdapter = new AppFragmentPagerAdapter(getChildFragmentManager(), listFragments);
         this.viewPager = (ViewPager) v.findViewById(R.id.view_pager);
@@ -92,10 +95,10 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
         tabHost = (TabHost) v.findViewById(android.R.id.tabhost);
         tabHost.setup();
 
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 0; i <= 4; i++) {
             TabHost.TabSpec tabSpec;
-            tabSpec = tabHost.newTabSpec("Tab" + i);
-            tabSpec.setIndicator("Tab" + i);
+            tabSpec = tabHost.newTabSpec(((TabFragment)listFragments.get(i)).getName());
+            tabSpec.setIndicator(((TabFragment)listFragments.get(i)).getName());
             tabSpec.setContent(new FakeContent(getActivity()));
             tabHost.addTab(tabSpec);
         }

@@ -18,6 +18,7 @@ import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 /**
  * Created by mattiacrippa on 13/03/17.
@@ -39,13 +40,15 @@ public class SplashScreen extends Activity {
         setContentView(R.layout.activity_splash);
 
         Realm.init(this);
-        realm = Realm.getDefaultInstance();
 
-        try {
-            initData();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("default2")
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        realm = Realm.getInstance(config);
+
+        initData();
 
         new Handler().postDelayed(new Runnable() {
 
@@ -68,7 +71,7 @@ public class SplashScreen extends Activity {
         }, SPLASH_TIME_OUT);
     }
 
-    private void initData() throws InterruptedException {
+    private void initData() {
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -85,31 +88,31 @@ public class SplashScreen extends Activity {
                 Badge b1 = realm.createObject(Badge.class);
 
                 u.setUser("Alberto", "Pirovano", "Newbie", "100");
-                t1.setTrip(new Date(), 100, 12, 0.5);
+                t1.setTrip(new Date(), 100, 26, 57, "Milano", "Vimercate");
                 u.getTrips().add(t1);
-                t2.setTrip(new Date(), 300, 30, 1);
+                t2.setTrip(new Date(), 300, 77, 64,  "Torino", "Vercelli");
                 u.getTrips().add(t2);
-                t3.setTrip(new Date(), 340, 5, 1.2);
+                t3.setTrip(new Date(), 340, 4, 8,  "Vimercate", "Arcore");
                 u.getTrips().add(t3);
-                t4.setTrip(new Date(), 120, 45, 0.7);
+                t4.setTrip(new Date(), 120, 56, 64,  "Milano", "Lecco");
                 u.getTrips().add(t4);
-                t5.setTrip(new Date(), 1000, 2, 4);
+                t5.setTrip(new Date(), 1000, 2, 4,  "Vimercate", "Oreno");
                 u.getTrips().add(t5);
-                t6.setTrip(new Date(), 12, 67, 0.2);
+                t6.setTrip(new Date(), 12, 52, 74, "Milano", "Como");
                 u.getTrips().add(t6);
-                t7.setTrip(new Date(), 78, 43, 0.5);
+                t7.setTrip(new Date(), 78, 46, 73, "Milano", "Pavia");
                 u.getTrips().add(t7);
-                t8.setTrip(new Date(), 444, 123, 2);
+                t8.setTrip(new Date(), 444, 215, 240,  "Milano", "Bormio");
                 u.getTrips().add(t8);
 
                 b1.setBadge("Newbie", "We are happy to have you in our community!");
                 u.getUnlockedBadges().add(b1);
 
-                System.out.println(u.getUnlockedBadges().get(0).toString());
+                /*System.out.println(u.getUnlockedBadges().get(0).toString());
                 for(Trip t : u.getTrips()) {
                     System.out.println(t.toString());
                 }
-                System.out.println(u.toString());
+                System.out.println(u.toString());*/
             }
         });
     }

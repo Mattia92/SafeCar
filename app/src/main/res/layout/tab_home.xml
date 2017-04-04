@@ -11,5 +11,5 @@
         android:textSize="20sp"
         android:textColor="#000000"
         android:textStyle="bold"
-        android:text="Fragment1"/>
+        android:text="Home fragment"/>
 </LinearLayout>

@@ -10,14 +10,22 @@ import android.view.ViewGroup;
 import com.example.albertomariopirovano.safecar.R;
 
 /**
- * Created by mattiacrippa on 14/03/17.
+ * Created by albertomariopirovano on 04/04/17.
  */
 
-public class Fragment3 extends Fragment {
+public class TabHome extends Fragment implements TabFragment {
+
+    private String name = "Home";
+
+    public String getName() {
+        return name;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment3_layout, container, false);
+        View v = inflater.inflate(R.layout.tab_home, container, false);
         return v;
     }
+
 }
