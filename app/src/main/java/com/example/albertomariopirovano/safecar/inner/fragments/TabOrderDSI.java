@@ -35,7 +35,7 @@ public class TabOrderDSI extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_order_dsi, container, false);
-        listView = (ListView) v.findViewById(R.id.listDSI);
+        /*listView = (ListView) v.findViewById(R.id.listDSI);
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("default2")
@@ -44,8 +44,7 @@ public class TabOrderDSI extends Fragment implements TabFragment {
 
         realm = Realm.getInstance(config);
 
-        dataService.insertTrips("DSI",v, new DSIComparator(), realm, listView, 0, 10);
-
+        dataService.insertTrips("DSI",v, new DSIComparator(), realm, listView, 0, 10);*/
         return v;
     }
 }

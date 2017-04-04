@@ -37,7 +37,7 @@ public class TabOrderDuration extends Fragment implements TabFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_order_duration, container, false);
-        listView = (ListView) v.findViewById(R.id.listDuration);
+        /*listView = (ListView) v.findViewById(R.id.listDuration);
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("default2")
@@ -46,7 +46,7 @@ public class TabOrderDuration extends Fragment implements TabFragment{
 
         realm = Realm.getInstance(config);
 
-        dataService.insertTrips("duration",v, new DurationComparator(), realm, listView, 0, 10);
+        dataService.insertTrips("duration",v, new DurationComparator(), realm, listView, 0, 10);*/
         return v;
     }
 }

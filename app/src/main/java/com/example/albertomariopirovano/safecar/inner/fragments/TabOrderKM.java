@@ -37,7 +37,7 @@ public class TabOrderKM extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_order_km, container, false);
-        listView = (ListView) v.findViewById(R.id.listKM);
+        /*listView = (ListView) v.findViewById(R.id.listKM);
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("default2")
@@ -46,7 +46,7 @@ public class TabOrderKM extends Fragment implements TabFragment {
 
         realm = Realm.getInstance(config);
 
-        dataService.insertTrips("KM",v, new KMComparator(), realm, listView, 0, 10);
+        dataService.insertTrips("KM",v, new KMComparator(), realm, listView, 0, 10);*/
         return v;
     }
 }

@@ -37,7 +37,7 @@ public class TabOrderDate extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_order_date, container, false);
-        listView = (ListView) v.findViewById(R.id.listDate);
+        /*listView = (ListView) v.findViewById(R.id.listDate);
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("default2")
@@ -46,7 +46,7 @@ public class TabOrderDate extends Fragment implements TabFragment {
 
         realm = Realm.getInstance(config);
 
-        dataService.insertTrips("date",v, new DateComparator(), realm, listView, 0, 10);
+        dataService.insertTrips("date",v, new DateComparator(), realm, listView, 0, 10);*/
         return v;
     }
 }
