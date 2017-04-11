@@ -6,13 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.model.Dog;
-import com.example.albertomariopirovano.safecar.model.Trip;
-import com.example.albertomariopirovano.safecar.model.User;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -39,7 +34,7 @@ public class ProfileFragment extends Fragment {
 
         realm = Realm.getInstance(config);
 
-        Button insertButton = (Button) v.findViewById(R.id.insert);
+        /*Button insertButton = (Button) v.findViewById(R.id.insert);
         insertButton.setOnClickListener( new View.OnClickListener() {
 
             @Override
@@ -82,8 +77,7 @@ public class ProfileFragment extends Fragment {
 
                 Toast.makeText(getActivity(), u.getUnlockedBadges().get(0).toString(),Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
         return v;
     }
-
 }

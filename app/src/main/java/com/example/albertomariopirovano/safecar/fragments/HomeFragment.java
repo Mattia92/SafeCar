@@ -26,7 +26,6 @@ import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderKM;
 import com.example.albertomariopirovano.safecar.services.FetchService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import io.realm.Realm;
