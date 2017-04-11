@@ -12,5 +12,6 @@
     <string name="button_smartobj">Smart Objects</string>
 
     <string name="button_info">Info e Feedback</string>
+    <string name="auth_failed">Authentication failed</string>
 
 </resources>
