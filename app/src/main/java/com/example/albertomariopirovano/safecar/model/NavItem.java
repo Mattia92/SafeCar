@@ -1,4 +1,4 @@
-package com.example.albertomariopirovano.safecar.models;
+package com.example.albertomariopirovano.safecar.model;
 
 /**
  * Created by mattiacrippa on 14/03/17.

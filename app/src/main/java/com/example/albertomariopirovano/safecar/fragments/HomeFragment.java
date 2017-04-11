@@ -11,24 +11,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
-import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
 import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.data_comparators.DSIComparator;
-import com.example.albertomariopirovano.safecar.data_comparators.DateComparator;
-import com.example.albertomariopirovano.safecar.data_comparators.DurationComparator;
-import com.example.albertomariopirovano.safecar.data_comparators.KMComparator;
-import com.example.albertomariopirovano.safecar.inner.fragments.TabFragment;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabHome;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabFragment;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDSI;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDate;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDuration;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderKM;
-import com.example.albertomariopirovano.safecar.model.Help;
 import com.example.albertomariopirovano.safecar.services.FetchService;
 
 import java.util.ArrayList;
@@ -49,7 +43,6 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     private AppFragmentPagerAdapter appFragmentPagerAdapter;
     private List<Fragment> listFragments;
     private Realm realm;
-    private HashMap<String, Help> map;
     private FetchService dataService = FetchService.getInstance();
     //int i = 0;
     View v;
@@ -58,16 +51,6 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.tabs_viewpager_layout, container, false);
-
-        //We put TabHostView Pager here
-        //i++;
-
-        map = new HashMap<String, Help>();
-
-        map.put("Date", new Help(R.id.listDate,new DateComparator(), "date"));
-        map.put("DSI", new Help(R.id.listDSI,new DSIComparator(), "DSI"));
-        map.put("Duration", new Help(R.id.listDuration,new DurationComparator(), "duration"));
-        map.put("KM", new Help(R.id.listKM,new KMComparator(), "KM"));
 
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name("default2")
@@ -119,6 +102,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     }
 
     private void initTabHost(Bundle args) {
+
         tabHost = (TabHost) v.findViewById(android.R.id.tabhost);
         tabHost.setup();
 
@@ -148,6 +132,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     @Override
     // tabHost Listener
     public void onTabChanged(String tabId) {
+
         int selectedItem = this.tabHost.getCurrentTab();
         this.viewPager.setCurrentItem(selectedItem);
 
@@ -156,11 +141,6 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
         int scrollPos = tabView.getLeft() - (horizontalScrollView.getWidth() - tabView.getWidth()) / 2;
         horizontalScrollView.smoothScrollTo(scrollPos, 0);
 
-        if(!tabId.equals("Home")) {
-            ListView listView = (ListView) v.findViewById(map.get(tabId).getId());
-
-            dataService.insertTrips(map.get(tabId).getTag(),v, map.get(tabId).getComparator(), realm, listView, 0, 10);
-        }
     }
 
     @Override
@@ -178,5 +158,4 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     public void onPageSelected(int selectedItem) {
         tabHost.setCurrentTab(selectedItem);
     }
-
 }

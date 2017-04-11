@@ -38,7 +38,7 @@ public class FetchService {
 
     public void insertTrips(final String attributeToShow, final View v, final Comparator c, Realm r, final ListView l, int startRange, int endRange) {
 
-        System.out.println("------------------ENTER INSERTTRIPS-----------------------------");
+        //System.out.println("------------------ENTER INSERTTRIPS-----------------------------");
 
         fragmentManager = ((MainActivity)v.getContext()).getSupportFragmentManager();
 
@@ -47,27 +47,27 @@ public class FetchService {
             @Override
             public void execute(Realm realm) {
 
-                System.out.println("------------------ATTR-----------------------------");
+                //System.out.println("------------------ATTR-----------------------------");
 
-                System.out.println(attributeToShow);
+                //System.out.println(attributeToShow);
 
                 User u = realm.where(User.class).equalTo("name", "Alberto").findFirst();
 
-                System.out.println("--------------------LIST BEFORE ORDER---------------------------");
+                //System.out.println("--------------------LIST BEFORE ORDER---------------------------");
 
                 tripList = u.getTrips();
 
-                for(Trip t:tripList) {
-                    System.out.println(t);
-                }
+                //for(Trip t:tripList) {
+                //    System.out.println(t);
+                //}
 
                 Collections.sort(tripList,c);
 
-                System.out.println("-----------------------LIST AFTER ORDER------------------------");
+                //System.out.println("-----------------------LIST AFTER ORDER------------------------");
 
-                for(Trip t:tripList) {
-                    System.out.println(t);
-                }
+                //for(Trip t:tripList) {
+                //    System.out.println(t);
+                //}
 
                 List<Map<String, String>> data = new ArrayList<Map<String, String>>();
                 for(Trip t:tripList) {
@@ -91,17 +91,17 @@ public class FetchService {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                System.out.println("------------------ENTER ON CLICK ITEM LISTENER-----------------------------");
+                //System.out.println("------------------ENTER ON CLICK ITEM LISTENER-----------------------------");
 
                 Trip t = tripList.get(i);
 
-                System.out.println("-----------------PRINT LIST INSIDE ON CLICK ITEM LISTENER------------------------------");
+                //System.out.println("-----------------PRINT LIST INSIDE ON CLICK ITEM LISTENER------------------------------");
 
-                for(Trip t1:tripList) {
-                    System.out.println(t1);
-                }
+                //for(Trip t1:tripList) {
+                //    System.out.println(t1);
+                //}
 
-                System.out.println("-------------------EXIT ON CLICK ITEM LISTENER----------------------------");
+                //System.out.println("-------------------EXIT ON CLICK ITEM LISTENER----------------------------");
 
                 ReportFragment rf = new ReportFragment();
                 Bundle bundle = new Bundle();
@@ -112,6 +112,6 @@ public class FetchService {
             }
         });
 
-        System.out.println("-------------------EXIT ON INSERTTRIPS----------------------------");
+        //System.out.println("-------------------EXIT ON INSERTTRIPS----------------------------");
     }
 }

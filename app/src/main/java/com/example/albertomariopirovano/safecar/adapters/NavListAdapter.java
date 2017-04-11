@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.albertomariopirovano.safecar.models.NavItem;
+import com.example.albertomariopirovano.safecar.model.NavItem;
 import com.example.albertomariopirovano.safecar.R;
 
 import java.util.List;

@@ -25,6 +25,7 @@ public class TabHome extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_home, container, false);
+        System.out.println("tab home");
 
         return v;
     }

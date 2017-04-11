@@ -18,13 +18,11 @@ import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
 import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
 import com.example.albertomariopirovano.safecar.fragments.ProfileFragment;
-import com.example.albertomariopirovano.safecar.models.NavItem;
+import com.example.albertomariopirovano.safecar.model.NavItem;
 import com.example.albertomariopirovano.safecar.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
 
 public class MainActivity extends AppCompatActivity {
 
