@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.albertomariopirovano.safecar">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,14 +27,27 @@
         <!-- Login activity-->
         <activity
             android:name=".activity.LoginActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <!-- Main activity -->
         <activity
             android:name=".activity.MainActivity">
         </activity>
+
+        <!-- ResetPassword activity -->
+        <activity
+            android:name=".activity.ResetPasswordActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustResize"></activity>
+
+        <!-- Signup activity -->
+        <activity
+            android:name=".activity.SignupActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustResize"></activity>
+
     </application>
 
 </manifest>
