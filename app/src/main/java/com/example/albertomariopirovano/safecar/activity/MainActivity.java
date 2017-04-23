@@ -1,5 +1,7 @@
 package com.example.albertomariopirovano.safecar.activity;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.adapters.NavListAdapter;
 import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
@@ -19,18 +22,25 @@ import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
 import com.example.albertomariopirovano.safecar.models.NavItem;
 import com.example.albertomariopirovano.safecar.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    DrawerLayout drawerLayout;
-    RelativeLayout drawerPane;
-    ListView lvNav;
+    private DrawerLayout drawerLayout;
+    private RelativeLayout drawerPane;
+    private ListView lvNav;
 
-    List<NavItem> listNavItems;
-    List<Fragment> listFragments;
+    private List<NavItem> listNavItems;
+    private List<Fragment> listFragments;
+    private FirebaseAuth auth;
+
+    private FirebaseAuth.AuthStateListener logout_listener;
 
     ActionBarDrawerToggle actionBarDrawerToggle;
 
@@ -38,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Get Firebase auth instance
+        auth = FirebaseAuth.getInstance();
+
+        addLogoutListener(auth);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -84,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         //Create listener for drawer layout
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_opened, R.string.drawer_closed) {
 
@@ -104,6 +121,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void addLogoutListener(FirebaseAuth a){
+        // this listener will be called when there is change in firebase user session
+        logout_listener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                System.out.println("INSIDE !");
+                if (user == null) {
+                    // user auth state is changed - user is null
+                    // launch login activity
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    finish();
+                }
+            }
+        };
+
+        a.addAuthStateListener(logout_listener);
+    }
+
     public void setEnabledNavigationDrawer(boolean isEnabled) {
         actionBarDrawerToggle.setDrawerIndicatorEnabled(isEnabled);
     }
@@ -117,14 +153,44 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        onBackPressed();
-        setEnabledNavigationDrawer(true);
-        setTitle(getString(R.string.action_settings));
+        System.out.println("CIAOOOOOO");
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+
+            case R.id.menu_item_logout:
+
+                System.out.println("Logout current user");
+                auth.signOut();
+
+                return false;
+            case R.id.menu_item_delete_account:
+
+                System.out.println("Delete current user");
+
+                FirebaseUser user = auth.getCurrentUser();
+                if (user != null) {
+                    user.delete()
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(MainActivity.this, "Your profile is deleted:( Create a account now!", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
+                                    }
+                                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                                }
+                            });
+                } else {
+                    System.out.println("Your are trying to eliminate an account while you already performed logout !");
+                }
+
+                return true;
+
+            default:
+
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -132,5 +198,4 @@ public class MainActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         actionBarDrawerToggle.syncState();
     }
-
 }
