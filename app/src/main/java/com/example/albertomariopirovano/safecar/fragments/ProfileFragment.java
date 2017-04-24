@@ -1,16 +1,29 @@
 package com.example.albertomariopirovano.safecar.fragments;
 
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.concurrency.DownloadImage;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * Created by albertomariopirovano on 03/04/17.
@@ -26,58 +39,39 @@ public class ProfileFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("default2")
-                .deleteRealmIfMigrationNeeded()
-                .build();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        ImageButton imageButton = (ImageButton) v.findViewById(R.id.imgProfilePic);
+        TextView nameTextView = (TextView) v.findViewById(R.id.txtName);
+        TextView emailTextView = (TextView) v.findViewById(R.id.txtEmail);
 
-        realm = Realm.getInstance(config);
+        ContextWrapper cw = new ContextWrapper(getActivity().getApplicationContext());
+        File directory = cw.getDir("safecar", Context.MODE_PRIVATE);
+        File profilePngFile = new File(directory, "profile.png");
 
-        /*Button insertButton = (Button) v.findViewById(R.id.insert);
-        insertButton.setOnClickListener( new View.OnClickListener() {
+        Log.d("onCreateView", String.valueOf(profilePngFile.getAbsolutePath()));
+        Log.d("onCreateView", String.valueOf(profilePngFile.getAbsoluteFile()));
+        Log.d("onCreateView", String.valueOf(profilePngFile.exists()));
 
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Dog myDog = realm.createObject(Dog.class);
-                        myDog.setName("Fido");
-                        myDog.setAge(1);
-                    }
-                });
+        if (!TextUtils.isEmpty(currentUser.getPhotoUrl().toString()) && !profilePngFile.exists()) {
+            Log.d("ProfileFragment", "preDownload");
+            new DownloadImage(getActivity().getApplicationContext(), imageButton).execute(currentUser.getPhotoUrl().toString());
 
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        Dog myPuppy = realm.where(Dog.class).equalTo("age", 1).findFirst();
-                        myPuppy.setAge(2);
-                    }
-                });
-                Dog myDog = realm.where(Dog.class).equalTo("age", 2).findFirst();
-                Toast.makeText(getActivity(), myDog.toString(),Toast.LENGTH_LONG).show();
+        } else if (profilePngFile.exists()) {
+            Log.d("ProfileFragment", "preLoad");
+            try {
+                imageButton.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
             }
-        });
+        }
 
-        Button testInsertButton = (Button) v.findViewById(R.id.testInsert);
-        testInsertButton.setOnClickListener( new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                User u = realm.where(User.class).equalTo("name", "Alberto").findFirst();
-
-                System.out.println(u.getUnlockedBadges().get(0).toString());
-                for(Trip t : u.getTrips()) {
-                    System.out.println(t.toString());
-                }
-                System.out.println(u.toString());
-
-                Toast.makeText(getActivity(), u.getUnlockedBadges().get(0).toString(),Toast.LENGTH_LONG).show();
-            }
-        });*/
+        if (!TextUtils.isEmpty(currentUser.getDisplayName())) {
+            nameTextView.setText(currentUser.getDisplayName());
+        }
+        if (!TextUtils.isEmpty(currentUser.getEmail())) {
+            emailTextView.setText(currentUser.getEmail());
+        }
         return v;
     }
 }
