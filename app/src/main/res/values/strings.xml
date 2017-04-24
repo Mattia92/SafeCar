@@ -7,6 +7,10 @@
     <string name="drawer_opened">Drawer Opened</string>
     <string name="drawer_closed">Drawer Closed</string>
 
+    <!-- Button text -->
+    <string name="btn_logout_from_google">Logout from Google</string>
+    <string name="btn_revoke_access">Revoke Access</string>
+
     <string name="button_sharing">Condivisione</string>
     <string name="button_notifications">Notifiche</string>
     <string name="button_smartobj">Smart Objects</string>

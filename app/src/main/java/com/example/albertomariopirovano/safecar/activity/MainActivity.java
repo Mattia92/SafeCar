@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     DrawerLayout drawerLayout;
     RelativeLayout drawerPane;
     ListView lvNav;
@@ -53,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+
+        Log.d(TAG, "------------------------------------------------");
+        FirebaseUser user = auth.getCurrentUser();
+        Log.d(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
+        Log.d(TAG, "------------------------------------------------");
 
         addLogoutListener(auth);
 
