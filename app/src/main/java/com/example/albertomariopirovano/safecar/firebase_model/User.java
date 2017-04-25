@@ -12,14 +12,31 @@ public class User {
 
     public String name;
     public String email;
+    public String provider;
+    public Boolean active;
+    public String photoURL;
+    public String authUID;
 
-    // Default constructor required for calls to
-    // DataSnapshot.getValue(User.class)
     public User() {
     }
 
-    public User(String name, String email) {
+    //constructor for GOOGLE+ users
+    public User(String uid, String name, String email, String photoURL) {
         this.name = name;
         this.email = email;
+        this.active = true;
+        this.provider = "Google+";
+        this.photoURL = photoURL;
+        this.authUID = uid;
+    }
+
+    //constructor for password/email users
+    public User(String uid, String email) {
+        this.name = "";
+        this.email = email;
+        this.active = true;
+        this.provider = "password";
+        this.photoURL = "";
+        this.authUID = uid;
     }
 }

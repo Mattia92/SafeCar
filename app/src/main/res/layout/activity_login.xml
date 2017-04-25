@@ -152,7 +152,7 @@
 
     <Button
         android:id="@+id/newAccountButton"
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="57dp"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="0dp"
@@ -176,7 +176,7 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/btn_sign_in"
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="57dp"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="0dp"

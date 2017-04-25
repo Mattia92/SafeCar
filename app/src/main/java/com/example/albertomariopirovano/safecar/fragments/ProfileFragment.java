@@ -23,15 +23,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import io.realm.Realm;
-
 /**
  * Created by albertomariopirovano on 03/04/17.
  */
 
 public class ProfileFragment extends Fragment {
-
-    private Realm realm;
 
     @Nullable
     @Override
@@ -49,11 +45,7 @@ public class ProfileFragment extends Fragment {
         File directory = cw.getDir("safecar", Context.MODE_PRIVATE);
         File profilePngFile = new File(directory, "profile.png");
 
-        Log.d("onCreateView", String.valueOf(profilePngFile.getAbsolutePath()));
-        Log.d("onCreateView", String.valueOf(profilePngFile.getAbsoluteFile()));
-        Log.d("onCreateView", String.valueOf(profilePngFile.exists()));
-
-        if (!TextUtils.isEmpty(currentUser.getPhotoUrl().toString()) && !profilePngFile.exists()) {
+        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
             Log.d("ProfileFragment", "preDownload");
             new DownloadImage(getActivity().getApplicationContext(), imageButton).execute(currentUser.getPhotoUrl().toString());
 

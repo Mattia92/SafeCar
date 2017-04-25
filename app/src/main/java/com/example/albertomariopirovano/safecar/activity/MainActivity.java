@@ -1,6 +1,9 @@
 package com.example.albertomariopirovano.safecar.activity;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -13,12 +16,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.adapters.NavListAdapter;
+import com.example.albertomariopirovano.safecar.concurrency.DownloadImage;
 import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
 import com.example.albertomariopirovano.safecar.fragments.ProfileFragment;
 import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
@@ -28,22 +34,36 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    DrawerLayout drawerLayout;
-    RelativeLayout drawerPane;
-    ListView lvNav;
+    private DrawerLayout drawerLayout;
+    private RelativeLayout drawerPane;
+    private ListView lvNav;
 
-    List<NavItem> listNavItems;
-    List<Fragment> listFragments;
-    ActionBarDrawerToggle actionBarDrawerToggle;
+    private List<NavItem> listNavItems;
+    private List<Fragment> listFragments;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+
+    private TextView nameTextView;
+    private TextView emailTextView;
+    private ImageButton logoImageView;
+
+    private File profilePngFile;
+
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener logout_listener;
+
+    private DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,19 +73,42 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
 
-        Log.d(TAG, "------------------------------------------------");
         FirebaseUser user = auth.getCurrentUser();
-        Log.d(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
-        Log.d(TAG, "------------------------------------------------");
 
         addLogoutListener(auth);
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
         lvNav = (ListView) findViewById(R.id.nav_list);
+
+        nameTextView = (TextView) findViewById(R.id.nameTextView);
+        emailTextView = (TextView) findViewById(R.id.emailTextView);
+        logoImageView = (ImageButton) findViewById(R.id.icon);
+
+        nameTextView.setText(auth.getCurrentUser().getDisplayName());
+        emailTextView.setText(auth.getCurrentUser().getEmail());
+
+        ContextWrapper cw = new ContextWrapper(this.getApplicationContext());
+        File directory = cw.getDir("safecar", Context.MODE_PRIVATE);
+        profilePngFile = new File(directory, "profile.png");
+
+        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
+            Log.d("ProfileFragment", "preDownload");
+            new DownloadImage(this.getApplicationContext(), logoImageView).execute(currentUser.getPhotoUrl().toString());
+
+        } else if (profilePngFile.exists()) {
+            Log.d("ProfileFragment", "preLoad");
+            try {
+                logoImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
 
         listNavItems = new ArrayList<NavItem>();
 
@@ -160,21 +203,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        System.out.println("CIAOOOOOO");
+        Log.d("MainActivity", "onOptionsItemSelected");
 
         switch (item.getItemId()) {
 
             case R.id.menu_item_logout:
 
                 System.out.println("Logout current user");
+
+                database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(false);
                 auth.signOut();
 
+                if (profilePngFile.exists()) {
+                    if (profilePngFile.delete()) {
+                        System.out.println("file Deleted :" + profilePngFile.getPath());
+                    } else {
+                        System.out.println("file not Deleted :" + profilePngFile.getPath());
+                    }
+                }
+
                 return false;
+
             case R.id.menu_item_delete_account:
 
                 System.out.println("Delete current user");
 
                 FirebaseUser user = auth.getCurrentUser();
+
+                database.child("users").child(user.getUid()).setValue(null);
+
                 if (user != null) {
                     user.delete()
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -190,6 +247,14 @@ public class MainActivity extends AppCompatActivity {
                             });
                 } else {
                     System.out.println("Your are trying to eliminate an account while you already performed logout !");
+                }
+
+                if (profilePngFile.exists()) {
+                    if (profilePngFile.delete()) {
+                        System.out.println("file Deleted :" + profilePngFile.getPath());
+                    } else {
+                        System.out.println("file not Deleted :" + profilePngFile.getPath());
+                    }
                 }
 
                 return true;

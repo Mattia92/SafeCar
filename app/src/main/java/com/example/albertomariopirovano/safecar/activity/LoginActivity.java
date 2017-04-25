@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.firebase_model.User;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -37,6 +38,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by albertomariopirovano on 14/03/17.
@@ -60,6 +66,8 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     private SignInButton btnSignIn;
     private GoogleApiClient mGoogleApiClient;
     private Boolean ANIMATION_ENDED = false;
+
+    private DatabaseReference database;
 
     // converte il valore in dp in px
     public static float dpToPx(Context context, float valueInDp) {
@@ -89,6 +97,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
             // single sign-on will occur in this branch.
+            Log.d(TAG, "No cached Google sign-in");
             progressBar.setVisibility(View.VISIBLE);
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
@@ -145,8 +154,27 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = auth.getCurrentUser();
+                            final FirebaseUser user = auth.getCurrentUser();
+                            database.child("user").orderByChild("userId").equalTo(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        Log.d("firebaseAuthWithGoogle", "user already present, let's set active to true");
+                                        database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
+                                    } else {
+                                        Log.d("firebaseAuthWithGoogle", "user not present, let's add him");
+                                        //String userID = database.child("users").push().getKey();
+                                        database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString()));
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                             Log.d(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
+
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -156,7 +184,6 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
-
                         // [START_EXCLUDE]
                         progressBar.setVisibility(View.GONE);
                         // [END_EXCLUDE]
@@ -181,13 +208,16 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
 
         if (auth.getCurrentUser() != null) {
-            System.out.println("skip" + auth.getCurrentUser());
+            Log.d(TAG, "skip -> " + auth.getCurrentUser().getEmail() + " " + auth.getCurrentUser().getDisplayName());
+            database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
+        } else {
+            Log.d(TAG, "no skip");
         }
 
         setContentView(R.layout.activity_login);
@@ -280,6 +310,8 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
+                                    Log.d(TAG, "signin successful");
+                                    database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
@@ -302,6 +334,8 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                         langTextView.setVisibility(View.GONE);
                         forgotPwdTextView.setVisibility(View.GONE);
                         staticLogo.setVisibility(View.VISIBLE);
+                        newAccountButton.setVisibility(View.GONE);
+
                     } else {
                         // soft keyboard is hidden
                         cover.setVisibility(View.VISIBLE);
@@ -309,6 +343,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                         forgotPwdTextView.setVisibility(View.VISIBLE);
                         btnSignIn.setVisibility(View.VISIBLE);
                         staticLogo.setVisibility(View.GONE);
+                        newAccountButton.setVisibility(View.VISIBLE);
                     }
                 }
             }

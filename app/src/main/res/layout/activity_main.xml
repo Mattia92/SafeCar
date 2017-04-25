@@ -17,46 +17,46 @@
     <RelativeLayout
         android:id="@+id/drawer_pane"
         android:layout_width="280dp"
-        android:layout_gravity="start"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
 
         <!-- Profile Box -->
         <RelativeLayout
             android:id="@+id/profile_box"
             android:layout_width="match_parent"
-            android:gravity="center_vertical"
             android:layout_height="100dp"
-            android:background="@color/material_blue_grey_800">
+            android:background="@color/material_blue_grey_800"
+            android:gravity="center_vertical">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/icon"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:background="@drawable/ic_tag_faces_black_24dp">
-            </ImageView>
+                android:layout_marginLeft="10dp"></ImageButton>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/icon"
                 android:layout_margin="5dp"
+                android:layout_toRightOf="@+id/icon"
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/nameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Username"
+                    android:textColor="#FFFFFF"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#FFFFFF"/>
+                    android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/emailTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Details"
-                    android:textSize="16sp"
-                    android:textColor="#FFFFFF"/>
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
 
 
             </LinearLayout>
@@ -69,8 +69,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/profile_box"
-            android:choiceMode="singleChoice"
-            android:background="#FFFFFF">
+            android:background="#FFFFFF"
+            android:choiceMode="singleChoice">
         </ListView>
 
     </RelativeLayout>

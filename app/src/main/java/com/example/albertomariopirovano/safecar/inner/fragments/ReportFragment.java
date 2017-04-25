@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.model.Trip;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 
 /**
  * Created by albertomariopirovano on 04/04/17.
@@ -33,7 +33,4 @@ public class ReportFragment extends Fragment {
 
         return v;
     }
-
-
-
 }

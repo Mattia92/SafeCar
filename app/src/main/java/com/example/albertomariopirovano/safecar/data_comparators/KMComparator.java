@@ -1,6 +1,6 @@
 package com.example.albertomariopirovano.safecar.data_comparators;
 
-import com.example.albertomariopirovano.safecar.model.Trip;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 
 import java.util.Comparator;
 

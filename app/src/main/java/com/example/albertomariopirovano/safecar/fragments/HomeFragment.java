@@ -15,10 +15,10 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
-import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.inner.fragments.TabHome;
+import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabFragment;
+import com.example.albertomariopirovano.safecar.inner.fragments.TabHome;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDSI;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDate;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDuration;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * Created by mattiacrippa on 14/03/17.
@@ -37,26 +36,19 @@ import io.realm.RealmConfiguration;
 
 public class HomeFragment extends Fragment implements OnPageChangeListener, OnTabChangeListener {
 
+    //int i = 0;
+    View v;
     private ViewPager viewPager;
     private TabHost tabHost;
     private AppFragmentPagerAdapter appFragmentPagerAdapter;
     private List<Fragment> listFragments;
     private Realm realm;
     private FetchService dataService = FetchService.getInstance();
-    //int i = 0;
-    View v;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.tabs_viewpager_layout, container, false);
-
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("default2")
-                .deleteRealmIfMigrationNeeded()
-                .build();
-
-        realm = Realm.getInstance(config);
 
         //init ViewPager
         this.initViewPager();
@@ -65,24 +57,6 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
         this.initTabHost(savedInstanceState);
 
         return v;
-    }
-
-    class FakeContent implements TabContentFactory {
-
-        private final Context context;
-
-        public FakeContent(Context mcontext) {
-            context = mcontext;
-        }
-
-        @Override
-        public View createTabContent(String s) {
-
-            View fakeView = new View(context);
-            fakeView.setMinimumHeight(0);
-            fakeView.setMinimumWidth(0);
-            return fakeView;
-        }
     }
 
     private void initViewPager() {
@@ -156,5 +130,23 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     @Override
     public void onPageSelected(int selectedItem) {
         tabHost.setCurrentTab(selectedItem);
+    }
+
+    class FakeContent implements TabContentFactory {
+
+        private final Context context;
+
+        public FakeContent(Context mcontext) {
+            context = mcontext;
+        }
+
+        @Override
+        public View createTabContent(String s) {
+
+            View fakeView = new View(context);
+            fakeView.setMinimumHeight(0);
+            fakeView.setMinimumWidth(0);
+            return fakeView;
+        }
     }
 }

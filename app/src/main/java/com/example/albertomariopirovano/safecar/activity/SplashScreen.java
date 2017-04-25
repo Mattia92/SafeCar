@@ -9,14 +9,13 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.model.Badge;
-import com.example.albertomariopirovano.safecar.model.Trip;
-import com.example.albertomariopirovano.safecar.model.User;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * Created by mattiacrippa on 13/03/17.
@@ -30,21 +29,13 @@ import io.realm.RealmConfiguration;
 public class SplashScreen extends Activity {
 
     private static int SPLASH_TIME_OUT = 4000;
-    private Realm realm;
+
+    private DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
-        Realm.init(this);
-
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("default2")
-                .deleteRealmIfMigrationNeeded()
-                .build();
-
-        realm = Realm.getInstance(config);
 
         initData();
 
@@ -71,48 +62,34 @@ public class SplashScreen extends Activity {
 
     private void initData() {
 
-        realm.executeTransaction(new Realm.Transaction() {
+        database = FirebaseDatabase.getInstance().getReference();
+
+        database.child("flag").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void execute(Realm realm) {
-                User u = realm.createObject(User.class);
-                Trip t1 = realm.createObject(Trip.class);
-                Trip t2 = realm.createObject(Trip.class);
-                Trip t3 = realm.createObject(Trip.class);
-                Trip t4 = realm.createObject(Trip.class);
-                Trip t5 = realm.createObject(Trip.class);
-                Trip t6 = realm.createObject(Trip.class);
-                Trip t7 = realm.createObject(Trip.class);
-                Trip t8 = realm.createObject(Trip.class);
-                Badge b1 = realm.createObject(Badge.class);
+            public void onDataChange(DataSnapshot snapshot) {
+                String id = "D5LEHTGLuAT2pXjIfNqF61XVclu2";
 
-                u.setUser("Alberto", "Pirovano", "Newbie", "100");
-                t1.setTrip(new Date(), 100, 26, 57, "Milano", "Vimercate");
-                u.getTrips().add(t1);
-                t2.setTrip(new Date(), 300, 77, 64,  "Torino", "Vercelli");
-                u.getTrips().add(t2);
-                t3.setTrip(new Date(), 340, 4, 8,  "Vimercate", "Arcore");
-                u.getTrips().add(t3);
-                t4.setTrip(new Date(), 120, 56, 64,  "Milano", "Lecco");
-                u.getTrips().add(t4);
-                t5.setTrip(new Date(), 1000, 2, 4,  "Vimercate", "Oreno");
-                u.getTrips().add(t5);
-                t6.setTrip(new Date(), 12, 52, 74, "Milano", "Como");
-                u.getTrips().add(t6);
-                t7.setTrip(new Date(), 78, 46, 73, "Milano", "Pavia");
-                u.getTrips().add(t7);
-                t8.setTrip(new Date(), 444, 215, 240,  "Milano", "Bormio");
-                u.getTrips().add(t8);
-
-                b1.setBadge("Newbie", "We are happy to have you in our community!");
-                u.getUnlockedBadges().add(b1);
-
-                /*System.out.println(u.getUnlockedBadges().get(0).toString());
-                for(Trip t : u.getTrips()) {
-                    System.out.println(t.toString());
+                if (Integer.parseInt(snapshot.getValue().toString()) == 1) {
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 100, 26, 57, "Milano", "Vimercate"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 300, 77, 64, "Torino", "Vercelli"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 340, 4, 8, "Vimercate", "Arcore"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 120, 56, 64, "Milano", "Lecco"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 1000, 2, 4, "Vimercate", "Oreno"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 12, 52, 74, "Milano", "Como"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 78, 46, 73, "Milano", "Pavia"));
+                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 444, 215, 240, "Milano", "Bormio"));
                 }
-                System.out.println(u.toString());*/
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
             }
         });
+    }
+
+    public void addTrip(com.example.albertomariopirovano.safecar.firebase_model.Trip t) {
+        String tripID = database.child("trips").push().getKey();
+        database.child("trips").child(tripID).setValue(t);
     }
 
     private void resizeFragment(Fragment f, int newWidth, int newHeight) {
