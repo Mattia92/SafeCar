@@ -11,12 +11,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -46,6 +47,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
     private DrawerLayout drawerLayout;
     private RelativeLayout drawerPane;
     private ListView lvNav;
@@ -56,12 +58,16 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView nameTextView;
     private TextView emailTextView;
-    private ImageButton logoImageView;
+    private ImageView iconImageView;
 
+    private File directory;
     private File profilePngFile;
+
+    private ContextWrapper cw;
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener logout_listener;
+    private FirebaseUser currentUser;
 
     private DatabaseReference database;
 
@@ -74,41 +80,15 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         auth = FirebaseAuth.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance().getReference();
 
-        FirebaseUser user = auth.getCurrentUser();
-
         addLogoutListener(auth);
-
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        handleDrawerProfileDetails();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
         lvNav = (ListView) findViewById(R.id.nav_list);
-
-        nameTextView = (TextView) findViewById(R.id.nameTextView);
-        emailTextView = (TextView) findViewById(R.id.emailTextView);
-        logoImageView = (ImageButton) findViewById(R.id.icon);
-
-        nameTextView.setText(auth.getCurrentUser().getDisplayName());
-        emailTextView.setText(auth.getCurrentUser().getEmail());
-
-        ContextWrapper cw = new ContextWrapper(this.getApplicationContext());
-        File directory = cw.getDir("safecar", Context.MODE_PRIVATE);
-        profilePngFile = new File(directory, "profile.png");
-
-        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
-            Log.d("ProfileFragment", "preDownload");
-            new DownloadImage(this.getApplicationContext(), logoImageView).execute(currentUser.getPhotoUrl().toString());
-
-        } else if (profilePngFile.exists()) {
-            Log.d("ProfileFragment", "preLoad");
-            try {
-                logoImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
 
         listNavItems = new ArrayList<NavItem>();
 
@@ -169,6 +149,46 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
+    }
+
+    private void handleDrawerProfileDetails() {
+
+        nameTextView = (TextView) findViewById(R.id.nameTextView);
+        emailTextView = (TextView) findViewById(R.id.emailTextView);
+        iconImageView = (ImageView) findViewById(R.id.icon);
+
+        if (!TextUtils.isEmpty(currentUser.getDisplayName())) {
+            nameTextView.setText(currentUser.getDisplayName());
+        } else {
+            nameTextView.setText("No name provided");
+        }
+
+        if (!TextUtils.isEmpty(currentUser.getEmail())) {
+            emailTextView.setText(currentUser.getEmail());
+        } else {
+            emailTextView.setText("No email provided");
+        }
+
+        cw = new ContextWrapper(this.getApplicationContext());
+        directory = cw.getDir("safecar", Context.MODE_PRIVATE);
+        profilePngFile = new File(directory, "profile.png");
+
+        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
+            Log.d(TAG, "download profile image");
+            new DownloadImage(profilePngFile).execute(currentUser.getPhotoUrl().toString());
+        }
+
+        if (currentUser.getPhotoUrl() != null) {
+            Log.d(TAG, "load profile image");
+            try {
+                iconImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Log.d(TAG, "load standard profile image");
+            iconImageView.setImageResource(R.drawable.user);
+        }
     }
 
     public void addLogoutListener(FirebaseAuth a) {
@@ -271,14 +291,11 @@ public class MainActivity extends AppCompatActivity {
                 setTitle(getString(R.string.action_settings));
 
                 return super.onOptionsItemSelected(item);
-
         }
     }
-
     @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         actionBarDrawerToggle.syncState();
     }
-
 }
