@@ -5,23 +5,37 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/entry_text_home"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home fragment"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/target_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0px"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
         android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_weight="0.5"
+        android:gravity="bottom"
+        android:text="Re scan"
+        android:textColor="#000000"
+        android:textSize="30sp" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="15dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="30dp"
         android:layout_marginTop="30dp"
-        android:background="@color/colorPrimaryDark"
-        android:text="sample text"
-        android:textColor="#ffffff"
-        android:textSize="20sp" />
+        android:layout_weight="0.1"
+        android:text="Scan" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="0.5" />
+
 
 </LinearLayout>

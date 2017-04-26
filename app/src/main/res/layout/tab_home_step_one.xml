@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_home_step_one"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -18,6 +19,7 @@
         android:textSize="30sp" />
 
     <LinearLayout
+        android:id="@+id/imageViewsBag"
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_below="@+id/entry_text_home"
@@ -27,12 +29,14 @@
         android:layout_weight="0.5">
 
         <ImageView
+            android:id="@+id/currentlyDrivingLogo"
             android:layout_width="0px"
             android:layout_height="50dp"
             android:layout_weight="0.5"
             android:src="@drawable/ic_done_black_24dp" />
 
         <ImageView
+            android:id="@+id/notCurrentlyDrivingLogo"
             android:layout_width="0px"
             android:layout_height="50dp"
             android:layout_weight="0.5"

@@ -10,10 +10,12 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -33,6 +35,13 @@ public class TabHome extends Fragment implements TabFragment {
 
     private static final String TAG = "TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
+    private String name = "Home";
+    private FirebaseAuth auth;
+    private DatabaseReference database;
+    private BluetoothAdapter bluetoothAdapter;
+    private ImageView currentlyDrivingLogo;
+    private ImageView notCurrentlyDrivingLogo;
+    private TextView titleBluetoothTriggered;
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -40,6 +49,8 @@ public class TabHome extends Fragment implements TabFragment {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 Log.d(TAG, "discovery started");
+
+
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.d(TAG, "discovery finished");
@@ -50,19 +61,35 @@ public class TabHome extends Fragment implements TabFragment {
 
                 Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
-                //targetTextView.setText(device.getName() + " " + device.getAddress());
+                Log.d(TAG, "making visible some items");
+
+                currentlyDrivingLogo.setAlpha(0f);
+                currentlyDrivingLogo.setVisibility(View.VISIBLE);
+                notCurrentlyDrivingLogo.setAlpha(0f);
+                notCurrentlyDrivingLogo.setVisibility(View.VISIBLE);
+                titleBluetoothTriggered.setAlpha(0f);
+                titleBluetoothTriggered.setVisibility(View.VISIBLE);
+
+                int mediumAnimationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+                currentlyDrivingLogo.animate()
+                        .alpha(1f)
+                        .setDuration(mediumAnimationTime)
+                        .setListener(null);
+                notCurrentlyDrivingLogo.animate()
+                        .alpha(1f)
+                        .setDuration(mediumAnimationTime)
+                        .setListener(null);
+                titleBluetoothTriggered.animate()
+                        .alpha(1f)
+                        .setDuration(mediumAnimationTime)
+                        .setListener(null);
 
             } else {
                 Log.d(TAG, "I really don't know why you are here");
             }
         }
     };
-    private String name = "Home";
-    private FirebaseAuth auth;
-    private DatabaseReference database;
-    private Boolean bluetoothEnabled = false;
-    private TextView targetTextView;
-    private BluetoothAdapter bluetoothAdapter;
 
     public String getName() {
         return name;
@@ -79,8 +106,56 @@ public class TabHome extends Fragment implements TabFragment {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
 
-        //targetTextView = (TextView) v.findViewById(R.id.target_text_view);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
+        notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
+        titleBluetoothTriggered = (TextView) v.findViewById(R.id.entry_text_home);
+
+        currentlyDrivingLogo.setVisibility(View.GONE);
+        notCurrentlyDrivingLogo.setVisibility(View.GONE);
+        titleBluetoothTriggered.setVisibility(View.GONE);
+
+        notCurrentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.d(TAG, "hiding some items");
+
+                currentlyDrivingLogo.setAlpha(0f);
+                currentlyDrivingLogo.setVisibility(View.GONE);
+                notCurrentlyDrivingLogo.setAlpha(0f);
+                notCurrentlyDrivingLogo.setVisibility(View.GONE);
+                titleBluetoothTriggered.setAlpha(0f);
+                titleBluetoothTriggered.setVisibility(View.GONE);
+
+                int mediumAnimationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+
+                currentlyDrivingLogo.animate()
+                        .alpha(1f)
+                        .setDuration(mediumAnimationTime)
+                        .setListener(null);
+                notCurrentlyDrivingLogo.animate()
+                        .alpha(1f)
+                        .setDuration(mediumAnimationTime)
+                        .setListener(null);
+                titleBluetoothTriggered.animate()
+                        .alpha(1f)
+                        .setDuration(mediumAnimationTime)
+                        .setListener(null);
+            }
+        });
+
+        currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_content, new Tab_home_step_two()).commit();*/
+                final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.tab_home_step_one, new Tab_home_step_two(), "NewFragmentTag");
+                ft.commit();
+            }
+        });
 
         // Quick permission check
         int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
@@ -173,4 +248,5 @@ public class TabHome extends Fragment implements TabFragment {
         // Don't forget to unregister the ACTION_FOUND receiver.
         getActivity().unregisterReceiver(receiver);
     }
+
 }
