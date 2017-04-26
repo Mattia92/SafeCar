@@ -33,13 +33,6 @@ public class TabHome extends Fragment implements TabFragment {
 
     private static final String TAG = "TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
-    private String name = "Home";
-    private FirebaseAuth auth;
-    private DatabaseReference database;
-
-    private Boolean bluetoothEnabled = false;
-
-    private TextView targetTextView;
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -57,13 +50,18 @@ public class TabHome extends Fragment implements TabFragment {
 
                 Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
-                targetTextView.setText(device.getName() + " " + device.getAddress());
+                //targetTextView.setText(device.getName() + " " + device.getAddress());
 
             } else {
                 Log.d(TAG, "I really don't know why you are here");
             }
         }
     };
+    private String name = "Home";
+    private FirebaseAuth auth;
+    private DatabaseReference database;
+    private Boolean bluetoothEnabled = false;
+    private TextView targetTextView;
     private BluetoothAdapter bluetoothAdapter;
 
     public String getName() {
@@ -74,14 +72,14 @@ public class TabHome extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.tab_home, container, false);
+        View v = inflater.inflate(R.layout.tab_home_step_one, container, false);
 
         Log.d(TAG, "onCreate");
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
 
-        targetTextView = (TextView) v.findViewById(R.id.target_text_view);
+        //targetTextView = (TextView) v.findViewById(R.id.target_text_view);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Quick permission check
@@ -92,8 +90,6 @@ public class TabHome extends Fragment implements TabFragment {
             Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
             getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
         }
-
-        //getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
 
         if (bluetoothAdapter != null) {
 
