@@ -2,11 +2,13 @@ package com.example.albertomariopirovano.safecar.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.google.firebase.database.DataSnapshot;
@@ -30,12 +32,21 @@ public class SplashScreen extends Activity {
 
     private static int SPLASH_TIME_OUT = 4000;
 
+    private Typeface font;
+
+    private TextView splash_text;
+
     private DatabaseReference database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        font = Typeface.createFromAsset(getAssets(), "fonts/Pacifico.ttf");
+
+        splash_text = (TextView) findViewById(R.id.splash_text);
+        splash_text.setTypeface(font);
 
         initData();
 

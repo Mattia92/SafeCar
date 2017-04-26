@@ -1,12 +1,9 @@
 package com.example.albertomariopirovano.safecar.concurrency;
 
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageButton;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,12 +18,10 @@ import java.net.URL;
  */
 
 public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-    private final ImageButton ref;
-    private Context c;
+    private File targetFile;
 
-    public DownloadImage(Context c, ImageButton imb) {
-        this.c = c;
-        this.ref = imb;
+    public DownloadImage(File targetFile) {
+        this.targetFile = targetFile;
     }
 
     @Override
@@ -39,9 +34,6 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap bitmap) {
         Log.d("DownloadImage", "onPostExecute");
-        if (ref != null && bitmap != null) {
-            ref.setImageBitmap(bitmap);
-        }
     }
 
     private Bitmap fetchImage(String urlstr) {
@@ -67,11 +59,8 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     public void saveBitmap(Bitmap bmp) {
         FileOutputStream out = null;
-        ContextWrapper cw = new ContextWrapper(c);
-        File directory = cw.getDir("safecar", Context.MODE_PRIVATE);
-        File profilePngFile = new File(directory, "profile.png");
         try {
-            out = new FileOutputStream(profilePngFile);
+            out = new FileOutputStream(targetFile);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
             // PNG is a lossless format, the compression factor (100) is ignored
         } catch (Exception e) {

@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -29,40 +29,61 @@ import java.io.FileNotFoundException;
 
 public class ProfileFragment extends Fragment {
 
+    private File directory;
+
+    private File profilePngFile;
+    private File standardPngFile;
+
+    private ContextWrapper cw;
+    private FirebaseUser currentUser;
+    private TextView nameTextView;
+    private TextView emailTextView;
+    private ImageView imageView;
+    private View v;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_profile, container, false);
+        v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        ImageButton imageButton = (ImageButton) v.findViewById(R.id.imgProfilePic);
-        TextView nameTextView = (TextView) v.findViewById(R.id.txtName);
-        TextView emailTextView = (TextView) v.findViewById(R.id.txtEmail);
+        imageView = (ImageView) v.findViewById(R.id.imgProfilePic);
+        nameTextView = (TextView) v.findViewById(R.id.txtName);
+        emailTextView = (TextView) v.findViewById(R.id.txtEmail);
 
-        ContextWrapper cw = new ContextWrapper(getActivity().getApplicationContext());
-        File directory = cw.getDir("safecar", Context.MODE_PRIVATE);
-        File profilePngFile = new File(directory, "profile.png");
+        cw = new ContextWrapper(getActivity().getApplicationContext());
+        directory = cw.getDir("safecar", Context.MODE_PRIVATE);
+        profilePngFile = new File(directory, "profile.png");
 
         if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
-            Log.d("ProfileFragment", "preDownload");
-            new DownloadImage(getActivity().getApplicationContext(), imageButton).execute(currentUser.getPhotoUrl().toString());
+            Log.d("ProfileFragment", "download profile image");
+            new DownloadImage(profilePngFile).execute(currentUser.getPhotoUrl().toString());
+        }
 
-        } else if (profilePngFile.exists()) {
-            Log.d("ProfileFragment", "preLoad");
+        if (currentUser.getPhotoUrl() != null) {
+            Log.d("ProfileFragment", "load profile image");
             try {
-                imageButton.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+                imageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        } else {
+            Log.d("ProfileFragment", "load standard profile image");
+            imageView.setImageResource(R.drawable.user);
         }
 
         if (!TextUtils.isEmpty(currentUser.getDisplayName())) {
             nameTextView.setText(currentUser.getDisplayName());
+        } else {
+            nameTextView.setText("No name provided");
         }
+
         if (!TextUtils.isEmpty(currentUser.getEmail())) {
             emailTextView.setText(currentUser.getEmail());
+        } else {
+            emailTextView.setText("No email provided");
         }
         return v;
     }
