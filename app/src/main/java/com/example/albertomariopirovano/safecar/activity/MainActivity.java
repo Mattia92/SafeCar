@@ -197,8 +197,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                System.out.println("INSIDE !");
+                Log.d(TAG, "addLogoutListener");
                 if (user == null) {
+                    Log.d(TAG, "addLogoutListener - null user");
                     // user auth state is changed - user is null
                     // launch login activity
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -229,26 +230,35 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.menu_item_logout:
 
-                System.out.println("Logout current user");
-
                 database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(false);
-                auth.signOut();
 
                 if (profilePngFile.exists()) {
                     if (profilePngFile.delete()) {
-                        System.out.println("file Deleted :" + profilePngFile.getPath());
+                        Log.d(TAG, "file Deleted :" + profilePngFile.getPath());
                     } else {
-                        System.out.println("file not Deleted :" + profilePngFile.getPath());
+                        Log.d(TAG, "file not Deleted :" + profilePngFile.getPath());
                     }
                 }
+
+                auth.signOut();
+
+                Log.d(TAG, "Logout current user");
+
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
                 return false;
 
             case R.id.menu_item_delete_account:
 
-                System.out.println("Delete current user");
-
                 FirebaseUser user = auth.getCurrentUser();
+
+                if (profilePngFile.exists()) {
+                    if (profilePngFile.delete()) {
+                        Log.d(TAG, "file Deleted :" + profilePngFile.getPath());
+                    } else {
+                        Log.d(TAG, "file not Deleted :" + profilePngFile.getPath());
+                    }
+                }
 
                 database.child("users").child(user.getUid()).setValue(null);
 
@@ -258,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(MainActivity.this, "Your profile is deleted:( Create a account now!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this, "Your profile is deleted!", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Toast.makeText(MainActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
                                     }
@@ -266,22 +276,16 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    System.out.println("Your are trying to eliminate an account while you already performed logout !");
+                    Log.d(TAG, "Your are trying to eliminate an account while you already performed logout !");
                 }
 
-                if (profilePngFile.exists()) {
-                    if (profilePngFile.delete()) {
-                        System.out.println("file Deleted :" + profilePngFile.getPath());
-                    } else {
-                        System.out.println("file not Deleted :" + profilePngFile.getPath());
-                    }
-                }
+                Log.d(TAG, "Delete current user");
 
                 return true;
 
             default:
 
-                System.out.println("DEFAULT CASE !");
+                Log.d(TAG, "DEFAULT CASE !");
 
                 if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
                     return true;

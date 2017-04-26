@@ -16,6 +16,8 @@ public class User {
     public Boolean active;
     public String photoURL;
     public String authUID;
+    public String level;
+    public String percentage;
 
     public User() {
     }
@@ -25,6 +27,8 @@ public class User {
         this.name = name;
         this.email = email;
         this.active = true;
+        this.level = "0";
+        this.percentage = "0";
         this.provider = "Google+";
         this.photoURL = photoURL;
         this.authUID = uid;
@@ -35,8 +39,24 @@ public class User {
         this.name = "";
         this.email = email;
         this.active = true;
+        this.level = "0";
+        this.percentage = "0";
         this.provider = "password";
         this.photoURL = "";
         this.authUID = uid;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", provider='" + provider + '\'' +
+                ", active=" + active +
+                ", photoURL='" + photoURL + '\'' +
+                ", authUID='" + authUID + '\'' +
+                ", level='" + level + '\'' +
+                ", percentage='" + percentage + '\'' +
+                '}';
     }
 }

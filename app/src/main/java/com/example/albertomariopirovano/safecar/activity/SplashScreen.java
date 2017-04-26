@@ -78,7 +78,7 @@ public class SplashScreen extends Activity {
         database.child("flag").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                String id = "D5LEHTGLuAT2pXjIfNqF61XVclu2";
+                String id = "PUyyqvKwsaevqS399UO8DV2PH1D2";
 
                 if (Integer.parseInt(snapshot.getValue().toString()) == 1) {
                     addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 100, 26, 57, "Milano", "Vimercate"));

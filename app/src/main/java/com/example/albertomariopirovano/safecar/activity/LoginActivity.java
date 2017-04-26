@@ -155,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             final FirebaseUser user = auth.getCurrentUser();
-                            database.child("user").orderByChild("userId").equalTo(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            database.child("users").orderByChild("authUID").equalTo(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()) {
@@ -356,27 +356,18 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 
-            Log.e(TAG, "display name: " + acct.getDisplayName());
+            Log.d(TAG, "Signed in successfully, name: " + acct.getDisplayName());
 
             String personName = acct.getDisplayName();
             String personPhotoUrl = acct.getPhotoUrl().toString();
             String email = acct.getEmail();
 
-            Log.e(TAG, "Name: " + personName + ", email: " + email
+            Log.d(TAG, "Name: " + personName + ", email: " + email
                     + ", Image: " + personPhotoUrl);
 
-            //txtName.setText(personName);
-            //txtEmail.setText(email);
-            /*Glide.with(getApplicationContext()).load(personPhotoUrl)
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(imgProfilePic);
-
-            updateUI(true);*/
         } else {
             // Signed out, show unauthenticated UI.
-            /*updateUI(false);*/
+            Log.d(TAG, "Signed out successfully");
             Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
         }
     }

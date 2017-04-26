@@ -17,8 +17,14 @@ import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadImage;
+import com.example.albertomariopirovano.safecar.firebase_model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,7 +48,11 @@ public class ProfileFragment extends Fragment {
     private TextView nameTextView;
     private TextView emailTextView;
     private ImageView imageView;
+    private TextView levelTextView;
     private View v;
+
+    private DatabaseReference database;
+    private FirebaseAuth auth;
 
     @Nullable
     @Override
@@ -50,18 +60,47 @@ public class ProfileFragment extends Fragment {
 
         v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance().getReference();
+        currentUser = auth.getCurrentUser();
 
         imageView = (ImageView) v.findViewById(R.id.imgProfilePic);
         nameTextView = (TextView) v.findViewById(R.id.txtName);
         emailTextView = (TextView) v.findViewById(R.id.txtEmail);
+        levelTextView = (TextView) v.findViewById(R.id.level_text_view);
 
         customProgress = (ProgressBar) v.findViewById(R.id.customProgress);
         progressDisplay = (TextView) v.findViewById(R.id.progressDisplay);
 
-        customProgress.setProgress(70);
-        customProgress.setSecondaryProgress(71);
-        progressDisplay.setText(String.valueOf(70) + "%");
+        Log.d("ProfileFragment - UID", auth.getCurrentUser().getUid());
+
+        database.child("users").orderByChild("authUID").equalTo(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                User user = null;
+                int i = 0;
+                for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                    if (i == 0) {
+                        user = snap.getValue(User.class);
+                        i++;
+                    }
+                }
+                Log.d("ProfileFragment", user.toString());
+
+                customProgress.setProgress(Integer.parseInt(user.percentage));
+                customProgress.setSecondaryProgress(Integer.parseInt(user.percentage) + 1);
+                progressDisplay.setText(user.percentage + "%");
+
+                levelTextView.setText("Level " + user.level);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         cw = new ContextWrapper(getActivity().getApplicationContext());
         directory = cw.getDir("safecar", Context.MODE_PRIVATE);
