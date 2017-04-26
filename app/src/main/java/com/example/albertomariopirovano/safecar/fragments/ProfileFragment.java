@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -32,7 +33,9 @@ public class ProfileFragment extends Fragment {
     private File directory;
 
     private File profilePngFile;
-    private File standardPngFile;
+
+    private ProgressBar customProgress;
+    private TextView progressDisplay;
 
     private ContextWrapper cw;
     private FirebaseUser currentUser;
@@ -52,6 +55,13 @@ public class ProfileFragment extends Fragment {
         imageView = (ImageView) v.findViewById(R.id.imgProfilePic);
         nameTextView = (TextView) v.findViewById(R.id.txtName);
         emailTextView = (TextView) v.findViewById(R.id.txtEmail);
+
+        customProgress = (ProgressBar) v.findViewById(R.id.customProgress);
+        progressDisplay = (TextView) v.findViewById(R.id.progressDisplay);
+
+        customProgress.setProgress(70);
+        customProgress.setSecondaryProgress(71);
+        progressDisplay.setText(String.valueOf(70) + "%");
 
         cw = new ContextWrapper(getActivity().getApplicationContext());
         directory = cw.getDir("safecar", Context.MODE_PRIVATE);
