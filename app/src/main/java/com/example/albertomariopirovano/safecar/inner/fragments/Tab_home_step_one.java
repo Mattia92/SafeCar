@@ -28,6 +28,7 @@ public class Tab_home_step_one extends Fragment implements TabFragment {
     private ImageView currentlyDrivingLogo;
     private ImageView notCurrentlyDrivingLogo;
     private TextView titleBluetoothTriggered;
+    private TextView devices;
 
     @Override
     public String getName() {
@@ -43,6 +44,15 @@ public class Tab_home_step_one extends Fragment implements TabFragment {
         currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
         notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
         titleBluetoothTriggered = (TextView) v.findViewById(R.id.entry_text_home);
+        devices = (TextView) v.findViewById(R.id.devices);
+
+        String dataFromPrevious = "ANYTHING";
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            dataFromPrevious = bundle.getString("devices");
+        }
+
+        devices.setText(dataFromPrevious);
 
         fm = getActivity().getSupportFragmentManager();
 
@@ -50,7 +60,7 @@ public class Tab_home_step_one extends Fragment implements TabFragment {
             @Override
             public void onClick(View view) {
                 final FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.tab_home_one, new TabHome(), "NewFragmentTag0");
+                fragmentTransaction.replace(R.id.tab_home_one, new TabHome());
                 fragmentTransaction.commit();
             }
         });
@@ -59,11 +69,19 @@ public class Tab_home_step_one extends Fragment implements TabFragment {
             @Override
             public void onClick(View view) {
                 final FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.tab_home_one, new Tab_home_step_two(), "NewFragmentTag2");
+                fragmentTransaction.replace(R.id.tab_home_one, new Tab_home_step_two());
                 fragmentTransaction.commit();
             }
         });
 
         return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.d(TAG, "Destroy TabHomeOne");
+
     }
 }

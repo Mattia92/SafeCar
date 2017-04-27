@@ -1,5 +1,7 @@
 package com.example.albertomariopirovano.safecar.concurrency;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,10 +20,15 @@ import java.net.URL;
  */
 
 public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+
     private File targetFile;
 
-    public DownloadImage(File targetFile) {
+    private String DOWNLOAD_ACTION = "download";
+    private Activity activity;
+
+    public DownloadImage(File targetFile, Activity activity) {
         this.targetFile = targetFile;
+        this.activity = activity;
     }
 
     @Override
@@ -34,6 +41,8 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap bitmap) {
         Log.d("DownloadImage", "onPostExecute");
+        Intent intent = new Intent(DOWNLOAD_ACTION);
+        activity.sendBroadcast(intent);
     }
 
     private Bitmap fetchImage(String urlstr) {
@@ -63,6 +72,7 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
             out = new FileOutputStream(targetFile);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
             // PNG is a lossless format, the compression factor (100) is ignored
+            Log.d("DownloadImage", "saveBitmap");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

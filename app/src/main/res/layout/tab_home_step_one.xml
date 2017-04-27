@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_home_one"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="500dp"
+    android:orientation="vertical"
+    android:weightSum="10">
 
     <TextView
         android:id="@+id/entry_text_home"
@@ -12,7 +13,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_weight="0.3"
+        android:layout_weight="4"
         android:gravity="bottom"
         android:text="We detected your presence in the car.\nAre you actually driving?"
         android:textColor="#000000"
@@ -26,21 +27,36 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="30dp"
-        android:layout_weight="0.7">
+        android:layout_weight="1"
+        android:weightSum="10">
 
         <ImageView
             android:id="@+id/currentlyDrivingLogo"
             android:layout_width="0px"
             android:layout_height="50dp"
-            android:layout_weight="0.5"
+            android:layout_weight="5"
             android:src="@drawable/ic_done_black_24dp" />
 
         <ImageView
             android:id="@+id/notCurrentlyDrivingLogo"
             android:layout_width="0px"
             android:layout_height="50dp"
-            android:layout_weight="0.5"
+            android:layout_weight="5"
             android:src="@drawable/ic_clear_black_24dp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/devices"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_weight="5"
+        android:gravity="top|center"
+        android:text="No devices found"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp" />
 
 </LinearLayout>

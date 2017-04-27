@@ -1,8 +1,10 @@
 package com.example.albertomariopirovano.safecar.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -63,11 +65,29 @@ public class MainActivity extends AppCompatActivity {
     private TextView nameTextView;
     private TextView emailTextView;
     private ImageView iconImageView;
+    private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
 
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Toast.makeText(MainActivity.this, "Profile-image download complete", Toast.LENGTH_LONG).show();
+
+            Log.d(TAG, "main activity download completed");
+            Log.d(TAG, "load user-based profile image");
+
+            try {
+                iconImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            unregisterReceiver(downloadReceiver);
+        }
+    };
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener logout_listener;
     private FirebaseUser currentUser;
-
+    private String DOWNLOAD_ACTION = "download";
     private DatabaseReference database;
 
     @Override
@@ -78,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        cw = new ContextWrapper(this.getApplicationContext());
+        directory = cw.getDir("safecar", Context.MODE_PRIVATE);
+        profilePngFile = new File(directory, "profile.png");
+
         auth = FirebaseAuth.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance().getReference();
@@ -85,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
         lvNav = (ListView) findViewById(R.id.nav_list);
+
+        registerReceiver(downloadReceiver, new IntentFilter(DOWNLOAD_ACTION));
 
         handleDrawerProfileDetails();
 
@@ -169,23 +195,12 @@ public class MainActivity extends AppCompatActivity {
             emailTextView.setText("No email provided");
         }
 
-        cw = new ContextWrapper(this.getApplicationContext());
-        directory = cw.getDir("safecar", Context.MODE_PRIVATE);
-        profilePngFile = new File(directory, "profile.png");
-
         if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
             Log.d(TAG, "download profile image");
-            new DownloadImage(profilePngFile).execute(currentUser.getPhotoUrl().toString());
+            new DownloadImage(profilePngFile, this).execute(currentUser.getPhotoUrl().toString());
         }
 
-        if (currentUser.getPhotoUrl() != null) {
-            Log.d(TAG, "load profile image");
-            try {
-                iconImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else {
+        if (currentUser.getPhotoUrl() == null) {
             Log.d(TAG, "load standard profile image");
             iconImageView.setImageResource(R.drawable.user);
         }

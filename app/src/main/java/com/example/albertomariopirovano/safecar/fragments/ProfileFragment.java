@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.concurrency.DownloadImage;
 import com.example.albertomariopirovano.safecar.firebase_model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -105,11 +104,6 @@ public class ProfileFragment extends Fragment {
         cw = new ContextWrapper(getActivity().getApplicationContext());
         directory = cw.getDir("safecar", Context.MODE_PRIVATE);
         profilePngFile = new File(directory, "profile.png");
-
-        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
-            Log.d("ProfileFragment", "download profile image");
-            new DownloadImage(profilePngFile).execute(currentUser.getPhotoUrl().toString());
-        }
 
         if (currentUser.getPhotoUrl() != null) {
             Log.d("ProfileFragment", "load profile image");

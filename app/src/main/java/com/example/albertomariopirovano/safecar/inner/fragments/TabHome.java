@@ -11,13 +11,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,13 +43,18 @@ public class TabHome extends Fragment implements TabFragment {
     private FirebaseAuth auth;
     private DatabaseReference database;
 
+    private ViewFlipper viewFlipper;
+
     private ProgressBar progressBar;
     private Button scanButton;
 
-    private BluetoothAdapter bluetoothAdapter;
+    private ImageView currentlyDrivingLogo;
+    private ImageView notCurrentlyDrivingLogo;
+    private TextView titleBluetoothTriggered;
+    private TextView devicesTextView;
 
-    private FragmentManager fm;
-
+    private Boolean found = false;
+    private String devices = "FOUND DEVICES:\n";
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -60,29 +68,40 @@ public class TabHome extends Fragment implements TabFragment {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.d(TAG, "discovery finished");
 
-                //progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
 
-                final FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.tab_home_first, new Tab_home_step_one(), "NewFragmentTag1");
-                fragmentTransaction.commit();
-                //discovery finishes, dismis progress dialog
+                Log.d("WARNING", devices);
+
+                if (found) {
+
+                    devicesTextView.setText(devices);
+                    viewFlipper.setDisplayedChild(1);
+                    devices = "FOUND DEVICES:\n";
+
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
+                }
+
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
                 BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
-                Log.d(TAG, "making visible some items");
+                devices = devices + device.getName() + " " + device.getAddress() + "\n";
 
-                /*final FragmentTransaction fragmentTransaction = fm.beginTransaction();
-                fragmentTransaction.replace(R.id.tab_home_first, new Tab_home_step_one(), "NewFragmentTag1");
-                fragmentTransaction.commit();*/
+                //TODO se il device mac è uno dei plugs dell'utente(test con MAC ipad) allora cambia fragment e stoppa discovery
+                if (device.getAddress().equals("98:B8:E3:CF:36:24")) {
+                    found = true;
+                }
 
             } else {
                 Log.d(TAG, "I really don't know why you are here");
             }
         }
     };
+    private BluetoothAdapter bluetoothAdapter;
+    private FragmentManager fm;
 
     public String getName() {
         return name;
@@ -92,7 +111,7 @@ public class TabHome extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.tab_home, container, false);
+        View v = inflater.inflate(R.layout.test, container, false);
 
         Log.d(TAG, "onCreate");
 
@@ -101,8 +120,32 @@ public class TabHome extends Fragment implements TabFragment {
 
         fm = getActivity().getSupportFragmentManager();
 
+        viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
+
+        //child 0 elements
         progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
         progressBar.setVisibility(View.GONE);
+        scanButton = (Button) v.findViewById(R.id.scanButton);
+
+        //child 1 elements
+        currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
+        notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
+        titleBluetoothTriggered = (TextView) v.findViewById(R.id.entry_text_home);
+        devicesTextView = (TextView) v.findViewById(R.id.devices);
+
+        currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.setDisplayedChild(2);
+            }
+        });
+
+        notCurrentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.setDisplayedChild(0);
+            }
+        });
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -126,6 +169,19 @@ public class TabHome extends Fragment implements TabFragment {
 
             getActivity().registerReceiver(receiver, filter);
 
+            scanButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    bluetoothAdapter.cancelDiscovery();
+                    bluetoothAdapter.startDiscovery();
+                    Log.d(TAG, "-------@@@---------");
+                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++) {
+                        Log.d(TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId() + fm.getBackStackEntryAt(entry).getName() + fm.getBackStackEntryAt(entry).getClass());
+                    }
+                    Log.d(TAG, "-------@@@---------");
+                }
+            });
+
             if (!bluetoothAdapter.isEnabled()) {
 
                 Log.d(TAG, "bluetooth not enabled");
@@ -137,24 +193,17 @@ public class TabHome extends Fragment implements TabFragment {
                 Log.d(TAG, "bluetooth enabled");
                 bluetoothSearchPairedDevices();
 
-                //Log.d(TAG, "search for not paired devices");
-
-                //bluetoothAdapter.startDiscovery();
-
             }
 
         } else {
             Log.d(TAG, "Bluetooth not supported");
+            scanButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Your device doesn't support bluetooth!", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
-
-        scanButton = (Button) v.findViewById(R.id.scanButton);
-
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bluetoothAdapter.startDiscovery();
-            }
-        });
 
         return v;
     }
@@ -185,11 +234,6 @@ public class TabHome extends Fragment implements TabFragment {
         if (resultCode == RESULT_OK) {
 
             Log.d(TAG, "RESULT_OK");
-            bluetoothSearchPairedDevices();
-
-            Log.d(TAG, "search for not paired devices");
-
-            bluetoothAdapter.startDiscovery();
 
         } else {
 
@@ -202,9 +246,11 @@ public class TabHome extends Fragment implements TabFragment {
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d(TAG, "destroy receiver");
-        // Don't forget to unregister the ACTION_FOUND receiver.
-        getActivity().unregisterReceiver(receiver);
-    }
+        Log.d(TAG, "Destroy TabHome");
 
+        if (bluetoothAdapter != null) {
+            Log.d(TAG, "unregister receiver");
+            getActivity().unregisterReceiver(receiver);
+        }
+    }
 }
