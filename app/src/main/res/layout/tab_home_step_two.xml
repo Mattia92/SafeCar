@@ -73,12 +73,14 @@
             android:weightSum="10">
 
             <ImageView
+                android:id="@+id/pause_resumeTrip"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_weight="5"
-                android:src="@drawable/ic_done_black_24dp" />
+                android:src="@drawable/ic_pause_black_24dp" />
 
             <TextView
+                android:id="@+id/pause_resumeTripTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
@@ -98,10 +100,11 @@
             android:weightSum="10">
 
             <ImageView
+                android:id="@+id/stopTrip"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_weight="5"
-                android:src="@drawable/ic_clear_black_24dp" />
+                android:src="@drawable/ic_stop_black_24dp" />
 
             <TextView
                 android:layout_width="match_parent"

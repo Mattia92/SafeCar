@@ -2,75 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_margin="10dp"
+    android:background="@drawable/border"
+    android:orientation="vertical"
+    android:weightSum="10">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_marginBottom="30sp"
-        android:layout_weight="0.3"
-        android:gravity="center|bottom"
+        android:layout_weight="1"
+        android:background="@drawable/border"
+        android:gravity="center"
         android:text="After Trip Report"
+        android:textColor="#000000"
         android:textSize="30sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="30sp"
-        android:layout_weight="0.1">
+        android:layout_weight="0.5"
+        android:weightSum="10">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_weight="5"
             android:gravity="center"
-            android:text="DSI EVALUATION" />
+            android:text="DSI EVALUATION"
+            android:textColor="#000000" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
+            android:layout_weight="5"
             android:gravity="center"
-            android:text="NAME" />
+            android:text="NAME"
+            android:textColor="#000000" />
 
     </LinearLayout>
 
-
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_marginBottom="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:layout_weight="0.3"
-        android:background="@drawable/border">
+        android:layout_height="wrap_content"
+        android:layout_weight="8.5">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/hint_scroll_view_header"
-                android:layout_width="fill_parent"
-                android:layout_height="30dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/border"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:text="Hints"
-                android:textSize="20sp" />
-
-            <ListView
-                android:id="@+id/hint_list_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="top"
-                android:layout_marginTop="5dp" />
-
-        </LinearLayout>
-
-    </ScrollView>
+    </LinearLayout>
 
 </LinearLayout>

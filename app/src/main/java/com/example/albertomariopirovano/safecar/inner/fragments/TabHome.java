@@ -53,6 +53,10 @@ public class TabHome extends Fragment implements TabFragment {
     private TextView titleBluetoothTriggered;
     private TextView devicesTextView;
 
+    private ImageView pause_resumeTrip;
+    private ImageView quitTrip;
+    private TextView pause_resumeTripTextView;
+
     private Boolean found = false;
     private String devices = "FOUND DEVICES:\n";
     // Create a BroadcastReceiver for ACTION_FOUND.
@@ -132,6 +136,32 @@ public class TabHome extends Fragment implements TabFragment {
         notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
         titleBluetoothTriggered = (TextView) v.findViewById(R.id.entry_text_home);
         devicesTextView = (TextView) v.findViewById(R.id.devices);
+
+        //child 2 elements
+        pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
+        quitTrip = (ImageView) v.findViewById(R.id.stopTrip);
+        pause_resumeTripTextView = (TextView) v.findViewById(R.id.pause_resumeTripTextView);
+
+        quitTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.setDisplayedChild(3);
+            }
+        });
+
+        pause_resumeTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (pause_resumeTripTextView.getText().equals("Take a break")) {
+                    pause_resumeTrip.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                    pause_resumeTripTextView.setText("Resume Trip");
+                } else {
+                    pause_resumeTrip.setImageResource(R.drawable.ic_pause_black_24dp);
+                    pause_resumeTripTextView.setText("Take a break");
+                }
+
+            }
+        });
 
         currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
             @Override
