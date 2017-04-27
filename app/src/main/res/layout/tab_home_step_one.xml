@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/tab_home_step_one"
+    android:id="@+id/tab_home_one"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -12,7 +12,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_weight="0.5"
+        android:layout_weight="0.3"
         android:gravity="bottom"
         android:text="We detected your presence in the car.\nAre you actually driving?"
         android:textColor="#000000"
@@ -26,7 +26,7 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="30dp"
-        android:layout_weight="0.5">
+        android:layout_weight="0.7">
 
         <ImageView
             android:id="@+id/currentlyDrivingLogo"

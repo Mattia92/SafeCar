@@ -10,13 +10,14 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,10 +39,14 @@ public class TabHome extends Fragment implements TabFragment {
     private String name = "Home";
     private FirebaseAuth auth;
     private DatabaseReference database;
+
+    private ProgressBar progressBar;
+    private Button scanButton;
+
     private BluetoothAdapter bluetoothAdapter;
-    private ImageView currentlyDrivingLogo;
-    private ImageView notCurrentlyDrivingLogo;
-    private TextView titleBluetoothTriggered;
+
+    private FragmentManager fm;
+
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -50,10 +55,16 @@ public class TabHome extends Fragment implements TabFragment {
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 Log.d(TAG, "discovery started");
 
-
+                progressBar.setVisibility(View.VISIBLE);
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.d(TAG, "discovery finished");
+
+                //progressBar.setVisibility(View.GONE);
+
+                final FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.tab_home_first, new Tab_home_step_one(), "NewFragmentTag1");
+                fragmentTransaction.commit();
                 //discovery finishes, dismis progress dialog
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
@@ -63,27 +74,9 @@ public class TabHome extends Fragment implements TabFragment {
 
                 Log.d(TAG, "making visible some items");
 
-                currentlyDrivingLogo.setAlpha(0f);
-                currentlyDrivingLogo.setVisibility(View.VISIBLE);
-                notCurrentlyDrivingLogo.setAlpha(0f);
-                notCurrentlyDrivingLogo.setVisibility(View.VISIBLE);
-                titleBluetoothTriggered.setAlpha(0f);
-                titleBluetoothTriggered.setVisibility(View.VISIBLE);
-
-                int mediumAnimationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
-                currentlyDrivingLogo.animate()
-                        .alpha(1f)
-                        .setDuration(mediumAnimationTime)
-                        .setListener(null);
-                notCurrentlyDrivingLogo.animate()
-                        .alpha(1f)
-                        .setDuration(mediumAnimationTime)
-                        .setListener(null);
-                titleBluetoothTriggered.animate()
-                        .alpha(1f)
-                        .setDuration(mediumAnimationTime)
-                        .setListener(null);
+                /*final FragmentTransaction fragmentTransaction = fm.beginTransaction();
+                fragmentTransaction.replace(R.id.tab_home_first, new Tab_home_step_one(), "NewFragmentTag1");
+                fragmentTransaction.commit();*/
 
             } else {
                 Log.d(TAG, "I really don't know why you are here");
@@ -99,63 +92,19 @@ public class TabHome extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.tab_home_step_one, container, false);
+        View v = inflater.inflate(R.layout.tab_home, container, false);
 
         Log.d(TAG, "onCreate");
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
 
+        fm = getActivity().getSupportFragmentManager();
+
+        progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
+        progressBar.setVisibility(View.GONE);
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
-        notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
-        titleBluetoothTriggered = (TextView) v.findViewById(R.id.entry_text_home);
-
-        currentlyDrivingLogo.setVisibility(View.GONE);
-        notCurrentlyDrivingLogo.setVisibility(View.GONE);
-        titleBluetoothTriggered.setVisibility(View.GONE);
-
-        notCurrentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Log.d(TAG, "hiding some items");
-
-                currentlyDrivingLogo.setAlpha(0f);
-                currentlyDrivingLogo.setVisibility(View.GONE);
-                notCurrentlyDrivingLogo.setAlpha(0f);
-                notCurrentlyDrivingLogo.setVisibility(View.GONE);
-                titleBluetoothTriggered.setAlpha(0f);
-                titleBluetoothTriggered.setVisibility(View.GONE);
-
-                int mediumAnimationTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
-                currentlyDrivingLogo.animate()
-                        .alpha(1f)
-                        .setDuration(mediumAnimationTime)
-                        .setListener(null);
-                notCurrentlyDrivingLogo.animate()
-                        .alpha(1f)
-                        .setDuration(mediumAnimationTime)
-                        .setListener(null);
-                titleBluetoothTriggered.animate()
-                        .alpha(1f)
-                        .setDuration(mediumAnimationTime)
-                        .setListener(null);
-            }
-        });
-
-        currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_content, new Tab_home_step_two()).commit();*/
-                final FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.tab_home_step_one, new Tab_home_step_two(), "NewFragmentTag");
-                ft.commit();
-            }
-        });
 
         // Quick permission check
         int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
@@ -188,15 +137,24 @@ public class TabHome extends Fragment implements TabFragment {
                 Log.d(TAG, "bluetooth enabled");
                 bluetoothSearchPairedDevices();
 
-                Log.d(TAG, "search for not paired devices");
+                //Log.d(TAG, "search for not paired devices");
 
-                bluetoothAdapter.startDiscovery();
+                //bluetoothAdapter.startDiscovery();
 
             }
 
         } else {
             Log.d(TAG, "Bluetooth not supported");
         }
+
+        scanButton = (Button) v.findViewById(R.id.scanButton);
+
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bluetoothAdapter.startDiscovery();
+            }
+        });
 
         return v;
     }
