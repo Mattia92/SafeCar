@@ -7,8 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -23,6 +25,16 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -35,7 +47,7 @@ import static android.app.Activity.RESULT_OK;
  * Created by albertomariopirovano on 04/04/17.
  */
 
-public class TabHome extends Fragment implements TabFragment {
+public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback {
 
     private static final String TAG = "TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
@@ -57,8 +69,14 @@ public class TabHome extends Fragment implements TabFragment {
     private ImageView quitTrip;
     private TextView pause_resumeTripTextView;
 
+    private MapView mapView;
+    private GoogleMap googleMap;
+
+    private View v;
+
     private Boolean found = false;
     private String devices = "FOUND DEVICES:\n";
+
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -115,7 +133,7 @@ public class TabHome extends Fragment implements TabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.test, container, false);
+        v = inflater.inflate(R.layout.test, container, false);
 
         Log.d(TAG, "onCreate");
 
@@ -179,6 +197,8 @@ public class TabHome extends Fragment implements TabFragment {
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        googleMapsHandler(savedInstanceState);
+
         // Quick permission check
         int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
         permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
@@ -238,6 +258,16 @@ public class TabHome extends Fragment implements TabFragment {
         return v;
     }
 
+    private void googleMapsHandler(Bundle savedInstanceState) {
+
+        mapView = (MapView) v.findViewById(R.id.map);
+        mapView.onCreate(savedInstanceState);
+        if (mapView != null) {
+            mapView.getMapAsync(this);
+        }
+
+    }
+
     private void bluetoothSearchPairedDevices() {
 
         Log.d(TAG, "search for already paired devices");
@@ -278,9 +308,57 @@ public class TabHome extends Fragment implements TabFragment {
 
         Log.d(TAG, "Destroy TabHome");
 
+        mapView.onDestroy();
+
         if (bluetoothAdapter != null) {
             Log.d(TAG, "unregister receiver");
             getActivity().unregisterReceiver(receiver);
         }
+    }
+
+    @Override
+    public void onResume() {
+        mapView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
+        googleMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
+                .anchor(0.0f, 1.0f)
+                .position(new LatLng(55.854049, 13.661331)));
+        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setZoomControlsEnabled(true);
+        MapsInitializer.initialize(this.getActivity());
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(new LatLng(55.854049, 13.661331));
+        LatLngBounds bounds = builder.build();
+
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
+
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+
+        googleMap.animateCamera(cu);
+
     }
 }
