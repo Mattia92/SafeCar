@@ -7,10 +7,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -80,6 +82,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private MapView mapView;
     private GoogleMap map;
+    private Button btnDraw;
 
     private View v;
 
@@ -152,6 +155,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         fm = getActivity().getSupportFragmentManager();
 
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
+        viewFlipper.setDisplayedChild(3);
 
         //child 0 elements
         progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
@@ -203,6 +207,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 viewFlipper.setDisplayedChild(0);
             }
         });
+
+        //child 3 elements
+        btnDraw = (Button) v.findViewById(R.id.btn_draw);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -350,18 +357,22 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         map = googleMap;
 
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        map.setMyLocationEnabled(true);
+
         // Setting onclick event listener for the map
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override
             public void onMapClick(LatLng point) {
 
-                Log.d(TAG, "onMapClick");
-
-                // Already two locations
-                if (markerPoints.size() > 1) {
-                    markerPoints.clear();
-                    map.clear();
+                // Already 10 locations with 8 waypoints and 1 start location and 1 end location.
+                // Upto 8 waypoints are allowed in a query for non-business users
+                if (markerPoints.size() >= 10) {
+                    return;
                 }
 
                 // Adding new item to the ArrayList
@@ -375,28 +386,42 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                 /**
                  * For the start location, the color of marker is GREEN and
-                 * for the end location, the color of marker is RED.
+                 * for the end location, the color of marker is RED and
+                 * for the rest of markers, the color is AZURE
                  */
                 if (markerPoints.size() == 1) {
-
-                    Log.d(TAG, "markerPoints size is 1");
-
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 } else if (markerPoints.size() == 2) {
-
-                    Log.d(TAG, "markerPoints size is 2");
-
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                } else {
+                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
                 }
 
                 // Add new marker to the Google Map Android API V2
                 map.addMarker(options);
+            }
+        });
 
+        // The map will be cleared on long click
+        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+            @Override
+            public void onMapLongClick(LatLng point) {
+                // Removes all the points from Google Map
+                map.clear();
+
+                // Removes all the points in the ArrayList
+                markerPoints.clear();
+            }
+        });
+
+        // Click event handler for Button btn_draw
+        btnDraw.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
                 // Checks, whether start and end locations are captured
                 if (markerPoints.size() >= 2) {
-
-                    Log.d(TAG, "init query to google maps web service");
-
                     LatLng origin = markerPoints.get(0);
                     LatLng dest = markerPoints.get(1);
 
@@ -423,16 +448,23 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         // Sensor enabled
         String sensor = "sensor=false";
 
+        // Waypoints
+        String waypoints = "";
+        for (int i = 2; i < markerPoints.size(); i++) {
+            LatLng point = (LatLng) markerPoints.get(i);
+            if (i == 2)
+                waypoints = "waypoints=";
+            waypoints += point.latitude + "," + point.longitude + "|";
+        }
+
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + waypoints;
 
         // Output format
         String output = "json";
 
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        Log.d(TAG, url);
 
         return url;
     }
@@ -444,10 +476,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
-        try {
+        try{
             URL url = new URL(strUrl);
-
-            Log.d(TAG, "download JSON");
 
             // Creating an http connection to communicate with url
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -463,7 +493,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             StringBuffer sb = new StringBuffer();
 
             String line = "";
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine())  != null){
                 sb.append(line);
             }
 
@@ -471,9 +501,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
             br.close();
 
-        } catch (Exception e) {
+        } catch (Exception e){
             e.printStackTrace();
-        } finally {
+        }finally{
             iStream.close();
             urlConnection.disconnect();
         }
@@ -481,22 +511,21 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     }
 
     // Fetches data from url passed
-    private class DownloadTask extends AsyncTask<String, Void, String> {
+    private class DownloadTask extends AsyncTask<String, Void, String>{
 
         // Downloading data in non-ui thread
         @Override
         protected String doInBackground(String... url) {
 
-            Log.d(TAG, "DownloadTask doInBackground");
-
             // For storing data from web service
+
             String data = "";
 
-            try {
+            try{
                 // Fetching the data from web service
                 data = downloadUrl(url[0]);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.d("Background Task", e.toString());
             }
             return data;
         }
@@ -506,8 +535,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-
-            Log.d(TAG, "DownloadTask onPostExecute");
 
             ParserTask parserTask = new ParserTask();
 
@@ -519,13 +546,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     /**
      * A class to parse the Google Places in JSON format
      */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>> > {
 
         // Parsing the data in non-ui thread
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            Log.d(TAG, "ParserTask doInBackground");
 
             JSONObject jObject;
             List<List<HashMap<String, String>>> routes = null;
@@ -546,11 +571,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
 
-            Log.d(TAG, "ParserTask onPostExecute");
-
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
-            MarkerOptions markerOptions = new MarkerOptions();
 
             // Traversing through all the routes
             for (int i = 0; i < result.size(); i++) {
@@ -576,11 +598,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 lineOptions.width(2);
                 lineOptions.color(Color.RED);
             }
-            Log.d(TAG, lineOptions.toString());
 
             // Drawing polyline in the Google Map for the i-th route
             map.addPolyline(lineOptions);
         }
+
     }
 
         /*googleMap.addMarker(new MarkerOptions()
