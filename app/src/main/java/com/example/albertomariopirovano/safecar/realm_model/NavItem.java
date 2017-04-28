@@ -1,4 +1,4 @@
-package com.example.albertomariopirovano.safecar.model;
+package com.example.albertomariopirovano.safecar.realm_model;
 
 /**
  * Created by mattiacrippa on 14/03/17.

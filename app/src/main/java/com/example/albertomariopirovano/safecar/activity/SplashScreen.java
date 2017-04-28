@@ -6,11 +6,15 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.firebase_model.Plug;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +22,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by mattiacrippa on 13/03/17.
@@ -30,13 +37,15 @@ import java.util.Date;
 
 public class SplashScreen extends Activity {
 
+    private static final String TAG = SplashScreen.class.getSimpleName();
     private static int SPLASH_TIME_OUT = 4000;
-
     private Typeface font;
 
     private TextView splash_text;
 
     private DatabaseReference database;
+
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,8 @@ public class SplashScreen extends Activity {
 
         splash_text = (TextView) findViewById(R.id.splash_text);
         splash_text.setTypeface(font);
+
+        initRealmLocalDb();
 
         initData();
 
@@ -71,6 +82,19 @@ public class SplashScreen extends Activity {
         }, SPLASH_TIME_OUT);
     }
 
+    private void initRealmLocalDb() {
+
+        Log.d(TAG, "initRealmLocalDb");
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("default2")
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        realm = Realm.getInstance(config);
+    }
+
     private void initData() {
 
         database = FirebaseDatabase.getInstance().getReference();
@@ -81,14 +105,16 @@ public class SplashScreen extends Activity {
                 String id = "36pneb31TEcITVHHaNDm5YVggsq2";
 
                 if (Integer.parseInt(snapshot.getValue().toString()) == 1) {
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 100, 26, 57, "Milano", "Vimercate"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 300, 77, 64, "Torino", "Vercelli"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 340, 4, 8, "Vimercate", "Arcore"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 120, 56, 64, "Milano", "Lecco"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 1000, 2, 4, "Vimercate", "Oreno"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 12, 52, 74, "Milano", "Como"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 78, 46, 73, "Milano", "Pavia"));
-                    addTrip(new com.example.albertomariopirovano.safecar.firebase_model.Trip(id, new Date(), 444, 215, 240, "Milano", "Bormio"));
+                    addTrip(new Trip(id, new Date(), 100, 26, 57, new LatLng(45.465308, 9.186129), new LatLng(45.610332, 9.348051), "Milano", "Vimercate"));
+                    addTrip(new Trip(id, new Date(), 300, 77, 64, new LatLng(45.062505, 7.679526), new LatLng(45.324625, 8.415318), "Torino", "Vercelli"));
+                    addTrip(new Trip(id, new Date(), 340, 4, 8, new LatLng(45.610332, 9.348051), new LatLng(45.623861, 9.322817), "Vimercate", "Arcore"));
+                    addTrip(new Trip(id, new Date(), 120, 56, 64, new LatLng(45.465308, 9.186129), new LatLng(45.856695, 9.392471), "Milano", "Lecco"));
+                    addTrip(new Trip(id, new Date(), 1000, 2, 4, new LatLng(45.610332, 9.348051), new LatLng(45.613372, 9.368208), "Vimercate", "Oreno"));
+                    addTrip(new Trip(id, new Date(), 12, 52, 74, new LatLng(45.465308, 9.186129), new LatLng(45.804600, 9.089425), "Milano", "Como"));
+                    addTrip(new Trip(id, new Date(), 78, 46, 73, new LatLng(45.465308, 9.186129), new LatLng(45.184332, 9.167233), "Milano", "Pavia"));
+                    addTrip(new Trip(id, new Date(), 444, 215, 240, new LatLng(45.465308, 9.186129), new LatLng(46.469777, 10.368755), "Milano", "Bormio"));
+
+                    addPlug(new Plug(id, "98:B8:E3:CF:36:24", "Ipad di Alberto"));
                 }
             }
 
@@ -98,9 +124,14 @@ public class SplashScreen extends Activity {
         });
     }
 
-    public void addTrip(com.example.albertomariopirovano.safecar.firebase_model.Trip t) {
+    public void addTrip(Trip t) {
         String tripID = database.child("trips").push().getKey();
         database.child("trips").child(tripID).setValue(t);
+    }
+
+    public void addPlug(Plug p) {
+        String plugID = database.child("plugs").push().getKey();
+        database.child("plugs").child(plugID).setValue(p);
     }
 
     private void resizeFragment(Fragment f, int newWidth, int newHeight) {

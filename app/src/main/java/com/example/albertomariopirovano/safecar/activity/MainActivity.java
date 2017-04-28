@@ -1,10 +1,8 @@
 package com.example.albertomariopirovano.safecar.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,12 +25,14 @@ import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.adapters.NavListAdapter;
-import com.example.albertomariopirovano.safecar.concurrency.DownloadImage;
 import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
 import com.example.albertomariopirovano.safecar.fragments.ProfileFragment;
 import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
-import com.example.albertomariopirovano.safecar.model.NavItem;
+import com.example.albertomariopirovano.safecar.realm_model.LocalPlug;
+import com.example.albertomariopirovano.safecar.realm_model.LocalTrip;
+import com.example.albertomariopirovano.safecar.realm_model.LocalUser;
+import com.example.albertomariopirovano.safecar.realm_model.NavItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +45,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,30 +68,14 @@ public class MainActivity extends AppCompatActivity {
     private TextView nameTextView;
     private TextView emailTextView;
     private ImageView iconImageView;
-    private final BroadcastReceiver downloadReceiver = new BroadcastReceiver() {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            Toast.makeText(MainActivity.this, "Profile-image download complete", Toast.LENGTH_LONG).show();
-
-            Log.d(TAG, "main activity download completed");
-            Log.d(TAG, "load user-based profile image");
-
-            try {
-                iconImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            unregisterReceiver(downloadReceiver);
-        }
-    };
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener logout_listener;
     private FirebaseUser currentUser;
     private String DOWNLOAD_ACTION = "download";
     private DatabaseReference database;
+
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,10 +96,6 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerPane = (RelativeLayout) findViewById(R.id.drawer_pane);
         lvNav = (ListView) findViewById(R.id.nav_list);
-
-        registerReceiver(downloadReceiver, new IntentFilter(DOWNLOAD_ACTION));
-
-        handleDrawerProfileDetails();
 
         addLogoutListener(auth);
 
@@ -175,6 +158,53 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
+        initRealmLocalDb();
+        testRealmDB();
+
+        //TODO do this with realm data not with firebase ones
+        handleDrawerProfileDetails();
+
+    }
+
+    private void initRealmLocalDb() {
+
+        Log.d(TAG, "initRealmLocalDb");
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("default2")
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        realm = Realm.getInstance(config);
+    }
+
+    private void testRealmDB() {
+
+        Log.d(TAG, "testRealmDB - testing Realm cache");
+
+        LocalUser lu = realm.where(LocalUser.class).equalTo("authUID", currentUser.getUid()).findFirst();
+
+        Log.d(TAG, lu.toString());
+        Log.d(TAG, "testRealmDB - 1] local user cached successfully");
+
+
+        if (profilePngFile.exists()) {
+            Log.d(TAG, "testRealmDB - 2.0] " + profilePngFile.getAbsolutePath() + " - exists");
+            Log.d(TAG, "testRealmDB - 2.1] local user-profile image cached");
+        } else {
+            Log.d(TAG, "testRealmDB - 2.0] " + profilePngFile.getAbsolutePath() + " - doesn't exist");
+        }
+
+        for (LocalTrip lt : lu.getTrips()) {
+            Log.d(TAG, lt.toString());
+        }
+        Log.d(TAG, "testRealmDB - 3] local trips cached");
+
+        for (LocalPlug lp : lu.getPlugs()) {
+            Log.d(TAG, lp.toString());
+        }
+        Log.d(TAG, "testRealmDB - 4] local plugs cached");
     }
 
     private void handleDrawerProfileDetails() {
@@ -195,14 +225,16 @@ public class MainActivity extends AppCompatActivity {
             emailTextView.setText("No email provided");
         }
 
-        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
-            Log.d(TAG, "download profile image");
-            new DownloadImage(profilePngFile, this).execute(currentUser.getPhotoUrl().toString());
-        }
-
         if (currentUser.getPhotoUrl() == null) {
-            Log.d(TAG, "load standard profile image");
+            Log.d(TAG, "handleDrawerProfileDetails - load standard profile image");
             iconImageView.setImageResource(R.drawable.user);
+        } else {
+            Log.d(TAG, "handleDrawerProfileDetails - load Google+ profile image");
+            try {
+                iconImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -257,6 +289,13 @@ public class MainActivity extends AppCompatActivity {
 
                 auth.signOut();
 
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.deleteAll();
+                    }
+                });
+
                 Log.d(TAG, "Logout current user");
 
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -294,6 +333,13 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Your are trying to eliminate an account while you already performed logout !");
                 }
 
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.deleteAll();
+                    }
+                });
+
                 Log.d(TAG, "Delete current user");
 
                 return true;
@@ -320,4 +366,8 @@ public class MainActivity extends AppCompatActivity {
         actionBarDrawerToggle.syncState();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

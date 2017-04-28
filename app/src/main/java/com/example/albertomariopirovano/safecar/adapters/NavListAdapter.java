@@ -8,8 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.albertomariopirovano.safecar.model.NavItem;
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.realm_model.NavItem;
 
 import java.util.List;
 

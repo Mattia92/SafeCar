@@ -1,7 +1,9 @@
 package com.example.albertomariopirovano.safecar.activity;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +23,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.concurrency.DownloadImage;
+import com.example.albertomariopirovano.safecar.firebase_model.Plug;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.User;
+import com.example.albertomariopirovano.safecar.realm_model.LocalPlug;
+import com.example.albertomariopirovano.safecar.realm_model.LocalTrip;
+import com.example.albertomariopirovano.safecar.realm_model.LocalUser;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -42,6 +50,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.util.concurrent.ExecutionException;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmList;
+
 /**
  * Created by albertomariopirovano on 14/03/17.
  */
@@ -59,13 +74,20 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     private Button loginButton;
     private Button newAccountButton;
     private ImageView staticLogo;
-    private FirebaseAuth auth;
+
     private ProgressBar progressBar;
     private SignInButton btnSignIn;
     private GoogleApiClient mGoogleApiClient;
     private Boolean ANIMATION_ENDED = false;
 
     private DatabaseReference database;
+    private FirebaseAuth auth;
+    private Realm realm;
+
+    private ContextWrapper cw;
+
+    private File directory;
+    private File profilePngFile;
 
     // converte il valore in dp in px
     public static float dpToPx(Context context, float valueInDp) {
@@ -139,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        Log.d(TAG, "firebaseAuthWithGoogle - userID: " + acct.getId());
         // [START_EXCLUDE silent]
         progressBar.setVisibility(View.VISIBLE);
         // [END_EXCLUDE]
@@ -151,14 +173,17 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
+                            Log.d(TAG, "firebaseAuthWithGoogle - [GOOGLE+ BASED] signin successfull");
                             final FirebaseUser user = auth.getCurrentUser();
-                            database.child("users").orderByChild("authUID").equalTo(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            database.child("users").orderByChild("authUID").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()) {
                                         Log.d("firebaseAuthWithGoogle", "user already present, let's set active to true");
                                         database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
+                                        Log.d(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
+
+                                        initRealmLocalDb(user);
                                     } else {
                                         Log.d("firebaseAuthWithGoogle", "user not present, let's add him");
                                         //String userID = database.child("users").push().getKey();
@@ -171,11 +196,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
 
                                 }
                             });
-                            Log.d(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
 
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -202,6 +223,41 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                 .build();
     }
 
+    public void cacheUserProfileImage(FirebaseUser currentUser) {
+
+        if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
+            Log.d(TAG, "cacheUserProfileImage - download profile image");
+            try {
+                new DownloadImage(profilePngFile, this, new Intent(LoginActivity.this, MainActivity.class)).execute(currentUser.getPhotoUrl().toString()).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initRealmLocalDb(FirebaseUser currentUser) {
+
+        Log.d(TAG, "initRealmLocalDb");
+
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("default2")
+                .deleteRealmIfMigrationNeeded()
+                .build();
+
+        realm = Realm.getInstance(config);
+
+        try {
+            new UserHandler(currentUser).execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -209,13 +265,20 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
 
+        cw = new ContextWrapper(this.getApplicationContext());
+        directory = cw.getDir("safecar", Context.MODE_PRIVATE);
+        profilePngFile = new File(directory, "profile.png");
+
         if (auth.getCurrentUser() != null) {
+
             Log.d(TAG, "skip -> " + auth.getCurrentUser().getEmail() + " " + auth.getCurrentUser().getDisplayName());
             database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
+            initRealmLocalDb(auth.getCurrentUser());
+
         } else {
+
             Log.d(TAG, "no skip");
+
         }
 
         setContentView(R.layout.activity_login);
@@ -308,11 +371,9 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    Log.d(TAG, "signin successful");
+                                    Log.d(TAG, "onCreate - [PASSWOD BASED] signin successful");
                                     database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    initRealmLocalDb(auth.getCurrentUser());
                                 }
                             }
                         });
@@ -439,5 +500,124 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
 
     @Override
     public void onAnimationRepeat(Animation animation) {
+    }
+
+    private class UserHandler extends AsyncTask<Void, Void, Void> {
+
+        private final FirebaseUser user;
+
+        public UserHandler(FirebaseUser user) {
+            this.user = user;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            Log.d(TAG, "UserHandler - doInBackground");
+
+            Log.d(TAG, user.getUid());
+
+            database.child("users").orderByChild("authUID").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(final DataSnapshot dataSnapshot) {
+
+                    realm.executeTransaction(new Realm.Transaction() {
+                        @Override
+                        public void execute(Realm realm) {
+
+                            Log.d(TAG, "UserHandler - doInBackground - adding USER from remote DB to local DB");
+                            Log.d(TAG, "execute Realm transaction");
+
+                            User user = null;
+                            int i = 0;
+                            for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                                if (i == 0) {
+                                    user = snap.getValue(User.class);
+                                    i++;
+                                }
+                            }
+
+                            LocalUser localUser = realm.createObject(LocalUser.class);
+                            localUser.setUserLocal(user);
+
+                            Log.d(TAG, localUser.toString());
+                            Log.d(TAG, "created local user");
+
+                        }
+                    });
+
+                    database.child("trips").orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(final DataSnapshot dataSnapshot) {
+                            realm.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
+
+                                    Log.d(TAG, "UserHandler - doInBackground - adding TRIPS from remote DB to local DB");
+                                    Log.d(TAG, "execute Realm transaction");
+
+                                    LocalUser u = realm.where(LocalUser.class).equalTo("authUID", auth.getCurrentUser().getUid()).findFirst();
+
+                                    final RealmList<LocalTrip> parsedList = new RealmList<LocalTrip>();
+                                    for (DataSnapshot parsedTrip : dataSnapshot.getChildren()) {
+                                        Trip trip = parsedTrip.getValue(Trip.class);
+                                        parsedList.add(new LocalTrip(trip));
+                                    }
+
+                                    u.setTrips(parsedList);
+
+                                }
+                            });
+
+                            database.child("pulgs").orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(final DataSnapshot dataSnapshot) {
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+
+                                            Log.d(TAG, "UserHandler - doInBackground - adding PLUGS from remote DB to local DB");
+                                            Log.d(TAG, "execute Realm transaction");
+
+                                            LocalUser u = realm.where(LocalUser.class).equalTo("authUID", auth.getCurrentUser().getUid()).findFirst();
+
+                                            final RealmList<LocalPlug> parsedList = new RealmList<LocalPlug>();
+                                            for (DataSnapshot parsedPlug : dataSnapshot.getChildren()) {
+                                                Plug plug = parsedPlug.getValue(Plug.class);
+                                                parsedList.add(new LocalPlug(plug));
+                                            }
+
+                                            u.setPlugs(parsedList);
+
+                                        }
+                                    });
+
+                                    cacheUserProfileImage(user);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+
+            });
+
+            return null;
+        }
+
     }
 }

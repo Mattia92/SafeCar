@@ -22,13 +22,15 @@ import java.net.URL;
 public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     private File targetFile;
-
-    private String DOWNLOAD_ACTION = "download";
     private Activity activity;
+    private Intent whereToGoNext;
 
-    public DownloadImage(File targetFile, Activity activity) {
+    public DownloadImage(File targetFile, Activity activity, Intent whereToGoNext) {
+
         this.targetFile = targetFile;
         this.activity = activity;
+        this.whereToGoNext = whereToGoNext;
+
     }
 
     @Override
@@ -41,8 +43,8 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap bitmap) {
         Log.d("DownloadImage", "onPostExecute");
-        Intent intent = new Intent(DOWNLOAD_ACTION);
-        activity.sendBroadcast(intent);
+        activity.startActivity(whereToGoNext);
+        activity.finish();
     }
 
     private Bitmap fetchImage(String urlstr) {
