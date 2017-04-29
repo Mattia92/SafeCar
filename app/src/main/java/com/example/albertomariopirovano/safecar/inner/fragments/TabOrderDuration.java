@@ -28,6 +28,11 @@ public class TabOrderDuration extends Fragment implements TabFragment{
     private Comparator comparator = new DurationComparator();
     private FetchService dataService = FetchService.getInstance();
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+    }
 
     public String getName() {
         return name;
@@ -37,7 +42,7 @@ public class TabOrderDuration extends Fragment implements TabFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreateView");
 
         View v = inflater.inflate(R.layout.tab_order_duration, container, false);
 

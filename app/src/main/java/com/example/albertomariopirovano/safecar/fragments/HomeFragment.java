@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabFragment;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabHome;
@@ -34,6 +36,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment implements OnPageChangeListener, OnTabChangeListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName() + " | HomeFragment";
     //int i = 0;
     View v;
     private ViewPager viewPager;
@@ -43,15 +46,46 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     private FetchService dataService = FetchService.getInstance();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+    }
 
-        v = inflater.inflate(R.layout.tabs_viewpager_layout, container, false);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach");
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(TAG, "onDestroyView");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "onActivityCreated");
         //init ViewPager
         this.initViewPager();
 
         //init TabHost
         this.initTabHost(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView");
+
+        v = inflater.inflate(R.layout.tabs_viewpager_layout, container, false);
 
         return v;
     }
@@ -67,7 +101,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
 
         this.appFragmentPagerAdapter = new AppFragmentPagerAdapter(getChildFragmentManager(), listFragments);
         this.viewPager = (ViewPager) v.findViewById(R.id.view_pager);
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(5);
         this.viewPager.setAdapter(this.appFragmentPagerAdapter);
         this.viewPager.setOnPageChangeListener(this);
     }

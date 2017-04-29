@@ -1,5 +1,6 @@
 package com.example.albertomariopirovano.safecar.services;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -31,8 +32,8 @@ public class FetchService {
     private static final String TAG = "FetchService";
     private static FetchService ourInstance = new FetchService();
     private LocalModel localModel = LocalModel.getInstance();
-    private FragmentManager fragmentManager;
     private FirebaseAuth auth;
+    private Integer numTask = 0;
 
     public FetchService() {
 
@@ -45,45 +46,84 @@ public class FetchService {
 
     public void insertTrips(final String attributeToShow, final View v, final Comparator c, final ListView l, int startRange, int endRange) {
 
-        Log.d(TAG, "insertTrips");
+        new PopolateTrips(c, attributeToShow, v, l, startRange, endRange).execute();
+        numTask++;
 
-        fragmentManager = ((MainActivity)v.getContext()).getSupportFragmentManager();
+    }
 
-        final List<Trip> userTrips = localModel.getTrips();
+    private class PopolateTrips extends AsyncTask<Void, Void, List<Map<String, String>>> {
 
-        Collections.sort(userTrips, c);
+        private final List<Trip> userTrips = new ArrayList<Trip>();
+        private Comparator c;
+        private String attributeToShow;
+        private View v;
+        private ListView l;
+        private int startRange;
+        private int endRange;
 
-        List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-        for (Trip t : userTrips) {
-            Map<String, String> datum = new HashMap<String, String>(2);
-            datum.put("title", t.depName + " - " + t.arrName);
-            datum.put("date", String.valueOf(t.getAttr(attributeToShow)));
-            data.add(datum);
+        public PopolateTrips(Comparator c, String attributeToShow, View v, ListView l, int startRange, int endRange) {
+            this.c = c;
+            this.attributeToShow = attributeToShow;
+            this.v = v;
+            this.l = l;
+            this.endRange = endRange;
+            this.startRange = startRange;
         }
 
-        SimpleAdapter adapter = new SimpleAdapter(v.getContext(), data,
-                android.R.layout.simple_list_item_2,
-                new String[]{"title", "date"},
-                new int[]{android.R.id.text1, android.R.id.text2});
-        l.setAdapter(adapter);
+        @Override
+        protected List<Map<String, String>> doInBackground(Void... voids) {
 
-        Log.d(TAG, "insertTrips - setting listener");
+            Log.d(TAG, "insertTrips");
 
-        l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            Log.d(TAG, "insertTrips - load trips task num: " + numTask);
 
-                Trip t = userTrips.get(i);
-                Log.d(TAG, "insertTrips - " + view.findViewById(android.R.id.text1).toString());
-                Log.d(TAG, "insertTrips - " + view.findViewById(android.R.id.text2).toString());
-
-                ReportFragment rf = new ReportFragment();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("key", t);
-                rf.setArguments(bundle);
-                ((MainActivity) v.getContext()).setEnabledNavigationDrawer(false);
-                fragmentManager.beginTransaction().replace(R.id.main_content, rf).addToBackStack(null).commit();
+            for (Trip t : localModel.getTrips()) {
+                userTrips.add(t);
             }
-        });
+
+            Collections.sort(userTrips, c);
+
+            List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+            for (Trip t : userTrips) {
+                Map<String, String> datum = new HashMap<String, String>(2);
+                datum.put("title", t.depName + " - " + t.arrName);
+                datum.put("date", String.valueOf(t.getAttr(attributeToShow)));
+                data.add(datum);
+            }
+
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(List<Map<String, String>> data) {
+            super.onPostExecute(data);
+
+            SimpleAdapter adapter = new SimpleAdapter(v.getContext(), data,
+                    android.R.layout.simple_list_item_2,
+                    new String[]{"title", "date"},
+                    new int[]{android.R.id.text1, android.R.id.text2});
+            l.setAdapter(adapter);
+
+            Log.d(TAG, "insertTrips - setting listener");
+
+            final FragmentManager fragmentManager = ((MainActivity) v.getContext()).getSupportFragmentManager();
+
+            l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    Trip t = userTrips.get(i);
+                    Log.d(TAG, "insertTrips - " + view.findViewById(android.R.id.text1).toString());
+                    Log.d(TAG, "insertTrips - " + view.findViewById(android.R.id.text2).toString());
+
+                    ReportFragment rf = new ReportFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("key", t);
+                    rf.setArguments(bundle);
+                    ((MainActivity) v.getContext()).setEnabledNavigationDrawer(false);
+                    fragmentManager.beginTransaction().replace(R.id.main_content, rf).addToBackStack(null).commit();
+                }
+            });
+        }
     }
 }

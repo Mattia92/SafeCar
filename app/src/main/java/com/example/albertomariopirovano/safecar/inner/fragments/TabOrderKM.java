@@ -32,11 +32,17 @@ public class TabOrderKM extends Fragment implements TabFragment {
         return name;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreate");
+        Log.d(TAG, "onCreateView");
 
         View v = inflater.inflate(R.layout.tab_order_km, container, false);
 

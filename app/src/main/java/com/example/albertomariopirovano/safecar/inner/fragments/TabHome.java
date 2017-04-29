@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ import android.widget.ViewFlipper;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
+import com.example.albertomariopirovano.safecar.firebase_model.Plug;
+import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -51,6 +54,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private String name = "Home";
     private FirebaseAuth auth;
 
+    private LocalModel localModel = LocalModel.getInstance();
+
     private ViewFlipper viewFlipper;
 
     private ProgressBar progressBar;
@@ -70,8 +75,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private View v;
 
-    private Boolean found = false;
-    private String devices = "FOUND DEVICES:\n";
+    private String found;
+    private BluetoothDevice targetPlug;
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -87,13 +92,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                 progressBar.setVisibility(View.GONE);
 
-                Log.d("WARNING", devices);
+                if (!TextUtils.isEmpty(found)) {
 
-                if (found) {
-
-                    devicesTextView.setText(devices);
+                    devicesTextView.setText(found);
                     viewFlipper.setDisplayedChild(1);
-                    devices = "FOUND DEVICES:\n";
+                    found = "";
 
                 } else {
                     Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
@@ -105,37 +108,61 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                 Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
-                devices = devices + device.getName() + " " + device.getAddress() + "\n";
-
-                //TODO se il device mac è uno dei plugs dell'utente(test con MAC ipad) allora cambia fragment e stoppa discovery
-                if (device.getAddress().equals("98:B8:E3:CF:36:24")) {
-                    found = true;
+                for (Plug plug : localModel.getPlugs()) {
+                    Log.d(TAG, plug.address_MAC);
+                    Log.d(TAG, device.getAddress());
+                    if (plug.address_MAC.equals(device.getAddress())) {
+                        found = found + device.getName();
+                        targetPlug = device;
+                        //THE LAST PLUG THAT IS SENSED IS THE TARGET ONE - CONVENTION
+                    }
                 }
+
 
             } else {
                 Log.d(TAG, "I really don't know why you are here");
             }
         }
     };
+    private Boolean registeredReceiver = false;
     private ArrayList<LatLng> markerPoints;
     private BluetoothAdapter bluetoothAdapter;
     private FragmentManager fm;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(TAG, "onActivityCreated");
+
+        googleMapsHandler(savedInstanceState);
+
+    }
 
     public String getName() {
         return name;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        v = inflater.inflate(R.layout.test, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         Log.d(TAG, "onCreate");
 
         auth = FirebaseAuth.getInstance();
 
         fm = getActivity().getSupportFragmentManager();
+
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView");
+
+        v = inflater.inflate(R.layout.test, container, false);
 
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
         viewFlipper.setDisplayedChild(0);
@@ -193,65 +220,58 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         //child 3 elements
         btnDraw = (Button) v.findViewById(R.id.btn_draw);
 
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        googleMapsHandler(savedInstanceState);
+                if (bluetoothAdapter != null) {
 
-        // Quick permission check
-        int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-        permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
-        Log.d(TAG, String.valueOf(permissionCheck));
-        if (permissionCheck != 0) {
-            Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
-            getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
-        }
+                    Log.d(TAG, "Bluetooth supported");
 
-        if (bluetoothAdapter != null) {
-
-            Log.d(TAG, "Bluetooth supported");
-
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(BluetoothDevice.ACTION_FOUND);
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-
-            getActivity().registerReceiver(receiver, filter);
-
-            scanButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    bluetoothAdapter.cancelDiscovery();
-                    bluetoothAdapter.startDiscovery();
-                    Log.d(TAG, "-------@@@---------");
-                    for (int entry = 0; entry < fm.getBackStackEntryCount(); entry++) {
-                        Log.d(TAG, "Found fragment: " + fm.getBackStackEntryAt(entry).getId() + fm.getBackStackEntryAt(entry).getName() + fm.getBackStackEntryAt(entry).getClass());
+                    // Quick permission check
+                    int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+                    permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+                    Log.d(TAG, String.valueOf(permissionCheck));
+                    if (permissionCheck != 0) {
+                        Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
+                        getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
                     }
-                    Log.d(TAG, "-------@@@---------");
+
+                    IntentFilter filter = new IntentFilter();
+                    filter.addAction(BluetoothDevice.ACTION_FOUND);
+                    filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+                    filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+
+                    getActivity().registerReceiver(receiver, filter);
+                    registeredReceiver = true;
+
+                    if (!bluetoothAdapter.isEnabled()) {
+
+                        Log.d(TAG, "bluetooth not enabled");
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
+                    } else {
+
+                        Log.d(TAG, "bluetooth enabled");
+                        bluetoothSearchPairedDevices();
+
+                        bluetoothAdapter.cancelDiscovery();
+                        bluetoothAdapter.startDiscovery();
+
+                    }
+
+                } else {
+                    Log.d(TAG, "Bluetooth not supported");
+                    scanButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(getActivity().getApplicationContext(), "Your device doesn't support bluetooth!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
-            });
-
-            if (!bluetoothAdapter.isEnabled()) {
-
-                Log.d(TAG, "bluetooth not enabled");
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-
-            } else {
-
-                Log.d(TAG, "bluetooth enabled");
-                bluetoothSearchPairedDevices();
-
             }
-
-        } else {
-            Log.d(TAG, "Bluetooth not supported");
-            scanButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Your device doesn't support bluetooth!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        });
 
         return v;
     }
@@ -306,24 +326,25 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d(TAG, "Destroy TabHome");
+        Log.d(TAG, "onDestroy");
 
         mapView.onDestroy();
 
-        if (bluetoothAdapter != null) {
+        if (registeredReceiver) {
             Log.d(TAG, "unregister receiver");
             getActivity().unregisterReceiver(receiver);
         }
     }
-
     @Override
     public void onResume() {
         mapView.onResume();
+        Log.d(TAG, "onResume");
         super.onResume();
     }
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause");
         mapView.onPause();
     }
     @Override

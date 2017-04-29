@@ -494,6 +494,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     public void onAnimationRepeat(Animation animation) {
     }
 
+
     private class UserHandler extends AsyncTask<Void, Void, Void> {
 
         private final FirebaseUser user;
@@ -530,12 +531,17 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                             ArrayList<Trip> tripList = new ArrayList<Trip>();
                             for (DataSnapshot parsedTrip : dataSnapshot.getChildren()) {
                                 Trip trip = parsedTrip.getValue(Trip.class);
+                                Log.d(TAG, trip.toString());
                                 tripList.add(trip);
                             }
 
+                            Log.d(TAG, String.valueOf(tripList.isEmpty()));
+
                             localModel.setTrips(tripList);
 
-                            database.child("pulgs").orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            Log.d(TAG, String.valueOf(localModel.getTrips().isEmpty()));
+
+                            database.child("plugs").orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(final DataSnapshot dataSnapshot) {
 
@@ -543,10 +549,15 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                     ArrayList<Plug> plugList = new ArrayList<Plug>();
                                     for (DataSnapshot parsedPlug : dataSnapshot.getChildren()) {
                                         Plug plug = parsedPlug.getValue(Plug.class);
+                                        Log.d(TAG, plug.toString());
                                         plugList.add(plug);
                                     }
 
+                                    Log.d(TAG, String.valueOf(plugList.isEmpty()));
+
                                     localModel.setPlugs(plugList);
+
+                                    Log.d(TAG, String.valueOf(localModel.getPlugs().isEmpty()));
 
                                     cacheUserProfileImage(user);
                                 }
@@ -567,4 +578,5 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
             return null;
         }
     }
+
 }
