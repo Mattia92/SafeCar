@@ -16,14 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.firebase_model.User;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
+import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +33,9 @@ import java.io.FileNotFoundException;
 
 public class ProfileFragment extends Fragment {
 
+    private static final String TAG = MainActivity.class.getSimpleName() + " | ProfileFragment";
+
+    private LocalModel localModel = LocalModel.getInstance();
     private File directory;
 
     private File profilePngFile;
@@ -52,6 +53,7 @@ public class ProfileFragment extends Fragment {
 
     private DatabaseReference database;
     private FirebaseAuth auth;
+
 
     @Nullable
     @Override
@@ -71,41 +73,21 @@ public class ProfileFragment extends Fragment {
         customProgress = (ProgressBar) v.findViewById(R.id.customProgress);
         progressDisplay = (TextView) v.findViewById(R.id.progressDisplay);
 
-        Log.d("ProfileFragment - UID", auth.getCurrentUser().getUid());
-
-        database.child("users").orderByChild("authUID").equalTo(auth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                User user = null;
-                int i = 0;
-                for (DataSnapshot snap : dataSnapshot.getChildren()) {
-                    if (i == 0) {
-                        user = snap.getValue(User.class);
-                        i++;
-                    }
-                }
-                Log.d("ProfileFragment", user.toString());
-
-                customProgress.setProgress(Integer.parseInt(user.percentage));
-                customProgress.setSecondaryProgress(Integer.parseInt(user.percentage) + 1);
-                progressDisplay.setText(user.percentage + "%");
-
-                levelTextView.setText("Level " + user.level);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         cw = new ContextWrapper(getActivity().getApplicationContext());
         directory = cw.getDir("safecar", Context.MODE_PRIVATE);
         profilePngFile = new File(directory, "profile.png");
 
-        if (currentUser.getPhotoUrl() != null) {
+
+        Log.d(TAG, "customizing user profile");
+        Log.d(TAG, localModel.getUser().toString());
+
+        customProgress.setProgress(Integer.parseInt(localModel.getUser().percentage));
+        customProgress.setSecondaryProgress(Integer.parseInt(localModel.getUser().percentage) + 1);
+        progressDisplay.setText(localModel.getUser().percentage + "%");
+
+        levelTextView.setText("Level " + localModel.getUser().level);
+
+        if (localModel.getUser().photoURL != null) {
             Log.d("ProfileFragment", "load profile image");
             try {
                 imageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
@@ -117,17 +99,18 @@ public class ProfileFragment extends Fragment {
             imageView.setImageResource(R.drawable.user);
         }
 
-        if (!TextUtils.isEmpty(currentUser.getDisplayName())) {
-            nameTextView.setText(currentUser.getDisplayName());
+        if (!TextUtils.isEmpty(localModel.getUser().name)) {
+            nameTextView.setText(localModel.getUser().name);
         } else {
             nameTextView.setText("No name provided");
         }
 
-        if (!TextUtils.isEmpty(currentUser.getEmail())) {
-            emailTextView.setText(currentUser.getEmail());
+        if (!TextUtils.isEmpty(localModel.getUser().email)) {
+            emailTextView.setText(localModel.getUser().email);
         } else {
             emailTextView.setText("No email provided");
         }
+
         return v;
     }
 }

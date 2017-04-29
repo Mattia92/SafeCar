@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -27,29 +25,17 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.services.DirectionsJSONParser;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
+import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
@@ -60,11 +46,10 @@ import static android.app.Activity.RESULT_OK;
 
 public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback {
 
-    private static final String TAG = "TabHome";
+    private static final String TAG = MainActivity.class.getSimpleName() + " | TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
     private String name = "Home";
     private FirebaseAuth auth;
-    private DatabaseReference database;
 
     private ViewFlipper viewFlipper;
 
@@ -73,7 +58,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private ImageView currentlyDrivingLogo;
     private ImageView notCurrentlyDrivingLogo;
-    private TextView titleBluetoothTriggered;
     private TextView devicesTextView;
 
     private ImageView pause_resumeTrip;
@@ -150,12 +134,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         Log.d(TAG, "onCreate");
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
 
         fm = getActivity().getSupportFragmentManager();
 
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
-        viewFlipper.setDisplayedChild(3);
+        viewFlipper.setDisplayedChild(0);
 
         //child 0 elements
         progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
@@ -165,7 +148,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         //child 1 elements
         currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
         notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
-        titleBluetoothTriggered = (TextView) v.findViewById(R.id.entry_text_home);
         devicesTextView = (TextView) v.findViewById(R.id.devices);
 
         //child 2 elements
@@ -311,11 +293,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         if (resultCode == RESULT_OK) {
 
-            Log.d(TAG, "RESULT_OK");
+            Log.d(TAG, "bluetooth activated");
 
         } else {
 
-            Log.d(TAG, "RESULT_CANCELLED");
+            Log.d(TAG, "bluetooth not activated even if asked");
 
         }
     }
@@ -428,7 +410,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     // Getting URL to the Google Directions API
                     String url = getDirectionsUrl(origin, dest);
 
-                    DownloadTask downloadTask = new DownloadTask();
+                    DownloadTask downloadTask = new DownloadTask(map);
 
                     // Start downloading json data from Google Directions API
                     downloadTask.execute(url);
@@ -469,165 +451,4 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         return url;
     }
 
-    /**
-     * A method to download json data from url
-     */
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try{
-            URL url = new URL(strUrl);
-
-            // Creating an http connection to communicate with url
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            // Connecting to url
-            urlConnection.connect();
-
-            // Reading data from url
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine())  != null){
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }finally{
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    // Fetches data from url passed
-    private class DownloadTask extends AsyncTask<String, Void, String>{
-
-        // Downloading data in non-ui thread
-        @Override
-        protected String doInBackground(String... url) {
-
-            // For storing data from web service
-
-            String data = "";
-
-            try{
-                // Fetching the data from web service
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        // Executes in UI thread, after the execution of
-        // doInBackground()
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-            // Invokes the thread for parsing the JSON data
-            parserTask.execute(result);
-        }
-    }
-
-    /**
-     * A class to parse the Google Places in JSON format
-     */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>> > {
-
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                DirectionsJSONParser parser = new DirectionsJSONParser();
-
-                // Starts parsing data
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        // Executes in UI thread, after the parsing process
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-
-            ArrayList<LatLng> points = null;
-            PolylineOptions lineOptions = null;
-
-            // Traversing through all the routes
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<LatLng>();
-                lineOptions = new PolylineOptions();
-
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
-
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(2);
-                lineOptions.color(Color.RED);
-            }
-
-            // Drawing polyline in the Google Map for the i-th route
-            map.addPolyline(lineOptions);
-        }
-
-    }
-
-        /*googleMap.addMarker(new MarkerOptions()
-                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
-                .anchor(0.0f, 1.0f)
-                .position(new LatLng(37.782832, -122.393981)))
-                .setTitle("Loop AI");
-        googleMap.getUiSettings().setMyLocationButtonEnabled(false);
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        MapsInitializer.initialize(this.getActivity());
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(new LatLng(37.782832, -122.393981));
-        LatLngBounds bounds = builder.build();
-
-        int width = getResources().getDisplayMetrics().widthPixels;
-        int height = getResources().getDisplayMetrics().heightPixels;
-        int padding = 0; // offset from edges of the map 12% of screen
-
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-
-        googleMap.animateCamera(cu);
-
-        }*/
 }

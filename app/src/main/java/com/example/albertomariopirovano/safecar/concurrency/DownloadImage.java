@@ -1,7 +1,5 @@
 package com.example.albertomariopirovano.safecar.concurrency;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -22,14 +20,10 @@ import java.net.URL;
 public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     private File targetFile;
-    private Activity activity;
-    private Intent whereToGoNext;
 
-    public DownloadImage(File targetFile, Activity activity, Intent whereToGoNext) {
+    public DownloadImage(File targetFile) {
 
         this.targetFile = targetFile;
-        this.activity = activity;
-        this.whereToGoNext = whereToGoNext;
 
     }
 
@@ -43,8 +37,6 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     protected void onPostExecute(Bitmap bitmap) {
         Log.d("DownloadImage", "onPostExecute");
-        activity.startActivity(whereToGoNext);
-        activity.finish();
     }
 
     private Bitmap fetchImage(String urlstr) {

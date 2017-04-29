@@ -25,13 +25,14 @@ import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.adapters.NavListAdapter;
+import com.example.albertomariopirovano.safecar.firebase_model.Plug;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
+import com.example.albertomariopirovano.safecar.firebase_model.User;
 import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
 import com.example.albertomariopirovano.safecar.fragments.ProfileFragment;
 import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
-import com.example.albertomariopirovano.safecar.realm_model.LocalPlug;
-import com.example.albertomariopirovano.safecar.realm_model.LocalTrip;
-import com.example.albertomariopirovano.safecar.realm_model.LocalUser;
+import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.example.albertomariopirovano.safecar.realm_model.NavItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,9 +46,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -71,11 +69,10 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener logout_listener;
-    private FirebaseUser currentUser;
-    private String DOWNLOAD_ACTION = "download";
     private DatabaseReference database;
 
-    private Realm realm;
+
+    private LocalModel localModel = LocalModel.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         profilePngFile = new File(directory, "profile.png");
 
         auth = FirebaseAuth.getInstance();
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance().getReference();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -158,34 +154,20 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
-        initRealmLocalDb();
         testRealmDB();
 
-        //TODO do this with realm data not with firebase ones
         handleDrawerProfileDetails();
 
     }
 
-    private void initRealmLocalDb() {
-
-        Log.d(TAG, "initRealmLocalDb");
-
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .name("default2")
-                .deleteRealmIfMigrationNeeded()
-                .build();
-
-        realm = Realm.getInstance(config);
-    }
 
     private void testRealmDB() {
 
         Log.d(TAG, "testRealmDB - testing Realm cache");
 
-        LocalUser lu = realm.where(LocalUser.class).equalTo("authUID", currentUser.getUid()).findFirst();
+        User u = localModel.getUser();
 
-        Log.d(TAG, lu.toString());
+        Log.d(TAG, u.toString());
         Log.d(TAG, "testRealmDB - 1] local user cached successfully");
 
 
@@ -196,13 +178,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "testRealmDB - 2.0] " + profilePngFile.getAbsolutePath() + " - doesn't exist");
         }
 
-        for (LocalTrip lt : lu.getTrips()) {
-            Log.d(TAG, lt.toString());
+        for (Trip t : localModel.getTrips()) {
+            Log.d(TAG, t.toString());
         }
         Log.d(TAG, "testRealmDB - 3] local trips cached");
 
-        for (LocalPlug lp : lu.getPlugs()) {
-            Log.d(TAG, lp.toString());
+        for (Plug p : localModel.getPlugs()) {
+            Log.d(TAG, p.toString());
         }
         Log.d(TAG, "testRealmDB - 4] local plugs cached");
     }
@@ -213,19 +195,19 @@ public class MainActivity extends AppCompatActivity {
         emailTextView = (TextView) findViewById(R.id.emailTextView);
         iconImageView = (ImageView) findViewById(R.id.icon);
 
-        if (!TextUtils.isEmpty(currentUser.getDisplayName())) {
-            nameTextView.setText(currentUser.getDisplayName());
+        if (!TextUtils.isEmpty(localModel.getUser().name)) {
+            nameTextView.setText(localModel.getUser().name);
         } else {
             nameTextView.setText("No name provided");
         }
 
-        if (!TextUtils.isEmpty(currentUser.getEmail())) {
-            emailTextView.setText(currentUser.getEmail());
+        if (!TextUtils.isEmpty(localModel.getUser().email)) {
+            emailTextView.setText(localModel.getUser().email);
         } else {
             emailTextView.setText("No email provided");
         }
 
-        if (currentUser.getPhotoUrl() == null) {
+        if (localModel.getUser().photoURL == null) {
             Log.d(TAG, "handleDrawerProfileDetails - load standard profile image");
             iconImageView.setImageResource(R.drawable.user);
         } else {
@@ -236,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
     }
 
     public void addLogoutListener(FirebaseAuth a) {
@@ -289,12 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
                 auth.signOut();
 
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.deleteAll();
-                    }
-                });
+                localModel.drop();
 
                 Log.d(TAG, "Logout current user");
 
@@ -333,12 +311,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Your are trying to eliminate an account while you already performed logout !");
                 }
 
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.deleteAll();
-                    }
-                });
+                localModel.drop();
 
                 Log.d(TAG, "Delete current user");
 

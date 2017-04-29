@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.data_comparators.DateComparator;
 import com.example.albertomariopirovano.safecar.services.FetchService;
 
@@ -21,6 +22,7 @@ import java.util.Comparator;
 
 public class TabOrderDate extends Fragment implements TabFragment {
 
+    private static final String TAG = MainActivity.class.getSimpleName() + " | TabOrderDate";
     private String name = "Date";
     private ListView listView;
     private Comparator comparator = new DateComparator();
@@ -33,6 +35,8 @@ public class TabOrderDate extends Fragment implements TabFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreate");
 
         View v = inflater.inflate(R.layout.tab_order_date, container, false);
 

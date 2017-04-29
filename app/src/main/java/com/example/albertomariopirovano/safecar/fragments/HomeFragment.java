@@ -28,8 +28,6 @@ import com.example.albertomariopirovano.safecar.services.FetchService;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.Realm;
-
 /**
  * Created by mattiacrippa on 14/03/17.
  */
@@ -42,7 +40,6 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     private TabHost tabHost;
     private AppFragmentPagerAdapter appFragmentPagerAdapter;
     private List<Fragment> listFragments;
-    private Realm realm;
     private FetchService dataService = FetchService.getInstance();
 
     @Override
@@ -70,6 +67,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
 
         this.appFragmentPagerAdapter = new AppFragmentPagerAdapter(getChildFragmentManager(), listFragments);
         this.viewPager = (ViewPager) v.findViewById(R.id.view_pager);
+        viewPager.setOffscreenPageLimit(2);
         this.viewPager.setAdapter(this.appFragmentPagerAdapter);
         this.viewPager.setOnPageChangeListener(this);
     }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.data_comparators.KMComparator;
 import com.example.albertomariopirovano.safecar.services.FetchService;
 
@@ -21,11 +22,11 @@ import java.util.Comparator;
 
 public class TabOrderKM extends Fragment implements TabFragment {
 
+    private static final String TAG = MainActivity.class.getSimpleName() + " | TabOrderKM";
     private String name = "KM";
     private ListView listView;
     private Comparator comparator = new KMComparator();
     private FetchService dataService = FetchService.getInstance();
-
 
     public String getName() {
         return name;
@@ -34,6 +35,9 @@ public class TabOrderKM extends Fragment implements TabFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreate");
+
         View v = inflater.inflate(R.layout.tab_order_km, container, false);
 
         listView = (ListView) v.findViewById(R.id.listKM);

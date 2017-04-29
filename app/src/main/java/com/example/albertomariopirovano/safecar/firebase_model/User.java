@@ -59,6 +59,4 @@ public class User {
                 ", percentage='" + percentage + '\'' +
                 '}';
     }
-
-
 }

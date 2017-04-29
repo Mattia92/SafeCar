@@ -29,7 +29,7 @@ public class ReportFragment extends Fragment {
             t = (Trip) bundle.getSerializable("key");
         }
 
-        tv.setText(t.getDeparture() + " - " + t.getArrival() + " | " +  t.getDate());
+        tv.setText(t.depName + " - " + t.arrName + " | " + t.date);
 
         return v;
     }

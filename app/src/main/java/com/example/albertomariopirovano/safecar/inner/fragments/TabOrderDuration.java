@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.data_comparators.DurationComparator;
 import com.example.albertomariopirovano.safecar.services.FetchService;
 
@@ -21,6 +22,7 @@ import java.util.Comparator;
 
 public class TabOrderDuration extends Fragment implements TabFragment{
 
+    private static final String TAG = MainActivity.class.getSimpleName() + " | TabOrderDuration";
     private String name = "Duration";
     private ListView listView;
     private Comparator comparator = new DurationComparator();
@@ -34,6 +36,9 @@ public class TabOrderDuration extends Fragment implements TabFragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreate");
+
         View v = inflater.inflate(R.layout.tab_order_duration, container, false);
 
         listView = (ListView) v.findViewById(R.id.listDuration);

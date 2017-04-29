@@ -11,6 +11,6 @@ import java.util.Comparator;
 public class DurationComparator implements Comparator<Trip> {
 
     public int compare(Trip trip1, Trip trip2){
-        return ((Double)trip1.getTimeDuration()).compareTo((Double)trip2.getTimeDuration());
+        return ((Double) trip1.timeDuration).compareTo((Double) trip2.timeDuration);
     }
 }

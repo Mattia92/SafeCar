@@ -9,9 +9,9 @@ import com.google.firebase.database.IgnoreExtraProperties;
 @IgnoreExtraProperties
 public class Plug {
 
-    private String userId;
-    private String address_MAC;
-    private String name;
+    public String userId;
+    public String address_MAC;
+    public String name;
 
     public Plug() {
 
@@ -21,30 +21,6 @@ public class Plug {
         this.userId = authUID;
         this.address_MAC = address_MAC;
         this.name = name;
-    }
-
-    public String getAddress_MAC() {
-        return address_MAC;
-    }
-
-    public void setAddress_MAC(String address_MAC) {
-        this.address_MAC = address_MAC;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAuthUID() {
-        return userId;
-    }
-
-    public void setAuthUID(String authUID) {
-        this.userId = authUID;
     }
 
     @Override

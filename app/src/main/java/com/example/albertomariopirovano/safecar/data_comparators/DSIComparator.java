@@ -12,6 +12,6 @@ import java.util.Comparator;
 public class DSIComparator implements Comparator<Trip> {
 
     public int compare(Trip trip1, Trip trip2){
-        return ((Integer)trip1.getFinalDSI()).compareTo((Integer)trip2.getFinalDSI());
+        return ((Integer) trip1.finalDSI).compareTo((Integer) trip2.finalDSI);
     }
 }
