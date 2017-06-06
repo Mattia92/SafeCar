@@ -101,11 +101,18 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         while (!stopTask) {
 
             if (wayPoints.size() < 8) {
-                Log.d(TAG, String.valueOf(stopTask));
-                //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-                //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
-                //Log.d(TAG, wayPoint.toString());
-                //wayPoints.add(wayPoint);
+                Log.d(TAG, String.valueOf(wayPoints.size()));
+
+                Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+                MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
+
+                try {
+                    Log.d(TAG, gcd.getFromLocation(wayPoint.getLat(), wayPoint.getLng(), 1).get(0).getLocality());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                wayPoints.add(wayPoint);
             }
             try {
                 Thread.sleep(10000);
@@ -158,13 +165,13 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         long tDelta = tEnd - tStart;
         double elapsedMinutes = (tDelta / 1000.0) / 60;
 
-        //Location closingLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        //closingPoint.setLng(closingLocation.getLongitude());
-        //closingPoint.setLat(closingLocation.getLatitude());
+        Location closingLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        closingPoint.setLng(closingLocation.getLongitude());
+        closingPoint.setLat(closingLocation.getLatitude());
 
         //sample milano
-        closingPoint.setLat(45.4629);
-        closingPoint.setLng(9.1990);
+        //closingPoint.setLat(45.4629);
+        //closingPoint.setLng(9.1990);
 
         trip.setUserId(auth.getCurrentUser().getUid());
         trip.setDate(new Date());
@@ -276,7 +283,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         }
         LatLngBounds bounds = builder.build();
 
-        int width = context.getResources().getDisplayMetrics().widthPixels;
+        int width = Double.valueOf(0.55 * context.getResources().getDisplayMetrics().widthPixels).intValue();
         int height = context.getResources().getDisplayMetrics().heightPixels;
         int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
 
