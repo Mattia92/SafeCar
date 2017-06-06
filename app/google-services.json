@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "835588033859-b0km0l81dmlsunsn0maqj95cnd5tgdk4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.albertomariopirovano.safecar",
+            "certificate_hash": "f3f454bb7414f4efe5b0e9e4fc7fc64fea5ae64f"
+          }
+        },
+        {
           "client_id": "835588033859-3adlf51ttd10csbivap8lcd3vma6lsse.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
