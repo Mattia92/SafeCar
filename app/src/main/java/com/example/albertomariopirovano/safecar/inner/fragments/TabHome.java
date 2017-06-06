@@ -29,16 +29,12 @@ import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
-import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -78,10 +74,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private ImageView pause_resumeTrip;
     private ImageView quitTrip;
     private TextView pause_resumeTripTextView;
+    private ProgressBar progressBarEndTrip;
+    private TextView tripName;
+    private TextView dsiEvaluation;
 
     private MapView mapView;
     private GoogleMap map;
-    private Button btnDraw;
 
     private ArrayList<Plug> toBeAdded = new ArrayList<Plug>();
     private ArrayList<Plug> found = new ArrayList<Plug>();
@@ -157,8 +155,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     }
                 }
 
-                Log.d(TAG, "New plug added to current user");
-
                 Plug newPlug = new Plug(auth.getCurrentUser().getUid(), device.getAddress(), "Anonymous");
                 newPlug.setPlugId(database.child("plugs").push().getKey());
 
@@ -176,7 +172,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     };
 
     private Boolean registeredReceiver = false;
-    private ArrayList<LatLng> markerPoints;
+    private Boolean stopTask = Boolean.FALSE;
     private BluetoothAdapter bluetoothAdapter;
     private TripHandler tripHandler;
     private FragmentManager fm;
@@ -233,17 +229,23 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         //child 1 elements
         currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
         notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
+        progressBarEndTrip = (ProgressBar) v.findViewById(R.id.progressBarEndTrip);
+        progressBarEndTrip.setVisibility(View.GONE);
+
 
         //child 2 elements
         pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
         quitTrip = (ImageView) v.findViewById(R.id.stopTrip);
         pause_resumeTripTextView = (TextView) v.findViewById(R.id.pause_resumeTripTextView);
+        tripName = (TextView) v.findViewById(R.id.tripNameVisualization);
+        dsiEvaluation = (TextView) v.findViewById(R.id.dsiEvaluationVisualization);
 
         quitTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tripHandler.cancel(true);
-                viewFlipper.setDisplayedChild(4);
+                Log.d(TAG, "CLICKED STOP");
+                progressBarEndTrip.setVisibility(View.VISIBLE);
+                tripHandler.stopTask();
             }
         });
 
@@ -274,7 +276,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "click on currently driving");
-                tripHandler = new TripHandler(view.getContext());
+                tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map);
                 tripHandler.execute();
                 viewFlipper.setDisplayedChild(3);
             }
@@ -286,9 +288,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 viewFlipper.setDisplayedChild(0);
             }
         });
-
-        //child 3 elements
-        btnDraw = (Button) v.findViewById(R.id.btn_draw);
 
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -355,8 +354,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         if (mapView != null) {
             mapView.getMapAsync(this);
         }
-
-        markerPoints = new ArrayList<LatLng>();
 
     }
 
@@ -437,111 +434,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             return;
         }
         map.setMyLocationEnabled(true);
-
-        // Setting onclick event listener for the map
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng point) {
-
-                // Already 10 locations with 8 waypoints and 1 start location and 1 end location.
-                // Upto 8 waypoints are allowed in a query for non-business users
-                if (markerPoints.size() >= 10) {
-                    return;
-                }
-
-                // Adding new item to the ArrayList
-                markerPoints.add(point);
-
-                // Creating MarkerOptions
-                MarkerOptions options = new MarkerOptions();
-
-                // Setting the position of the marker
-                options.position(point);
-
-                /**
-                 * For the start location, the color of marker is GREEN and
-                 * for the end location, the color of marker is RED and
-                 * for the rest of markers, the color is AZURE
-                 */
-                if (markerPoints.size() == 1) {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                } else if (markerPoints.size() == 2) {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                } else {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                }
-
-                // Add new marker to the Google Map Android API V2
-                map.addMarker(options);
-            }
-        });
-
-        // The map will be cleared on long click
-        map.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-
-            @Override
-            public void onMapLongClick(LatLng point) {
-                // Removes all the points from Google Map
-                map.clear();
-
-                // Removes all the points in the ArrayList
-                markerPoints.clear();
-            }
-        });
-
-        // Click event handler for Button btn_draw
-        btnDraw.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // Checks, whether start and end locations are captured
-                if (markerPoints.size() >= 2) {
-                    LatLng origin = markerPoints.get(0);
-                    LatLng dest = markerPoints.get(1);
-
-                    // Getting URL to the Google Directions API
-                    String url = getDirectionsUrl(origin, dest);
-
-                    DownloadTask downloadTask = new DownloadTask(map);
-
-                    // Start downloading json data from Google Directions API
-                    downloadTask.execute(url);
-                }
-            }
-        });
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-
-        // Waypoints
-        String waypoints = "";
-        for (int i = 2; i < markerPoints.size(); i++) {
-            LatLng point = (LatLng) markerPoints.get(i);
-            if (i == 2)
-                waypoints = "waypoints=";
-            waypoints += point.latitude + "," + point.longitude + "|";
-        }
-
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + waypoints;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
     }
 
 }

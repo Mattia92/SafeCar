@@ -71,15 +71,14 @@ public class LocalModel {
 
     public void updateCloudModel() {
 
-        Log.d(TAG, "create resources before exit");
+        Log.d(TAG, "synchronize cloud database");
 
         for (final Trip trip : trips) {
             if (trip.getIsnew()) {
                 database.child("trips").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        String tripID = database.child("trips").push().getKey();
-                        database.child("trips").child(tripID).setValue(trip);
+                        database.child("trips").child(trip.getTripId()).setValue(trip);
                     }
 
                     @Override

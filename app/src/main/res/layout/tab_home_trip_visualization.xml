@@ -22,7 +22,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30sp"
         android:layout_weight="0.01"
         android:weightSum="10">
 
@@ -39,24 +38,40 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:gravity="center"
-            android:text="NAME"
+            android:text="TRIP"
             android:textColor="#000000" />
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_draw"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_weight="0.01" />
+        android:layout_weight="0.01"
+        android:weightSum="10">
+
+        <TextView
+            android:id="@+id/dsiEvaluationVisualization"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/tripNameVisualization"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:textColor="#000000" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_margin="20dp"
-        android:layout_weight="8.98">
+        android:layout_weight="8.99">
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
