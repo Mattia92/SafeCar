@@ -531,6 +531,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                             ArrayList<Trip> tripList = new ArrayList<Trip>();
                             for (DataSnapshot parsedTrip : dataSnapshot.getChildren()) {
                                 Trip trip = parsedTrip.getValue(Trip.class);
+                                trip.setTripId(parsedTrip.getKey());
                                 Log.d(TAG, trip.toString());
                                 tripList.add(trip);
                             }
@@ -549,6 +550,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                     ArrayList<Plug> plugList = new ArrayList<Plug>();
                                     for (DataSnapshot parsedPlug : dataSnapshot.getChildren()) {
                                         Plug plug = parsedPlug.getValue(Plug.class);
+                                        plug.setPlugId(parsedPlug.getKey());
                                         Log.d(TAG, plug.toString());
                                         plugList.add(plug);
                                     }

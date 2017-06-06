@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +22,10 @@ import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter {
 
+    private final ViewBinderHelper binderHelper = new ViewBinderHelper();
     private List<String> mDataSet = new ArrayList<>();
     private LayoutInflater mInflater;
-    private final ViewBinderHelper binderHelper = new ViewBinderHelper();
-
+    private LocalModel localModel = LocalModel.getInstance();
 
     public RecyclerAdapter(Context context, List<String> dataSet) {
         mDataSet = dataSet;
@@ -95,6 +96,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
             deleteLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String element = mDataSet.get(getAdapterPosition());
+                    String MAC_key = element.substring(element.length() - 17);
+
+                    localModel.dropPlug(MAC_key);
                     mDataSet.remove(getAdapterPosition());
                     notifyItemRemoved(getAdapterPosition());
                 }

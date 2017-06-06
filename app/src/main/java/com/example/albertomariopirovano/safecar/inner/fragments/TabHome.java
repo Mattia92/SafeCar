@@ -13,14 +13,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -37,8 +39,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
@@ -61,6 +68,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private ProgressBar progressBar;
     private Button scanButton;
 
+    private ListView listDevices;
+    private Button reScanButton;
+
     private ImageView currentlyDrivingLogo;
     private ImageView notCurrentlyDrivingLogo;
     private TextView devicesTextView;
@@ -73,10 +83,13 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private GoogleMap map;
     private Button btnDraw;
 
+    private ArrayList<Plug> toBeAdded = new ArrayList<Plug>();
+    private ArrayList<Plug> found = new ArrayList<Plug>();
+
+    private DatabaseReference database;
+
     private View v;
 
-    private String found;
-    private BluetoothDevice targetPlug;
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -92,14 +105,43 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                 progressBar.setVisibility(View.GONE);
 
-                if (!TextUtils.isEmpty(found)) {
+                if (found.isEmpty()) {
+                    Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
+                } else if (!found.isEmpty() && (toBeAdded.size() - found.size()) == 0) {
 
-                    devicesTextView.setText(found);
+                    List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+                    for (final Plug plug : toBeAdded) {
+                        data.add(new HashMap<String, String>() {
+                            {
+                                put("name", plug.getName());
+                                put("MAC", plug.getAddress_MAC());
+                            }
+                        });
+                    }
+                    SimpleAdapter adapter = new SimpleAdapter(v.getContext(), data,
+                            android.R.layout.simple_list_item_2,
+                            new String[]{"name", "MAC"},
+                            new int[]{android.R.id.text1, android.R.id.text2});
+                    listDevices.setAdapter(adapter);
+
+                    listDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            Plug clicked = toBeAdded.get(i);
+                            clicked.setIsnew(Boolean.TRUE);
+                            localModel.getPlugs().add(clicked);
+
+                            localModel.setActivePlug(clicked.getPlugId());
+
+                            viewFlipper.setDisplayedChild(2);
+                        }
+                    });
+
                     viewFlipper.setDisplayedChild(1);
-                    found = "";
 
                 } else {
-                    Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
+                    viewFlipper.setDisplayedChild(2);
+                    localModel.setActivePlug(found.get(0).getPlugId());
                 }
 
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -109,21 +151,30 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
                 for (Plug plug : localModel.getPlugs()) {
-                    Log.d(TAG, plug.address_MAC);
-                    Log.d(TAG, device.getAddress());
                     if (plug.address_MAC.equals(device.getAddress())) {
-                        found = found + device.getName();
-                        targetPlug = device;
-                        //THE LAST PLUG THAT IS SENSED IS THE TARGET ONE - CONVENTION
+                        found.add(plug);
+                        return;
                     }
                 }
 
+                Log.d(TAG, "New plug added to current user");
+
+                Plug newPlug = new Plug(auth.getCurrentUser().getUid(), device.getAddress(), "Anonymous");
+                newPlug.setPlugId(database.child("plugs").push().getKey());
+
+                if (!(device.getName() == null)) {
+                    newPlug.setName(device.getName());
+                }
+
+                found.add(newPlug);
+                toBeAdded.add(newPlug);
 
             } else {
                 Log.d(TAG, "I really don't know why you are here");
             }
         }
     };
+
     private Boolean registeredReceiver = false;
     private ArrayList<LatLng> markerPoints;
     private BluetoothAdapter bluetoothAdapter;
@@ -150,6 +201,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         auth = FirebaseAuth.getInstance();
 
+        database = FirebaseDatabase.getInstance().getReference();
+
         fm = getActivity().getSupportFragmentManager();
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -172,10 +225,13 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         progressBar.setVisibility(View.GONE);
         scanButton = (Button) v.findViewById(R.id.scanButton);
 
+        //child 0_bis elements
+        listDevices = (ListView) v.findViewById(R.id.listDevices);
+        reScanButton = (Button) v.findViewById(R.id.scanButton);
+
         //child 1 elements
         currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
         notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
-        devicesTextView = (TextView) v.findViewById(R.id.devices);
 
         //child 2 elements
         pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
@@ -185,7 +241,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         quitTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewFlipper.setDisplayedChild(3);
+                viewFlipper.setDisplayedChild(4);
             }
         });
 
@@ -203,10 +259,17 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
         });
 
+        reScanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.setDisplayedChild(0);
+            }
+        });
+
         currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewFlipper.setDisplayedChild(2);
+                viewFlipper.setDisplayedChild(3);
             }
         });
 

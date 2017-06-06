@@ -9,6 +9,10 @@
         layout="@layout/tab_home_step_zero" />
 
     <include
+        android:id="@+id/tab_home_first_bis"
+        layout="@layout/tab_home_step_zero_bis" />
+
+    <include
         android:id="@+id/tab_home_one"
         layout="@layout/tab_home_step_one" />
 

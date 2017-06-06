@@ -27,6 +27,9 @@ public class Trip implements Serializable {
     public String depName;
     public String arrName;
 
+    public Boolean isnew = Boolean.FALSE;
+    public String tripId;
+
     public Trip() {
     }
 
@@ -54,6 +57,14 @@ public class Trip implements Serializable {
         this.arrName = arrName;
     }
 
+    public String getTripId() {
+        return tripId;
+    }
+
+    public void setTripId(String tripId) {
+        this.tripId = tripId;
+    }
+
     public String getAttr(String attributeToShow) {
         switch (attributeToShow) {
             case "duration":
@@ -67,6 +78,14 @@ public class Trip implements Serializable {
             default:
                 return "error";
         }
+    }
+
+    public Boolean getIsnew() {
+        return isnew;
+    }
+
+    public void setIsnew(Boolean isnew) {
+        this.isnew = isnew;
     }
 
     @Override

@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
                 auth.signOut();
 
+                localModel.updateCloudModel();
                 localModel.drop();
 
                 Log.d(TAG, "Logout current user");
