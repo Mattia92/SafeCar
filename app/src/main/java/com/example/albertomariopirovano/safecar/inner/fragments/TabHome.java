@@ -30,6 +30,7 @@ import android.widget.ViewFlipper;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
+import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.google.android.gms.maps.GoogleMap;
@@ -73,7 +74,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private ImageView currentlyDrivingLogo;
     private ImageView notCurrentlyDrivingLogo;
-    private TextView devicesTextView;
 
     private ImageView pause_resumeTrip;
     private ImageView quitTrip;
@@ -151,7 +151,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
                 for (Plug plug : localModel.getPlugs()) {
-                    if (plug.address_MAC.equals(device.getAddress())) {
+                    if (plug.address_MAC.equals(device.getAddress()) && !plug.getIsDropped()) {
                         found.add(plug);
                         return;
                     }
@@ -178,6 +178,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private Boolean registeredReceiver = false;
     private ArrayList<LatLng> markerPoints;
     private BluetoothAdapter bluetoothAdapter;
+    private TripHandler tripHandler;
     private FragmentManager fm;
 
     @Override
@@ -227,7 +228,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         //child 0_bis elements
         listDevices = (ListView) v.findViewById(R.id.listDevices);
-        reScanButton = (Button) v.findViewById(R.id.scanButton);
+        reScanButton = (Button) v.findViewById(R.id.rescan_button);
 
         //child 1 elements
         currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
@@ -241,6 +242,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         quitTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tripHandler.cancel(true);
                 viewFlipper.setDisplayedChild(4);
             }
         });
@@ -262,6 +264,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         reScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                toBeAdded = new ArrayList<Plug>();
+                found = new ArrayList<Plug>();
                 viewFlipper.setDisplayedChild(0);
             }
         });
@@ -269,6 +273,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "click on currently driving");
+                tripHandler = new TripHandler(view.getContext());
+                tripHandler.execute();
                 viewFlipper.setDisplayedChild(3);
             }
         });
@@ -287,6 +294,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             @Override
             public void onClick(View view) {
 
+                toBeAdded = new ArrayList<Plug>();
+                found = new ArrayList<Plug>();
                 if (bluetoothAdapter != null) {
 
                     Log.d(TAG, "Bluetooth supported");

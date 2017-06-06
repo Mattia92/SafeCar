@@ -20,8 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Date;
-
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -104,14 +102,14 @@ public class SplashScreen extends Activity {
                 String id = "36pneb31TEcITVHHaNDm5YVggsq2";
 
                 if (Integer.parseInt(snapshot.getValue().toString()) == 1) {
-                    addTrip(new Trip(id, new Date(), 100, 26, 57.0, 45.465308, 9.186129, 45.610332, 9.348051, "Milano", "Vimercate"));
-                    addTrip(new Trip(id, new Date(), 300, 77, 64.0, 45.062505, 7.679526, 45.324625, 8.415318, "Torino", "Vercelli"));
-                    addTrip(new Trip(id, new Date(), 340, 4, 8.0, 45.610332, 9.348051, 45.623861, 9.322817, "Vimercate", "Arcore"));
-                    addTrip(new Trip(id, new Date(), 120, 56, 64.0, 45.465308, 9.186129, 45.856695, 9.392471, "Milano", "Lecco"));
-                    addTrip(new Trip(id, new Date(), 1000, 2, 4.0, 45.610332, 9.348051, 45.613372, 9.368208, "Vimercate", "Oreno"));
-                    addTrip(new Trip(id, new Date(), 12, 52, 74.0, 45.465308, 9.186129, 45.804600, 9.089425, "Milano", "Como"));
-                    addTrip(new Trip(id, new Date(), 78, 46, 73.0, 45.465308, 9.186129, 45.184332, 9.167233, "Milano", "Pavia"));
-                    addTrip(new Trip(id, new Date(), 444, 215, 240.0, 45.465308, 9.186129, 46.469777, 10.368755, "Milano", "Bormio"));
+                    //addTrip(new Trip(id, new Date(), 100, 26, 57.0, 45.465308, 9.186129, 45.610332, 9.348051, "Milano", "Vimercate"));
+                    //addTrip(new Trip(id, new Date(), 300, 77, 64.0, 45.062505, 7.679526, 45.324625, 8.415318, "Torino", "Vercelli"));
+                    //addTrip(new Trip(id, new Date(), 340, 4, 8.0, 45.610332, 9.348051, 45.623861, 9.322817, "Vimercate", "Arcore"));
+                    //addTrip(new Trip(id, new Date(), 120, 56, 64.0, 45.465308, 9.186129, 45.856695, 9.392471, "Milano", "Lecco"));
+                    //addTrip(new Trip(id, new Date(), 1000, 2, 4.0, 45.610332, 9.348051, 45.613372, 9.368208, "Vimercate", "Oreno"));
+                    //addTrip(new Trip(id, new Date(), 12, 52, 74.0, 45.465308, 9.186129, 45.804600, 9.089425, "Milano", "Como"));
+                    //addTrip(new Trip(id, new Date(), 78, 46, 73.0, 45.465308, 9.186129, 45.184332, 9.167233, "Milano", "Pavia"));
+                    //addTrip(new Trip(id, new Date(), 444, 215, 240.0, 45.465308, 9.186129, 46.469777, 10.368755, "Milano", "Bormio"));
 
                     addPlug(new Plug(id, "98:B8:E3:CF:36:24", "Ipad di Alberto"));
                 }

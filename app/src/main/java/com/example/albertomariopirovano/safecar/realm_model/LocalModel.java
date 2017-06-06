@@ -20,9 +20,6 @@ import java.util.List;
  */
 
 public class LocalModel {
-    // TODO use this class for holding the user data and popolate this static object available in
-    // the whole code with the currentUser from database . in this way the network calls are done
-    // only once.
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static LocalModel ourInstance = new LocalModel();
@@ -97,7 +94,7 @@ public class LocalModel {
             if (plug.getActivePlug().equals(Boolean.TRUE)) {
                 plug.setActivePlug(Boolean.FALSE);
             }
-            if (plug.getIsnew()) {
+            if (plug.getIsnew() && !plug.getIsDropped()) {
                 database.child("plugs").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

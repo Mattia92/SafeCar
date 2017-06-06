@@ -11,6 +11,6 @@ import java.util.Comparator;
 public class KMComparator implements Comparator<Trip> {
 
     public int compare(Trip trip1, Trip trip2){
-        return ((Integer) trip1.km).compareTo((Integer) trip2.km);
+        return ((Float) trip1.km).compareTo((Float) trip2.km);
     }
 }
