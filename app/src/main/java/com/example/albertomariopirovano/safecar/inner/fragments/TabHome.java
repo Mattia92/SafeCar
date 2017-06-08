@@ -1,13 +1,19 @@
 package com.example.albertomariopirovano.safecar.inner.fragments;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,6 +39,14 @@ import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -88,6 +102,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private DatabaseReference database;
     private LocationManager locationManager;
+
+    private Criteria criteria = new Criteria();
 
     private View v;
 
@@ -282,11 +298,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 Log.d(TAG, "click on currently driving");
                 if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-                    //Log.d(TAG, "location not enabled");
-                    //Intent gpsOptionsIntent = new Intent(
-                    //        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    //startActivity(gpsOptionsIntent);
                     Log.d(TAG, "location not enabled");
+                    buildAlertMessageNoGps();
 
                 } else {
 
@@ -318,13 +331,19 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     Log.d(TAG, "Bluetooth supported");
 
                     // Quick permission check
-                    int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-                    permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
-                    Log.d(TAG, String.valueOf(permissionCheck));
-                    if (permissionCheck != 0) {
-                        Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
-                        getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+                    try {
+                        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    } catch (SecurityException e) {
+                        Log.d(TAG, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
                     }
+
+                    //int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+                    //permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+                    //Log.d(TAG, String.valueOf(permissionCheck));
+                    //if (permissionCheck != 0) {
+                    //    Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
+                    //    getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+                    //}
 
                     IntentFilter filter = new IntentFilter();
                     filter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -334,9 +353,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     getActivity().registerReceiver(receiver, filter);
 
                     registeredReceiver = true;
-                    Log.d(TAG, "----------------------");
-                    Log.d(TAG, (BluetoothAdapter.ACTION_REQUEST_ENABLE));
-                    Log.d(TAG, "----------------------");
 
                     if (!bluetoothAdapter.isEnabled()) {
 
@@ -367,6 +383,33 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         });
 
         return v;
+    }
+
+    private void buildAlertMessageNoGps() {
+        Log.d(TAG, "STARTING METHOD");
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+
+                        Intent gpsOptionsIntent = new Intent(
+                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivityForResult(gpsOptionsIntent, REQUEST_ENABLE_LOC);
+
+                        Log.d(TAG, "POSITIVE CLICK");
+                        dialog.cancel();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        Log.d(TAG, "NEGATIVE CLICK");
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+        Log.d(TAG, "ENDING METHOD");
     }
 
     private void googleMapsHandler(Bundle savedInstanceState) {
@@ -414,7 +457,27 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 Log.d(TAG, "bluetooth not activated even if asked");
                 Toast.makeText(getActivity().getApplicationContext(), "Bluetooth not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
             }
-        } else {
+        } else if(requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+
+                Log.d(TAG, "location activated");
+                Toast.makeText(getActivity().getApplicationContext(), "Location activated !", Toast.LENGTH_SHORT).show();
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+            } else {
+
+                Log.d(TAG, "location not activated even if asked");
+                Toast.makeText(getActivity().getApplicationContext(), "Location not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

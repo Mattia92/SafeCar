@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.mattiacrippa.testproject.activities.MainActivity">
+    tools:context="com.example.albertomariopirovano.safecar.activity.MainActivity">
 
     <TabHost
         android:id="@android:id/tabhost"
