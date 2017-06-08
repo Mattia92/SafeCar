@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -55,6 +56,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private static final String TAG = MainActivity.class.getSimpleName() + " | TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
+    private final static int REQUEST_ENABLE_LOC = 2;
     private String name = "Home";
     private FirebaseAuth auth;
 
@@ -85,6 +87,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private ArrayList<Plug> found = new ArrayList<Plug>();
 
     private DatabaseReference database;
+    private LocationManager locationManager;
 
     private View v;
 
@@ -204,6 +207,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
     }
 
     @Nullable
@@ -243,7 +248,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         quitTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "CLICKED STOP");
                 progressBarEndTrip.setVisibility(View.VISIBLE);
                 tripHandler.stopTask();
             }
@@ -276,9 +280,23 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "click on currently driving");
-                tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map);
-                tripHandler.execute();
-                viewFlipper.setDisplayedChild(3);
+                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                    //Log.d(TAG, "location not enabled");
+                    //Intent gpsOptionsIntent = new Intent(
+                    //        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    //startActivity(gpsOptionsIntent);
+                    Log.d(TAG, "location not enabled");
+
+                } else {
+
+                    Log.d(TAG, "location enabled");
+
+                    tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map);
+                    tripHandler.execute();
+                    viewFlipper.setDisplayedChild(3);
+
+                }
             }
         });
 
@@ -314,7 +332,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
                     getActivity().registerReceiver(receiver, filter);
+
                     registeredReceiver = true;
+                    Log.d(TAG, "----------------------");
+                    Log.d(TAG, (BluetoothAdapter.ACTION_REQUEST_ENABLE));
+                    Log.d(TAG, "----------------------");
 
                     if (!bluetoothAdapter.isEnabled()) {
 
@@ -380,14 +402,19 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == RESULT_OK) {
+        Log.d(TAG, String.valueOf(requestCode));
 
-            Log.d(TAG, "bluetooth activated");
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
 
+                Log.d(TAG, "bluetooth activated");
+                Toast.makeText(getActivity().getApplicationContext(), "Bluetooth activated !", Toast.LENGTH_SHORT).show();
+            } else {
+
+                Log.d(TAG, "bluetooth not activated even if asked");
+                Toast.makeText(getActivity().getApplicationContext(), "Bluetooth not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
+            }
         } else {
-
-            Log.d(TAG, "bluetooth not activated even if asked");
-
         }
     }
 

@@ -138,11 +138,21 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
         Location startingLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        //int i = 0;
+        //while (startingLocation == null) {
+        //    Log.d(TAG, String.valueOf(i));
+        //    startingLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+        //    i++;
+        //}
+
+        Log.d(TAG, startingLocation.toString());
 
         startingPoint.setLng(startingLocation.getLongitude());
         startingPoint.setLat(startingLocation.getLatitude());
     }
+
 
     public void stopTask() {
         this.stopTask = Boolean.TRUE;
