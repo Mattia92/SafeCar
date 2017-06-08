@@ -1,14 +1,18 @@
 package com.example.albertomariopirovano.safecar.concurrency;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.TextView;
@@ -17,6 +21,14 @@ import android.widget.ViewFlipper;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,9 +50,10 @@ import java.util.Locale;
  * Created by albertomariopirovano on 26/04/17.
  */
 
-public class TripHandler extends AsyncTask<Void, Trip, Void> {
+public class TripHandler extends AsyncTask<Void, Trip, Void> implements LocationListener {
 
     private static final String TAG = "TripHandler";
+    private final static int REQUEST_ENABLE_LOC = 2;
     private Context context;
     private LocalModel localModel = LocalModel.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -49,9 +62,9 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
     private LocationManager locationManager;
     private Criteria criteria = new Criteria();
 
-    private MapPoint startingPoint = new MapPoint();
-    private MapPoint closingPoint = new MapPoint();
-    private List<MapPoint> wayPoints = new ArrayList<MapPoint>();
+    //private MapPoint startingPoint = new MapPoint();
+    //private MapPoint closingPoint = new MapPoint();
+    //private List<MapPoint> wayPoints = new ArrayList<MapPoint>();
     private float globalDistance = 0;
     private long tStart;
     private Boolean stopTask = Boolean.FALSE;
@@ -66,6 +79,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
     private Geocoder gcd;
 
     private Integer fakeDSI = 1000;
+    private String bestProvider;
 
     public TripHandler(Context context, ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map) {
         this.context = context;
@@ -75,7 +89,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         this.trip = new Trip();
         this.viewFlipper = viewFlipper;
         this.markerPoints = new ArrayList<LatLng>();
-        this.locationManager = (LocationManager) context.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         this.gcd = new Geocoder(context, Locale.getDefault());
     }
 
@@ -83,25 +97,14 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
     protected Void doInBackground(Void... voids) {
         Log.d(TAG, "doInBackground");
 
-        if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return null;
-        }
-
         startJob();
 
         tStart = System.currentTimeMillis();
 
         while (!stopTask) {
 
-            if (wayPoints.size() < 8) {
-                Log.d(TAG, String.valueOf(wayPoints.size()));
+            if ((trip.getMarkers().size() - 2) < 8) {
+                Log.d(TAG, String.valueOf(trip.getMarkers().size() - 2));
 
                 //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
                 //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
@@ -113,6 +116,8 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
                 //}
 
                 //wayPoints.add(wayPoint);
+
+                //getLocation();
             }
             try {
                 Thread.sleep(10000);
@@ -128,35 +133,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
 
     private void startJob() {
         Log.d(TAG, "startJob");
-        if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        Location startingLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        //int i = 0;
-        //while (startingLocation == null) {
-        //    Log.d(TAG, String.valueOf(i));
-        //    startingLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-        //    i++;
-        //}
-
-        Log.d(TAG, startingLocation.toString());
-
-        startingPoint.setLng(startingLocation.getLongitude());
-        startingPoint.setLat(startingLocation.getLatitude());
-    }
-
-
-    public void stopTask() {
-        this.stopTask = Boolean.TRUE;
+        getLocation();
     }
 
     private void finishJob() {
@@ -181,23 +158,26 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         //closingPoint.setLat(closingLocation.getLatitude());
 
         //sample milano
-        closingPoint.setLat(45.578680);
-        closingPoint.setLng(9.269462);
+        trip.getMarkers().add(new MapPoint(45.578680, 9.269462));
+        Log.d(TAG, String.valueOf(trip.getMarkers().get(trip.getMarkers().size() - 1)));
+
+        //startingPoint.setLng(location.getLongitude());
+        //startingPoint.setLat(location.getLatitude());
 
         trip.setUserId(auth.getCurrentUser().getUid());
         trip.setDate(new Date());
         trip.setFinalDSI(fakeDSI);
-        trip.setTimeDuration(new Double(elapsedMinutes));
+        trip.setTimeDuration(elapsedMinutes);
         trip.setTripId(database.child("users").push().getKey());
         trip.setIsnew(Boolean.TRUE);
 
-        trip.getMarkers().add(startingPoint);
+        //trip.getMarkers().add(startingPoint);
 
-        for (MapPoint wayPoint : wayPoints) {
+        /*for (MapPoint wayPoint : wayPoints) {
             trip.getMarkers().add(wayPoint);
-        }
+        }*/
 
-        trip.getMarkers().add(closingPoint);
+        //trip.getMarkers().add(closingPoint);
 
         for (MapPoint t : trip.getMarkers()) {
             try {
@@ -230,8 +210,8 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         List<Address> addresses_start = null;
         List<Address> addresses_close = null;
         try {
-            addresses_start = gcd.getFromLocation(startingPoint.getLat(), startingPoint.getLng(), 1);
-            addresses_close = gcd.getFromLocation(closingPoint.getLat(), closingPoint.getLng(), 1);
+            addresses_start = gcd.getFromLocation(trip.getMarkers().get(0).getLat(), trip.getMarkers().get(0).getLng(), 1);
+            addresses_close = gcd.getFromLocation(trip.getMarkers().get(trip.getMarkers().size() - 1).getLat(), trip.getMarkers().get(trip.getMarkers().size() - 1).getLng(), 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -244,9 +224,93 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         localModel.getTrips().add(trip);
     }
 
+    public void stopTask() {
+        this.stopTask = Boolean.TRUE;
+    }
+
+
+    private boolean isLocationEnabled() {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    protected void getLocation() {
+        if (isLocationEnabled()) {
+            Log.d(TAG, "location is enabled");
+            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            criteria = new Criteria();
+            bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true));
+
+            //You can still do this if you like, you might get lucky:
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(bestProvider);
+            if (location != null) {
+                Log.d(TAG, "location is enabled 2");
+                trip.getMarkers().add(new MapPoint(location.getLongitude(), location.getLatitude()));
+                Log.d(TAG, String.valueOf(trip.getMarkers().get(trip.getMarkers().size() - 1)));
+            } else {
+                Log.d(TAG, "location is not enabled 2");
+                //This is what you need:
+                locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
+            }
+        } else {
+            Log.d(TAG, "location not enabled");
+            displayLocationSettingsRequest(context);
+        }
+    }
+
+    private void displayLocationSettingsRequest(final Context context) {
+        Log.d(TAG, "- displayLocationSettingsRequest");
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final com.google.android.gms.common.api.Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.d(TAG, "All location settings are satisfied.");
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.d(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            status.startResolutionForResult((Activity) context, REQUEST_ENABLE_LOC);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.d(TAG, "PendingIntent unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.d(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        break;
+                }
+            }
+        });
+    }
+
     protected void onPreExecute() {
         Log.d(TAG, "onPreExecute");
-
     }
 
     private void updateAfterTripVisualization() {
@@ -344,5 +408,31 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> {
         updateAfterTripVisualization();
 
         viewFlipper.setDisplayedChild(4);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        locationManager.removeUpdates(this);
+        trip.getMarkers().add(new MapPoint(location.getLongitude(), location.getLatitude()));
+
+        //startingPoint.setLng(location.getLongitude());
+        //startingPoint.setLat(location.getLatitude());
+
+        Log.d(TAG, String.valueOf(trip.getMarkers().get(trip.getMarkers().size() - 1)));
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
     }
 }
