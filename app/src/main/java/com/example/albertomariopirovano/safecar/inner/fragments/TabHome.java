@@ -1,16 +1,18 @@
 package com.example.albertomariopirovano.safecar.inner.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
-import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -32,9 +34,18 @@ import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
+import com.example.albertomariopirovano.safecar.concurrency.DSIEvaluator;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -58,6 +69,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private static final String TAG = MainActivity.class.getSimpleName() + " | TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
+    private final static int REQUEST_ENABLE_LOC = 2;
     private String name = "Home";
     private FirebaseAuth auth;
 
@@ -86,6 +98,10 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private ArrayList<Plug> toBeAdded = new ArrayList<Plug>();
     private ArrayList<Plug> found = new ArrayList<Plug>();
+
+    private Plug targetPlug;
+
+    private ListView hintsListView;
 
     private DatabaseReference database;
     private LocationManager locationManager;
@@ -135,7 +151,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                             Plug clicked = toBeAdded.get(i);
                             clicked.setIsnew(Boolean.TRUE);
                             localModel.getPlugs().add(clicked);
-
+                            targetPlug = clicked;
                             localModel.setActivePlug(clicked.getPlugId());
 
                             viewFlipper.setDisplayedChild(2);
@@ -145,8 +161,17 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     viewFlipper.setDisplayedChild(1);
 
                 } else {
+
+                    for (Plug p1 : found) {
+                        for (Plug p2 : localModel.getPlugs()) {
+                            if (p2.getPlugId().equals(p1.getPlugId())) {
+                                targetPlug = p1;
+                                localModel.setActivePlug(p1.getPlugId());
+                            }
+                        }
+                    }
+
                     viewFlipper.setDisplayedChild(2);
-                    localModel.setActivePlug(found.get(0).getPlugId());
                 }
 
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -182,6 +207,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private Boolean stopTask = Boolean.FALSE;
     private BluetoothAdapter bluetoothAdapter;
     private TripHandler tripHandler;
+    private DSIEvaluator dsiEvaluator;
     private FragmentManager fm;
 
     @Override
@@ -239,8 +265,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
         notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
         progressBarEndTrip = (ProgressBar) v.findViewById(R.id.progressBarEndTrip);
+        hintsListView = (ListView) v.findViewById(R.id.hint_list_view);
         progressBarEndTrip.setVisibility(View.GONE);
-
 
         //child 2 elements
         pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
@@ -254,6 +280,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             public void onClick(View view) {
                 progressBarEndTrip.setVisibility(View.VISIBLE);
                 tripHandler.stopTask();
+                dsiEvaluator.stopTask();
             }
         });
 
@@ -287,6 +314,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
                     Log.d(TAG, "location not enabled");
+                    displayLocationSettingsRequest(getActivity());
 
                 } else {
 
@@ -303,9 +331,21 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                         return;
                     }
                     Log.d(TAG, String.valueOf(locationManager.getAllProviders().size()));
-                    Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
                     tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map);
-                    tripHandler.execute();
+                    dsiEvaluator = new DSIEvaluator(getActivity(), targetPlug, hintsListView);
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        tripHandler.executeOnExecutor(TripHandler.THREAD_POOL_EXECUTOR);
+                    } else {
+                        tripHandler.execute();
+                    }
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        dsiEvaluator.executeOnExecutor(DSIEvaluator.THREAD_POOL_EXECUTOR);
+                    } else {
+                        dsiEvaluator.execute();
+                    }
+
                     viewFlipper.setDisplayedChild(3);
 
                 }
@@ -328,13 +368,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 if (bluetoothAdapter != null) {
 
                     Log.d(TAG, "Bluetooth supported");
-
-                    // Quick permission check
-                    try {
-                        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    } catch (SecurityException e) {
-                        Log.d(TAG, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-                    }
 
                     //int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
                     //permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
@@ -382,6 +415,48 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         });
 
         return v;
+    }
+
+    private void displayLocationSettingsRequest(final Context context) {
+        Log.d(TAG, "- displayLocationSettingsRequest");
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final com.google.android.gms.common.api.Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.d(TAG, "All location settings are satisfied.");
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.d(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            status.startResolutionForResult((Activity) context, REQUEST_ENABLE_LOC);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.d(TAG, "PendingIntent unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.d(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        break;
+                }
+            }
+        });
     }
 
     private void googleMapsHandler(Bundle savedInstanceState) {

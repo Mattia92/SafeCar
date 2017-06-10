@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.TextView;
@@ -50,7 +51,7 @@ import java.util.Locale;
  * Created by albertomariopirovano on 26/04/17.
  */
 
-public class TripHandler extends AsyncTask<Void, Trip, Void> implements LocationListener {
+public class TripHandler extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "TripHandler";
     private final static int REQUEST_ENABLE_LOC = 2;
@@ -81,6 +82,37 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
     private Integer fakeDSI = 1000;
     private String bestProvider;
 
+    private LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d(TAG, "onLocationChanged");
+            locationManager.removeUpdates(this);
+            trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+
+            //startingPoint.setLng(location.getLongitude());
+            //startingPoint.setLat(location.getLatitude());
+
+            MapPoint mp = trip.getMarkers().get(trip.getMarkers().size() - 1);
+            Log.d(TAG, mp.toString());
+            Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
     public TripHandler(Context context, ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map) {
         this.context = context;
         this.tripName = tripName;
@@ -103,8 +135,8 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
 
         while (!stopTask) {
 
-            if ((trip.getMarkers().size() - 2) < 8) {
-                Log.d(TAG, String.valueOf(trip.getMarkers().size() - 2));
+            if ((trip.getMarkers().size() - 2) < 8 && trip.getMarkers().size() > 0) {
+                Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
 
                 //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
                 //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
@@ -125,6 +157,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
                 e.printStackTrace();
             }
         }
+        Log.d(TAG, "TripHandler task has been stopped !");
 
         finishJob();
 
@@ -159,7 +192,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
 
         //sample milano
         trip.getMarkers().add(new MapPoint(45.578680, 9.269462));
-        Log.d(TAG, String.valueOf(trip.getMarkers().get(trip.getMarkers().size() - 1)));
+        Log.d(TAG, String.valueOf("Markers size: " + trip.getMarkers().size()));
 
         //startingPoint.setLng(location.getLongitude());
         //startingPoint.setLat(location.getLatitude());
@@ -181,7 +214,7 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
 
         for (MapPoint t : trip.getMarkers()) {
             try {
-                Log.d(TAG, gcd.getFromLocation(t.getLat(), t.getLng(), 1).get(0).getLocality().toString());
+                Log.d(TAG, gcd.getFromLocation(t.getLat(), t.getLng(), 1).get(0).getLocality());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -228,12 +261,11 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
         this.stopTask = Boolean.TRUE;
     }
 
-
     private boolean isLocationEnabled() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
-    protected void getLocation() {
+    private void getLocation() {
         if (isLocationEnabled()) {
             Log.d(TAG, "location is enabled");
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -254,12 +286,14 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
             Location location = locationManager.getLastKnownLocation(bestProvider);
             if (location != null) {
                 Log.d(TAG, "location is enabled 2");
-                trip.getMarkers().add(new MapPoint(location.getLongitude(), location.getLatitude()));
-                Log.d(TAG, String.valueOf(trip.getMarkers().get(trip.getMarkers().size() - 1)));
+                trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+                Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
+                Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
             } else {
                 Log.d(TAG, "location is not enabled 2");
                 //This is what you need:
-                locationManager.requestLocationUpdates(bestProvider, 1000, 0, this);
+                Looper.myLooper().prepare();
+                locationManager.requestLocationUpdates(bestProvider, 1000, 0, locationListener, Looper.getMainLooper());
             }
         } else {
             Log.d(TAG, "location not enabled");
@@ -408,31 +442,5 @@ public class TripHandler extends AsyncTask<Void, Trip, Void> implements Location
         updateAfterTripVisualization();
 
         viewFlipper.setDisplayedChild(4);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        locationManager.removeUpdates(this);
-        trip.getMarkers().add(new MapPoint(location.getLongitude(), location.getLatitude()));
-
-        //startingPoint.setLng(location.getLongitude());
-        //startingPoint.setLat(location.getLatitude());
-
-        Log.d(TAG, String.valueOf(trip.getMarkers().get(trip.getMarkers().size() - 1)));
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
     }
 }
