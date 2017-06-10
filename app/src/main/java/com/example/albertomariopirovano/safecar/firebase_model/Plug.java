@@ -2,12 +2,14 @@ package com.example.albertomariopirovano.safecar.firebase_model;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
+
 /**
  * Created by albertomariopirovano on 28/04/17.
  */
 
 @IgnoreExtraProperties
-public class Plug {
+public class Plug implements Serializable {
 
     public String userId;
     public String address_MAC;

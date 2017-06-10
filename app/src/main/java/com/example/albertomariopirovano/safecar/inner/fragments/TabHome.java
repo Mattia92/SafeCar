@@ -14,10 +14,10 @@ import android.location.Criteria;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,9 +35,14 @@ import android.widget.ViewFlipper;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.concurrency.DSIEvaluator;
+import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
+import com.example.albertomariopirovano.safecar.data_comparators.DateComparator;
 import com.example.albertomariopirovano.safecar.firebase_model.Plug;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
+import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -46,14 +51,21 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,50 +79,48 @@ import static android.app.Activity.RESULT_OK;
 
 public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback {
 
+
     private static final String TAG = MainActivity.class.getSimpleName() + " | TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
     private final static int REQUEST_ENABLE_LOC = 2;
     private String name = "Home";
+
+
     private FirebaseAuth auth;
-
     private LocalModel localModel = LocalModel.getInstance();
+    private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
+    private DatabaseReference database;
+    private LocationManager locationManager;
+    private BluetoothAdapter bluetoothAdapter;
+    private Criteria criteria = new Criteria();
 
+
+    private View v;
     private ViewFlipper viewFlipper;
-
     private ProgressBar progressBar;
     private Button scanButton;
-
     private ListView listDevices;
+    private ListView hintsListView;
     private Button reScanButton;
-
     private ImageView currentlyDrivingLogo;
     private ImageView notCurrentlyDrivingLogo;
-
     private ImageView pause_resumeTrip;
     private ImageView quitTrip;
     private TextView pause_resumeTripTextView;
     private ProgressBar progressBarEndTrip;
     private TextView tripName;
     private TextView dsiEvaluation;
-
     private MapView mapView;
     private GoogleMap map;
 
+
     private ArrayList<Plug> toBeAdded = new ArrayList<Plug>();
     private ArrayList<Plug> found = new ArrayList<Plug>();
-
+    private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
     private Plug targetPlug;
 
-    private ListView hintsListView;
 
-    private DatabaseReference database;
-    private LocationManager locationManager;
-
-    private Criteria criteria = new Criteria();
-    private String bestProvider;
-
-    private View v;
-
+    private Boolean isBluetoothScanning = Boolean.FALSE;
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -128,6 +138,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                 if (found.isEmpty()) {
                     Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
+                    isBluetoothScanning = Boolean.FALSE;
                 } else if (!found.isEmpty() && (toBeAdded.size() - found.size()) == 0) {
 
                     List<Map<String, String>> data = new ArrayList<Map<String, String>>();
@@ -154,10 +165,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                             targetPlug = clicked;
                             localModel.setActivePlug(clicked.getPlugId());
 
+                            isBluetoothScanning = Boolean.FALSE;
                             viewFlipper.setDisplayedChild(2);
                         }
                     });
 
+                    isBluetoothScanning = Boolean.FALSE;
                     viewFlipper.setDisplayedChild(1);
 
                 } else {
@@ -171,6 +184,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                         }
                     }
 
+                    isBluetoothScanning = Boolean.FALSE;
                     viewFlipper.setDisplayedChild(2);
                 }
 
@@ -202,13 +216,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
         }
     };
-
     private Boolean registeredReceiver = false;
-    private Boolean stopTask = Boolean.FALSE;
-    private BluetoothAdapter bluetoothAdapter;
+    private Object lock1 = new Object();
+    private Object lock2 = new Object();
     private TripHandler tripHandler;
     private DSIEvaluator dsiEvaluator;
-    private FragmentManager fm;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -226,19 +238,15 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Log.d(TAG, "onCreate");
 
         auth = FirebaseAuth.getInstance();
 
         database = FirebaseDatabase.getInstance().getReference();
 
-        fm = getActivity().getSupportFragmentManager();
-
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
     }
 
     @Nullable
@@ -250,7 +258,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         v = inflater.inflate(R.layout.test, container, false);
 
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
-        viewFlipper.setDisplayedChild(0);
 
         //child 0 elements
         progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
@@ -275,12 +282,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         tripName = (TextView) v.findViewById(R.id.tripNameVisualization);
         dsiEvaluation = (TextView) v.findViewById(R.id.dsiEvaluationVisualization);
 
+        googleMapsHandler(savedInstanceState);
+
         quitTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBarEndTrip.setVisibility(View.VISIBLE);
-                tripHandler.stopTask();
-                dsiEvaluator.stopTask();
+                quitTrip();
             }
         });
 
@@ -310,45 +317,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "click on currently driving");
-                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-                    Log.d(TAG, "location not enabled");
-                    displayLocationSettingsRequest(getActivity());
-
-                } else {
-
-                    Log.d(TAG, "location enabled");
-
-                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-                    Log.d(TAG, String.valueOf(locationManager.getAllProviders().size()));
-                    tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map);
-                    dsiEvaluator = new DSIEvaluator(getActivity(), targetPlug, hintsListView);
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        tripHandler.executeOnExecutor(TripHandler.THREAD_POOL_EXECUTOR);
-                    } else {
-                        tripHandler.execute();
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        dsiEvaluator.executeOnExecutor(DSIEvaluator.THREAD_POOL_EXECUTOR);
-                    } else {
-                        dsiEvaluator.execute();
-                    }
-
-                    viewFlipper.setDisplayedChild(3);
-
-                }
+                startTrip(view);
             }
         });
 
@@ -362,59 +331,161 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                toBeAdded = new ArrayList<Plug>();
-                found = new ArrayList<Plug>();
-                if (bluetoothAdapter != null) {
-
-                    Log.d(TAG, "Bluetooth supported");
-
-                    //int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-                    //permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
-                    //Log.d(TAG, String.valueOf(permissionCheck));
-                    //if (permissionCheck != 0) {
-                    //    Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
-                    //    getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
-                    //}
-
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(BluetoothDevice.ACTION_FOUND);
-                    filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-                    filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-
-                    getActivity().registerReceiver(receiver, filter);
-
-                    registeredReceiver = true;
-
-                    if (!bluetoothAdapter.isEnabled()) {
-
-                        Log.d(TAG, "bluetooth not enabled");
-                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-
-                    } else {
-
-                        Log.d(TAG, "bluetooth enabled");
-                        bluetoothSearchPairedDevices();
-
-                        bluetoothAdapter.cancelDiscovery();
-                        bluetoothAdapter.startDiscovery();
-
-                    }
-
-                } else {
-                    Log.d(TAG, "Bluetooth not supported");
-                    scanButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Toast.makeText(getActivity().getApplicationContext(), "Your device doesn't support bluetooth!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                startBluetoothScan();
             }
         });
 
+        loadStateIfNeeded();
+
         return v;
+    }
+
+    private void loadStateIfNeeded() {
+        if (savedStateHandler.hasTag("TabHome")) {
+            Log.d(TAG, "TabHome key present");
+            Bundle oldState = savedStateHandler.retrieveState("TabHome");
+
+            Log.d(TAG, String.valueOf(oldState.getInt("viewFlipperKey")));
+
+            if (oldState.getInt("viewFlipperKey") == 0) {
+                if (oldState.getBoolean("isBluetoothScanning")) {
+                    startBluetoothScan();
+                }
+            } else if (oldState.getInt("viewFlipperKey") == 2) {
+                targetPlug = (Plug) oldState.getSerializable("targetPlug");
+            } else if (oldState.getInt("viewFlipperKey") == 3) {
+                if (oldState.getString("pause_resumeTripTextView").equals("Resume Trip")) {
+                    pause_resumeTrip.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                    pause_resumeTripTextView.setText("Resume Trip");
+                } else {
+                    pause_resumeTrip.setImageResource(R.drawable.ic_pause_black_24dp);
+                    pause_resumeTripTextView.setText("Take a break");
+                }
+                tripHandler = (TripHandler) oldState.getSerializable("tripHandler");
+                tripHandler.setViewElements(viewFlipper, tripName, dsiEvaluation, map);
+                dsiEvaluator = (DSIEvaluator) oldState.getSerializable("dsiEvaluator");
+                dsiEvaluator.setViewElements(hintsListView);
+                synchronized (lock1) {
+                    tripHandler.reloadTaskState();
+                    lock1.notifyAll();
+                }
+                synchronized (lock2) {
+                    dsiEvaluator.reloadTaskState();
+                    lock2.notifyAll();
+                }
+            } else if (oldState.getInt("viewFlipperKey") == 4) {
+                dsiEvaluation.setText(oldState.getString("dsiEvaluationVisualization"));
+                tripName.setText(oldState.getString("tripNameVisualization"));
+                ArrayList<MapPoint> markers = oldState.getParcelableArrayList("markersToBePlaced");
+                updateAfterTripVisualization(markers);
+            } else {
+
+            }
+            // restore the old state
+            viewFlipper.setDisplayedChild(oldState.getInt("viewFlipperKey"));
+
+        } else {
+            viewFlipper.setDisplayedChild(0);
+        }
+    }
+
+    private void quitTrip() {
+        progressBarEndTrip.setVisibility(View.VISIBLE);
+        tripHandler.stopTask();
+        dsiEvaluator.stopTask();
+    }
+
+    private void startBluetoothScan() {
+        isBluetoothScanning = Boolean.TRUE;
+        toBeAdded = new ArrayList<Plug>();
+        found = new ArrayList<Plug>();
+        if (bluetoothAdapter != null) {
+
+            Log.d(TAG, "Bluetooth supported");
+
+            //int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+            //permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+            //Log.d(TAG, String.valueOf(permissionCheck));
+            //if (permissionCheck != 0) {
+            //    Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
+            //    getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+            //}
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(BluetoothDevice.ACTION_FOUND);
+            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+
+            getActivity().registerReceiver(receiver, filter);
+
+            registeredReceiver = true;
+
+            if (!bluetoothAdapter.isEnabled()) {
+
+                Log.d(TAG, "bluetooth not enabled");
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
+            } else {
+
+                Log.d(TAG, "bluetooth enabled");
+                bluetoothSearchPairedDevices();
+
+                bluetoothAdapter.cancelDiscovery();
+                bluetoothAdapter.startDiscovery();
+
+            }
+
+        } else {
+            Log.d(TAG, "Bluetooth not supported");
+            scanButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Your device doesn't support bluetooth!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void startTrip(View view) {
+        Log.d(TAG, "click on currently driving");
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            Log.d(TAG, "location not enabled");
+            displayLocationSettingsRequest(getActivity());
+
+        } else {
+
+            Log.d(TAG, "location enabled");
+
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map, lock1);
+            dsiEvaluator = new DSIEvaluator(getActivity(), targetPlug, hintsListView, lock2);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                tripHandler.executeOnExecutor(TripHandler.THREAD_POOL_EXECUTOR);
+            } else {
+                tripHandler.execute();
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                dsiEvaluator.executeOnExecutor(DSIEvaluator.THREAD_POOL_EXECUTOR);
+            } else {
+                dsiEvaluator.execute();
+            }
+
+            viewFlipper.setDisplayedChild(3);
+
+        }
     }
 
     private void displayLocationSettingsRequest(final Context context) {
@@ -552,12 +623,143 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
+
+
+        Log.d(TAG, "building bundle");
+
+        Bundle state = new Bundle();
+
+        //viewflipper state
+        state.putInt("viewFlipperKey", viewFlipper.getDisplayedChild());
+        Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
+
+        if (viewFlipper.getDisplayedChild() == 0) {
+            state.putBoolean("isBluetoothScanning", isBluetoothScanning);
+            Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
+        } else if (viewFlipper.getDisplayedChild() == 2) {
+            state.putSerializable("targetPlug", targetPlug); // set bluetooth targetplug
+            Log.d(TAG, String.valueOf((Plug) state.getSerializable("targetPlug")));
+        } else if (viewFlipper.getDisplayedChild() == 3) {
+            synchronized (lock1) {
+                tripHandler.viewNotAvailable();
+                lock1.notifyAll();
+            }
+            synchronized (lock2) {
+                dsiEvaluator.viewNotAvailable();
+                lock2.notifyAll();
+            }
+            state.putSerializable("tripHandler", tripHandler); // tripHandler.reloadTaskState();
+            Log.d(TAG, String.valueOf((TripHandler) state.getSerializable("tripHandler")));
+            state.putSerializable("dsiEvaluator", dsiEvaluator); //dsiEvaluator.reloadTaskState();
+            Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
+            state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
+            Log.d(TAG, state.getString("pause_resumeTripTextView"));
+        } else if (viewFlipper.getDisplayedChild() == 4) {
+            state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
+            Log.d(TAG, state.getString("dsiEvaluationVisualization"));
+            state.putString("tripNameVisualization", tripName.getText().toString());
+            Log.d(TAG, state.getString("tripNameVisualization"));
+
+            List<Trip> trips = localModel.getTrips();
+            Collections.sort(trips, new DateComparator());
+            state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
+            Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
+        }
+
+        savedStateHandler.addState("TabHome", state);
+        Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
+
         mapView.onPause();
     }
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    private void updateAfterTripVisualization(ArrayList<MapPoint> markers) {
+
+        Log.d(TAG, String.valueOf(map));
+        Log.d(TAG, String.valueOf(mapView));
+
+        int i = 0;
+        for (MapPoint p : markers) {
+            LatLng point = new LatLng(p.getLat(), p.getLng());
+            markerPoints.add(point);
+            MarkerOptions options = new MarkerOptions();
+            options.position(point);
+            if (i == 0) {
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            } else if (i == 1) {
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            } else {
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            }
+            map.addMarker(options);
+            i++;
+        }
+
+        Log.d(TAG, String.valueOf(markerPoints.size()));
+        Log.d(TAG, markerPoints.get(0).toString());
+        Log.d(TAG, markerPoints.get(1).toString());
+
+        LatLng origin = markerPoints.get(0);
+        LatLng dest = markerPoints.get(1);
+
+        // Getting URL to the Google Directions API
+        String url = getDirectionsUrl(origin, dest);
+
+        DownloadTask downloadTask = new DownloadTask(map);
+
+        // Start downloading json data from Google Directions API
+        downloadTask.execute(url);
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (LatLng latLng : markerPoints) {
+            builder.include(latLng);
+        }
+        LatLngBounds bounds = builder.build();
+
+        int width = Double.valueOf(0.55 * getActivity().getResources().getDisplayMetrics().widthPixels).intValue();
+        int height = getActivity().getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
+
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+
+        map.animateCamera(cu);
+
+    }
+
+    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+
+        // Sensor enabled
+        String sensor = "sensor=false";
+
+        // Waypoints
+        String waypoints = "";
+        for (int i = 2; i < markerPoints.size(); i++) {
+            LatLng point = (LatLng) markerPoints.get(i);
+            if (i == 2)
+                waypoints = "waypoints=";
+            waypoints += point.latitude + "," + point.longitude + "|";
+        }
+
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + waypoints;
+
+        // Output format
+        String output = "json";
+
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
+
+        return url;
     }
 
     @Override

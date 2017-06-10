@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -127,8 +128,9 @@ public class MainActivity extends AppCompatActivity {
 
                 //Replace the fragment with the selection correspondingly
                 FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-                fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(position)).commit();
+                transaction.replace(R.id.main_content, listFragments.get(position)).commit();
 
                 setTitle(listNavItems.get(position).getTitle());
                 lvNav.setItemChecked(position, true);

@@ -1,10 +1,13 @@
 package com.example.albertomariopirovano.safecar.firebase_model.map;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by albertomariopirovano on 06/06/17.
  */
 
-public class MapPoint {
+public class MapPoint implements Parcelable {
 
     public Double lat;
     public Double lng;
@@ -39,5 +42,15 @@ public class MapPoint {
                 "lat=" + lat +
                 ", lng=" + lng +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+
     }
 }

@@ -42,6 +42,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,10 +52,11 @@ import java.util.Locale;
  * Created by albertomariopirovano on 26/04/17.
  */
 
-public class TripHandler extends AsyncTask<Void, Void, Void> {
+public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializable {
 
     private static final String TAG = "TripHandler";
     private final static int REQUEST_ENABLE_LOC = 2;
+    private final Object lock;
     private Context context;
     private LocalModel localModel = LocalModel.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -81,6 +83,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> {
 
     private Integer fakeDSI = 1000;
     private String bestProvider;
+    private Boolean viewAvailable = Boolean.TRUE;
 
     private LocationListener locationListener = new LocationListener() {
         @Override
@@ -113,13 +116,11 @@ public class TripHandler extends AsyncTask<Void, Void, Void> {
         }
     };
 
-    public TripHandler(Context context, ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map) {
+    public TripHandler(Context context, ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map, Object lock) {
         this.context = context;
-        this.tripName = tripName;
-        this.dsiEvaluation = dsiEvaluation;
-        this.map = map;
+        this.lock = lock;
+        setViewElements(viewFlipper, tripName, dsiEvaluation, map);
         this.trip = new Trip();
-        this.viewFlipper = viewFlipper;
         this.markerPoints = new ArrayList<LatLng>();
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         this.gcd = new Geocoder(context, Locale.getDefault());
@@ -356,7 +357,10 @@ public class TripHandler extends AsyncTask<Void, Void, Void> {
 
         int i = 0;
         for (MapPoint p : trip.getMarkers()) {
+            Log.d(TAG, String.valueOf(p));
             LatLng point = new LatLng(p.getLat(), p.getLng());
+            Log.d(TAG, String.valueOf(point.latitude));
+            Log.d(TAG, String.valueOf(point.longitude));
             markerPoints.add(point);
             MarkerOptions options = new MarkerOptions();
             options.position(point);
@@ -439,8 +443,35 @@ public class TripHandler extends AsyncTask<Void, Void, Void> {
         super.onPostExecute(aVoid);
         Log.d(TAG, "onPostExecute");
 
-        updateAfterTripVisualization();
+        synchronized (lock) {
+            if (viewAvailable) {
+                updateAfterTripVisualization();
+            } else {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         viewFlipper.setDisplayedChild(4);
+    }
+
+    public void reloadTaskState() {
+        Log.d(TAG, "reloadTaskState");
+        viewAvailable = Boolean.TRUE;
+    }
+
+    public void viewNotAvailable() {
+        Log.d(TAG, "viewNotAvailable");
+        viewAvailable = Boolean.FALSE;
+    }
+
+    public void setViewElements(ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map) {
+        this.tripName = tripName;
+        this.dsiEvaluation = dsiEvaluation;
+        this.map = map;
+        this.viewFlipper = viewFlipper;
     }
 }
