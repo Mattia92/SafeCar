@@ -56,33 +56,14 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.d(TAG, "onAttach");
-    }
-
-    @Override
     public void onDestroyView() {
         super.onDestroyView();
         Log.d(TAG, "onDestroyView");
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart");
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated");
         //init ViewPager
         this.initViewPager();
 

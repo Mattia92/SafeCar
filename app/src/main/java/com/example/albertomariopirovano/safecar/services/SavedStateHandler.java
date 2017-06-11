@@ -34,4 +34,7 @@ public class SavedStateHandler {
         return savedStates.keySet().contains(tag);
     }
 
+    public void removeState(String id) {
+        savedStates.remove(id);
+    }
 }

@@ -1,23 +1,17 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    tools:context=".activity.MainActivity">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linlayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/f1"
+    <RelativeLayout
+        android:id="@+id/f1"
         android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:weightSum="1">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:weightSum="1">
 
         <ImageView
             android:id="@+id/header_cover_image"
@@ -120,18 +114,19 @@
 
         </RelativeLayout>
 
-        </RelativeLayout>
+    </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/f2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="#43a8e7"
-            android:orientation="vertical">
+    <!-- Your Scrollable View -->
+    <include layout="@layout/cardviews" />
 
-        </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_brightness_low_black_24dp"
+        app:fabSize="normal" />
 
-    </LinearLayout>
-
-</ScrollView>
+</android.support.design.widget.CoordinatorLayout>

@@ -69,7 +69,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -124,21 +123,22 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive");
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                Log.d(TAG, "discovery started");
+                //Log.d(TAG, "discovery started");
+
+                isBluetoothScanning = Boolean.TRUE;
+                //Log.d(TAG, String.valueOf(isBluetoothScanning));
 
                 progressBar.setVisibility(View.VISIBLE);
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Log.d(TAG, "discovery finished");
+                //Log.d(TAG, "discovery finished");
 
                 progressBar.setVisibility(View.GONE);
 
                 if (found.isEmpty()) {
                     Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
-                    isBluetoothScanning = Boolean.FALSE;
                 } else if (!found.isEmpty() && (toBeAdded.size() - found.size()) == 0) {
 
                     List<Map<String, String>> data = new ArrayList<Map<String, String>>();
@@ -165,12 +165,10 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                             targetPlug = clicked;
                             localModel.setActivePlug(clicked.getPlugId());
 
-                            isBluetoothScanning = Boolean.FALSE;
                             viewFlipper.setDisplayedChild(2);
                         }
                     });
 
-                    isBluetoothScanning = Boolean.FALSE;
                     viewFlipper.setDisplayedChild(1);
 
                 } else {
@@ -183,10 +181,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                             }
                         }
                     }
-
-                    isBluetoothScanning = Boolean.FALSE;
                     viewFlipper.setDisplayedChild(2);
                 }
+
+                isBluetoothScanning = Boolean.FALSE;
+                //Log.d(TAG, String.valueOf(isBluetoothScanning));
 
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
@@ -222,15 +221,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private TripHandler tripHandler;
     private DSIEvaluator dsiEvaluator;
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated");
-
-        googleMapsHandler(savedInstanceState);
-
-    }
-
     public String getName() {
         return name;
     }
@@ -238,7 +228,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
 
         auth = FirebaseAuth.getInstance();
 
@@ -340,7 +329,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private void loadStateIfNeeded() {
         if (savedStateHandler.hasTag("TabHome")) {
-            Log.d(TAG, "TabHome key present");
+            Log.d(TAG, "loading previous state");
             Bundle oldState = savedStateHandler.retrieveState("TabHome");
 
             Log.d(TAG, String.valueOf(oldState.getInt("viewFlipperKey")));
@@ -379,6 +368,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             } else {
 
             }
+            savedStateHandler.removeState("TabHome");
             // restore the old state
             viewFlipper.setDisplayedChild(oldState.getInt("viewFlipperKey"));
 
@@ -394,12 +384,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     }
 
     private void startBluetoothScan() {
-        isBluetoothScanning = Boolean.TRUE;
         toBeAdded = new ArrayList<Plug>();
         found = new ArrayList<Plug>();
         if (bluetoothAdapter != null) {
 
-            Log.d(TAG, "Bluetooth supported");
+            //Log.d(TAG, "Bluetooth supported");
 
             //int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
             //permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
@@ -420,14 +409,14 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
             if (!bluetoothAdapter.isEnabled()) {
 
-                Log.d(TAG, "bluetooth not enabled");
+                //Log.d(TAG, "Bluetooth not enabled");
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
             } else {
 
-                Log.d(TAG, "bluetooth enabled");
-                bluetoothSearchPairedDevices();
+                //Log.d(TAG, "Bluetooth enabled");
+                //bluetoothSearchPairedDevices();
 
                 bluetoothAdapter.cancelDiscovery();
                 bluetoothAdapter.startDiscovery();
@@ -435,7 +424,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
 
         } else {
-            Log.d(TAG, "Bluetooth not supported");
+            //Log.d(TAG, "Bluetooth not supported");
             scanButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -446,15 +435,14 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     }
 
     private void startTrip(View view) {
-        Log.d(TAG, "click on currently driving");
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-            Log.d(TAG, "location not enabled");
+            //Log.d(TAG, "Location not enabled");
             displayLocationSettingsRequest(getActivity());
 
         } else {
 
-            Log.d(TAG, "location enabled");
+            //Log.d(TAG, "Location enabled");
 
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -480,14 +468,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             } else {
                 dsiEvaluator.execute();
             }
-
             viewFlipper.setDisplayedChild(3);
 
         }
     }
 
     private void displayLocationSettingsRequest(final Context context) {
-        Log.d(TAG, "- displayLocationSettingsRequest");
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API).build();
         googleApiClient.connect();
@@ -507,21 +493,21 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 final com.google.android.gms.common.api.Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        Log.d(TAG, "All location settings are satisfied.");
+                        //Log.d(TAG, "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.d(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+                        //Log.d(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
 
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
                             status.startResolutionForResult((Activity) context, REQUEST_ENABLE_LOC);
                         } catch (IntentSender.SendIntentException e) {
-                            Log.d(TAG, "PendingIntent unable to execute request.");
+                            //Log.d(TAG, "PendingIntent unable to execute request.");
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.d(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        //Log.d(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
                         break;
                 }
             }
@@ -538,7 +524,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     }
 
-    private void bluetoothSearchPairedDevices() {
+    /*private void bluetoothSearchPairedDevices() {
 
         Log.d(TAG, "search for already paired devices");
         //new BluetoothSearcher(getActivity().getApplicationContext(), targetTextView).execute();
@@ -557,27 +543,25 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         } else {
             Log.d(TAG, "there are no paired devices");
         }
-    }
+    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d(TAG, String.valueOf(requestCode));
-
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
 
-                Log.d(TAG, "bluetooth activated");
+                //Log.d(TAG, "Bluetooth activated");
                 Toast.makeText(getActivity().getApplicationContext(), "Bluetooth activated !", Toast.LENGTH_SHORT).show();
             } else {
 
-                Log.d(TAG, "bluetooth not activated even if asked");
+                //Log.d(TAG, "Bluetooth not activated even if asked");
                 Toast.makeText(getActivity().getApplicationContext(), "Bluetooth not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
             }
         } else if(requestCode == 2) {
             if (resultCode == RESULT_OK) {
 
-                Log.d(TAG, "location activated");
+                //Log.d(TAG, "Location activated");
                 Toast.makeText(getActivity().getApplicationContext(), "Location activated !", Toast.LENGTH_SHORT).show();
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
@@ -592,38 +576,31 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
             } else {
 
-                Log.d(TAG, "location not activated even if asked");
+                //Log.d(TAG, "Location not activated even if asked");
                 Toast.makeText(getActivity().getApplicationContext(), "Location not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d(TAG, "onDestroy");
-
         mapView.onDestroy();
 
         if (registeredReceiver) {
-            Log.d(TAG, "unregister receiver");
+            //Log.d(TAG, "Receiver unregistered");
             getActivity().unregisterReceiver(receiver);
         }
     }
     @Override
     public void onResume() {
         mapView.onResume();
-        Log.d(TAG, "onResume");
         super.onResume();
     }
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
-
-
-        Log.d(TAG, "building bundle");
+        Log.d(TAG, "onPause - building bundle for saving the current state");
 
         Bundle state = new Bundle();
 
@@ -668,6 +645,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         savedStateHandler.addState("TabHome", state);
         Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
+        bluetoothAdapter.cancelDiscovery();
 
         mapView.onPause();
     }
@@ -678,9 +656,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     }
 
     private void updateAfterTripVisualization(ArrayList<MapPoint> markers) {
-
-        Log.d(TAG, String.valueOf(map));
-        Log.d(TAG, String.valueOf(mapView));
 
         int i = 0;
         for (MapPoint p : markers) {
@@ -761,7 +736,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         return url;
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 

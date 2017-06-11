@@ -6,13 +6,17 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -49,65 +53,14 @@ public class ProfileFragment extends Fragment {
     private TextView emailTextView;
     private ImageView imageView;
     private TextView levelTextView;
+    private LinearLayout layout;
+    private RelativeLayout f1;
+    private LinearLayout f2;
     private View v;
+    private CardView cardviewelement;
 
     private DatabaseReference database;
     private FirebaseAuth auth;
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.d(TAG, "onAttach");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView");
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart");
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.d(TAG, "onActivityCreated");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG, "onDestroy");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.d(TAG, "onDetach");
-    }
 
     @Nullable
     @Override
@@ -118,6 +71,31 @@ public class ProfileFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance().getReference();
         currentUser = auth.getCurrentUser();
+
+        layout = (LinearLayout) v.findViewById(R.id.linlayout);
+        f1 = (RelativeLayout) v.findViewById(R.id.f1);
+        f2 = (LinearLayout) v.findViewById(R.id.f2);
+
+        ViewTreeObserver vto = layout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int width = layout.getWidth();
+                int height = layout.getHeight();
+
+                ViewGroup.LayoutParams params1 = f1.getLayoutParams();
+                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
+
+                params1.height = height;
+                params1.width = width;
+                f1.requestLayout();
+
+                params2.height = height / 2;
+                params2.width = width;
+                f2.requestLayout();
+            }
+        });
 
         imageView = (ImageView) v.findViewById(R.id.imgProfilePic);
         nameTextView = (TextView) v.findViewById(R.id.txtName);

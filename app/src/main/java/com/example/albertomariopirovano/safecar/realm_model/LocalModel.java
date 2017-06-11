@@ -13,7 +13,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by albertomariopirovano on 26/04/17.
@@ -135,5 +137,59 @@ public class LocalModel {
                 plug.setIsDropped(Boolean.TRUE);
             }
         }
+    }
+
+    public ArrayList<Map<String, String>> getValuesToRender(final Trip t) {
+
+        ArrayList<Map<String, String>> temp = new ArrayList<Map<String, String>>();
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "ID");
+                put("value", t.getTripId());
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "User");
+                put("value", t.getUserId());
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "Arrival");
+                put("value", t.getArrName());
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "Departure");
+                put("value", t.getDepName());
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "Date");
+                put("value", String.valueOf(t.getDate()));
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "DSI");
+                put("value", String.valueOf(t.getFinalDSI()));
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "KM");
+                put("value", String.valueOf(t.getKm()));
+            }
+        });
+        temp.add(new HashMap<String, String>() {
+            {
+                put("key", "Duration");
+                put("value", String.valueOf(t.getTimeDuration()));
+            }
+        });
+        return temp;
     }
 }

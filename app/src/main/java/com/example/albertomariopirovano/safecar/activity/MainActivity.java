@@ -35,6 +35,7 @@ import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.example.albertomariopirovano.safecar.realm_model.NavItem;
+import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private LocalModel localModel = LocalModel.getInstance();
+    private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -276,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
 
                 localModel.updateCloudModel();
                 localModel.drop();
+
+                savedStateHandler.removeState("TabHome");
 
                 Log.d(TAG, "Logout current user");
 

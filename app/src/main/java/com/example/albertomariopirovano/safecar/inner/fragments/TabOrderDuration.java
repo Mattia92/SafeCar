@@ -28,12 +28,6 @@ public class TabOrderDuration extends Fragment implements TabFragment{
     private Comparator comparator = new DurationComparator();
     private FetchService dataService = FetchService.getInstance();
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate");
-    }
-
     public String getName() {
         return name;
     }

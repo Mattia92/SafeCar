@@ -46,4 +46,15 @@
     <string name="lbl_forgot_password">Forgot password?</string>
     <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
 
+    <string name="hello_world">Hello world!</string>
+    <string name="action_find_location">Find</string>
+
+    <string name="long_text">Android 5.0 Lollipop was one of the most significant Android releases ever,
+        in no small part due to the introduction of material design,
+        a new design language that refreshed the entire Android experience
+    </string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
 </resources>

@@ -348,6 +348,11 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         Log.d(TAG, "onPreExecute");
     }
 
+    private void updateAfterTripVisualization2() {
+
+
+    }
+
     private void updateAfterTripVisualization() {
         dsiEvaluation.setText(trip.getFinalDSI().toString());
         tripName.setText(trip.getDepName() + " - " + trip.getArrName());
