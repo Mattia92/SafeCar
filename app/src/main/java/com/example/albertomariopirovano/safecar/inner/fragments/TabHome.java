@@ -620,56 +620,58 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     public void onPause() {
         super.onPause();
 
-        if (localModel != null) {
+        synchronized (localModel) {
+            if (localModel != null) {
 
-            Log.d(TAG, "onPause - building bundle for saving the current state");
+                Log.d(TAG, "onPause - building bundle for saving the current state");
 
-            Bundle state = new Bundle();
+                Bundle state = new Bundle();
 
-            //viewflipper state
-            state.putInt("viewFlipperKey", viewFlipper.getDisplayedChild());
-            Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
+                //viewflipper state
+                state.putInt("viewFlipperKey", viewFlipper.getDisplayedChild());
+                Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
 
-            if (viewFlipper.getDisplayedChild() == 0) {
-                state.putBoolean("isBluetoothScanning", isBluetoothScanning);
-                Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
-            } else if (viewFlipper.getDisplayedChild() == 2) {
-                state.putSerializable("targetPlug", targetPlug); // set bluetooth targetplug
-                Log.d(TAG, String.valueOf((Plug) state.getSerializable("targetPlug")));
-            } else if (viewFlipper.getDisplayedChild() == 3) {
-                synchronized (lock1) {
-                    tripHandler.viewNotAvailable();
-                    lock1.notifyAll();
+                if (viewFlipper.getDisplayedChild() == 0) {
+                    state.putBoolean("isBluetoothScanning", isBluetoothScanning);
+                    Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
+                } else if (viewFlipper.getDisplayedChild() == 2) {
+                    state.putSerializable("targetPlug", targetPlug); // set bluetooth targetplug
+                    Log.d(TAG, String.valueOf((Plug) state.getSerializable("targetPlug")));
+                } else if (viewFlipper.getDisplayedChild() == 3) {
+                    synchronized (lock1) {
+                        tripHandler.viewNotAvailable();
+                        lock1.notifyAll();
+                    }
+                    synchronized (lock2) {
+                        dsiEvaluator.viewNotAvailable();
+                        lock2.notifyAll();
+                    }
+                    state.putSerializable("tripHandler", tripHandler); // tripHandler.reloadTaskState();
+                    Log.d(TAG, String.valueOf((TripHandler) state.getSerializable("tripHandler")));
+                    state.putSerializable("dsiEvaluator", dsiEvaluator); //dsiEvaluator.reloadTaskState();
+                    Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
+                    state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
+                    Log.d(TAG, state.getString("pause_resumeTripTextView"));
+                } else if (viewFlipper.getDisplayedChild() == 4) {
+                    //state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
+                    //Log.d(TAG, state.getString("dsiEvaluationVisualization"));
+                    //state.putString("tripNameVisualization", tripName.getText().toString());
+                    //Log.d(TAG, state.getString("tripNameVisualization"));
+
+                    details.clear();
+                    List<Trip> trips = localModel.getTrips();
+                    Collections.sort(trips, new DateComparator());
+                    state.putSerializable("trip", trips.get(trips.size() - 1));
+                    //state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
+                    //Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
                 }
-                synchronized (lock2) {
-                    dsiEvaluator.viewNotAvailable();
-                    lock2.notifyAll();
-                }
-                state.putSerializable("tripHandler", tripHandler); // tripHandler.reloadTaskState();
-                Log.d(TAG, String.valueOf((TripHandler) state.getSerializable("tripHandler")));
-                state.putSerializable("dsiEvaluator", dsiEvaluator); //dsiEvaluator.reloadTaskState();
-                Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
-                state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
-                Log.d(TAG, state.getString("pause_resumeTripTextView"));
-            } else if (viewFlipper.getDisplayedChild() == 4) {
-                //state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
-                //Log.d(TAG, state.getString("dsiEvaluationVisualization"));
-                //state.putString("tripNameVisualization", tripName.getText().toString());
-                //Log.d(TAG, state.getString("tripNameVisualization"));
 
-                details.clear();
-                List<Trip> trips = localModel.getTrips();
-                Collections.sort(trips, new DateComparator());
-                state.putSerializable("trip", trips.get(trips.size() - 1));
-                //state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
-                //Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
+                savedStateHandler.addState("TabHome", state);
+                Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
+                bluetoothAdapter.cancelDiscovery();
+
+                mapView.onPause();
             }
-
-            savedStateHandler.addState("TabHome", state);
-            Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
-            bluetoothAdapter.cancelDiscovery();
-
-            mapView.onPause();
         }
     }
     @Override
