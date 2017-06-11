@@ -335,8 +335,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
         });
 
-        loadStateIfNeeded();
-
         return v;
     }
 
@@ -660,10 +658,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             state.putString("tripNameVisualization", tripName.getText().toString());
             Log.d(TAG, state.getString("tripNameVisualization"));
 
-            List<Trip> trips = localModel.getTrips();
-            Collections.sort(trips, new DateComparator());
-            state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
-            Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
+            if (localModel != null) {
+                List<Trip> trips = localModel.getTrips();
+                Collections.sort(trips, new DateComparator());
+                state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
+                Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
+            }
         }
 
         savedStateHandler.addState("TabHome", state);
@@ -774,6 +774,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             return;
         }
         map.setMyLocationEnabled(true);
+
+        loadStateIfNeeded();
     }
 
 }
