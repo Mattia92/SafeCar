@@ -22,5 +22,5 @@
 
     <include
         android:id="@+id/tab_home_three"
-        layout="@layout/tab_home_trip_visualization" />
+        layout="@layout/report_fragment" />
 </ViewFlipper>

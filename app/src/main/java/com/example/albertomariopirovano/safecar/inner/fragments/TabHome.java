@@ -14,17 +14,19 @@ import android.location.Criteria;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -67,6 +69,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -107,10 +110,13 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private ImageView quitTrip;
     private TextView pause_resumeTripTextView;
     private ProgressBar progressBarEndTrip;
-    private TextView tripName;
-    private TextView dsiEvaluation;
     private MapView mapView;
     private GoogleMap map;
+    private LinearLayout f1;
+    private LinearLayout f2;
+    private LinearLayout layout;
+    private View cardViewWrapper;
+    private ArrayList<CardView> details = new ArrayList<CardView>();
 
 
     private ArrayList<Plug> toBeAdded = new ArrayList<Plug>();
@@ -120,8 +126,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
 
     private Boolean isBluetoothScanning = Boolean.FALSE;
-    // Create a BroadcastReceiver for ACTION_FOUND.
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
@@ -216,8 +222,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         }
     };
     private Boolean registeredReceiver = false;
+
     private Object lock1 = new Object();
     private Object lock2 = new Object();
+
+
     private TripHandler tripHandler;
     private DSIEvaluator dsiEvaluator;
 
@@ -268,10 +277,44 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
         quitTrip = (ImageView) v.findViewById(R.id.stopTrip);
         pause_resumeTripTextView = (TextView) v.findViewById(R.id.pause_resumeTripTextView);
-        tripName = (TextView) v.findViewById(R.id.tripNameVisualization);
-        dsiEvaluation = (TextView) v.findViewById(R.id.dsiEvaluationVisualization);
 
+        //child 3 elements
         googleMapsHandler(savedInstanceState);
+        layout = (LinearLayout) v.findViewById(R.id.linlayout);
+        f1 = (LinearLayout) v.findViewById(R.id.f1);
+        f2 = (LinearLayout) v.findViewById(R.id.f2);
+
+        setListeners();
+
+        return v;
+    }
+
+    private void setListeners() {
+        ViewTreeObserver vto = layout.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int width = layout.getMeasuredWidth();
+                int height = layout.getMeasuredHeight();
+
+                ViewGroup.LayoutParams params1 = f1.getLayoutParams();
+                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
+
+                Log.d(TAG, String.valueOf(height));
+                Log.d(TAG, String.valueOf(width));
+                Log.d(TAG, String.valueOf(223 * 8));
+                Log.d(TAG, String.valueOf(height));
+
+                params1.height = height;
+                params1.width = width;
+                f1.requestLayout();
+
+                params2.height = 223 * 8;
+                params2.width = width;
+                f2.requestLayout();
+            }
+        });
 
         quitTrip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,8 +366,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 startBluetoothScan();
             }
         });
-
-        return v;
     }
 
     private void loadStateIfNeeded() {
@@ -349,7 +390,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     pause_resumeTripTextView.setText("Take a break");
                 }
                 tripHandler = (TripHandler) oldState.getSerializable("tripHandler");
-                tripHandler.setViewElements(viewFlipper, tripName, dsiEvaluation, map);
+                tripHandler.setViewElements(viewFlipper, layout, f2, map);
                 dsiEvaluator = (DSIEvaluator) oldState.getSerializable("dsiEvaluator");
                 dsiEvaluator.setViewElements(hintsListView);
                 synchronized (lock1) {
@@ -361,12 +402,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     lock2.notifyAll();
                 }
             } else if (oldState.getInt("viewFlipperKey") == 4) {
-                dsiEvaluation.setText(oldState.getString("dsiEvaluationVisualization"));
-                tripName.setText(oldState.getString("tripNameVisualization"));
-                ArrayList<MapPoint> markers = oldState.getParcelableArrayList("markersToBePlaced");
-                updateAfterTripVisualization(markers);
-            } else {
-
+                //dsiEvaluation.setText(oldState.getString("dsiEvaluationVisualization"));
+                //tripName.setText(oldState.getString("tripNameVisualization"));
+                //ArrayList<MapPoint> markers = oldState.getParcelableArrayList("markersToBePlaced");
+                //drawTrip(markers);
+                Trip trip = (Trip) oldState.getSerializable("trip");
+                restoreAfterTripVisualization(trip);
             }
             savedStateHandler.removeState("TabHome");
             // restore the old state
@@ -454,7 +495,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            tripHandler = new TripHandler(view.getContext(), viewFlipper, tripName, dsiEvaluation, map, lock1);
+            tripHandler = new TripHandler(view.getContext(), viewFlipper, layout, f2, map, lock1);
             dsiEvaluator = new DSIEvaluator(getActivity(), targetPlug, hintsListView, lock2);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -516,34 +557,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private void googleMapsHandler(Bundle savedInstanceState) {
 
-        mapView = (MapView) v.findViewById(R.id.map);
+        mapView = (MapView) v.findViewById(R.id.reportMap);
         mapView.onCreate(savedInstanceState);
         if (mapView != null) {
             mapView.getMapAsync(this);
         }
-
     }
-
-    /*private void bluetoothSearchPairedDevices() {
-
-        Log.d(TAG, "search for already paired devices");
-        //new BluetoothSearcher(getActivity().getApplicationContext(), targetTextView).execute();
-
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-
-        if (pairedDevices.size() > 0) {
-
-            Log.d(TAG, "there are paired devices");
-            // There are paired devices. Get the name and address of each paired device.
-            for (BluetoothDevice device : pairedDevices) {
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                Log.d(TAG, deviceName + " " + deviceHardwareAddress);
-            }
-        } else {
-            Log.d(TAG, "there are no paired devices");
-        }
-    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -600,54 +619,58 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause - building bundle for saving the current state");
 
-        Bundle state = new Bundle();
+        if (localModel != null) {
 
-        //viewflipper state
-        state.putInt("viewFlipperKey", viewFlipper.getDisplayedChild());
-        Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
+            Log.d(TAG, "onPause - building bundle for saving the current state");
 
-        if (viewFlipper.getDisplayedChild() == 0) {
-            state.putBoolean("isBluetoothScanning", isBluetoothScanning);
-            Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
-        } else if (viewFlipper.getDisplayedChild() == 2) {
-            state.putSerializable("targetPlug", targetPlug); // set bluetooth targetplug
-            Log.d(TAG, String.valueOf((Plug) state.getSerializable("targetPlug")));
-        } else if (viewFlipper.getDisplayedChild() == 3) {
-            synchronized (lock1) {
-                tripHandler.viewNotAvailable();
-                lock1.notifyAll();
-            }
-            synchronized (lock2) {
-                dsiEvaluator.viewNotAvailable();
-                lock2.notifyAll();
-            }
-            state.putSerializable("tripHandler", tripHandler); // tripHandler.reloadTaskState();
-            Log.d(TAG, String.valueOf((TripHandler) state.getSerializable("tripHandler")));
-            state.putSerializable("dsiEvaluator", dsiEvaluator); //dsiEvaluator.reloadTaskState();
-            Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
-            state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
-            Log.d(TAG, state.getString("pause_resumeTripTextView"));
-        } else if (viewFlipper.getDisplayedChild() == 4) {
-            state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
-            Log.d(TAG, state.getString("dsiEvaluationVisualization"));
-            state.putString("tripNameVisualization", tripName.getText().toString());
-            Log.d(TAG, state.getString("tripNameVisualization"));
+            Bundle state = new Bundle();
 
-            if (localModel != null) {
+            //viewflipper state
+            state.putInt("viewFlipperKey", viewFlipper.getDisplayedChild());
+            Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
+
+            if (viewFlipper.getDisplayedChild() == 0) {
+                state.putBoolean("isBluetoothScanning", isBluetoothScanning);
+                Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
+            } else if (viewFlipper.getDisplayedChild() == 2) {
+                state.putSerializable("targetPlug", targetPlug); // set bluetooth targetplug
+                Log.d(TAG, String.valueOf((Plug) state.getSerializable("targetPlug")));
+            } else if (viewFlipper.getDisplayedChild() == 3) {
+                synchronized (lock1) {
+                    tripHandler.viewNotAvailable();
+                    lock1.notifyAll();
+                }
+                synchronized (lock2) {
+                    dsiEvaluator.viewNotAvailable();
+                    lock2.notifyAll();
+                }
+                state.putSerializable("tripHandler", tripHandler); // tripHandler.reloadTaskState();
+                Log.d(TAG, String.valueOf((TripHandler) state.getSerializable("tripHandler")));
+                state.putSerializable("dsiEvaluator", dsiEvaluator); //dsiEvaluator.reloadTaskState();
+                Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
+                state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
+                Log.d(TAG, state.getString("pause_resumeTripTextView"));
+            } else if (viewFlipper.getDisplayedChild() == 4) {
+                //state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
+                //Log.d(TAG, state.getString("dsiEvaluationVisualization"));
+                //state.putString("tripNameVisualization", tripName.getText().toString());
+                //Log.d(TAG, state.getString("tripNameVisualization"));
+
+                details.clear();
                 List<Trip> trips = localModel.getTrips();
                 Collections.sort(trips, new DateComparator());
-                state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
-                Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
+                state.putSerializable("trip", trips.get(trips.size() - 1));
+                //state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
+                //Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
             }
+
+            savedStateHandler.addState("TabHome", state);
+            Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
+            bluetoothAdapter.cancelDiscovery();
+
+            mapView.onPause();
         }
-
-        savedStateHandler.addState("TabHome", state);
-        Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
-        bluetoothAdapter.cancelDiscovery();
-
-        mapView.onPause();
     }
     @Override
     public void onLowMemory() {
@@ -655,7 +678,34 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         mapView.onLowMemory();
     }
 
-    private void updateAfterTripVisualization(ArrayList<MapPoint> markers) {
+    private void addDetails() {
+        for (CardView cv : details) {
+            f2.addView(cv);
+        }
+    }
+
+    private void restoreAfterTripVisualization(Trip trip) {
+
+        for (Map<String, String> map : localModel.getValuesToRender(trip)) {
+            Iterator it = map.entrySet().iterator();
+            cardViewWrapper = LayoutInflater.from(getActivity()).inflate(R.layout.cardview, layout, false);
+            Map.Entry<String, String> entry1 = (Map.Entry) it.next();
+            CardView cardView = (CardView) cardViewWrapper.findViewById(R.id.cardviewelement);
+            LinearLayout firstChild = ((LinearLayout) cardView.getChildAt(0));
+            TextView tv1 = (TextView) firstChild.getChildAt(0);
+            tv1.setText(entry1.getValue());
+            Map.Entry<String, String> entry2 = (Map.Entry) it.next();
+            TextView tv2 = (TextView) firstChild.getChildAt(1);
+            tv2.setText(entry2.getValue());
+            details.add(cardView);
+        }
+
+        drawTrip(trip.getMarkers());
+        addDetails();
+
+    }
+
+    private void drawTrip(List<MapPoint> markers) {
 
         int i = 0;
         for (MapPoint p : markers) {
@@ -702,7 +752,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
 
         map.animateCamera(cu);
-
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {

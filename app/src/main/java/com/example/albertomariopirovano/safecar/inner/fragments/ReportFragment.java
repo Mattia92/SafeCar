@@ -97,6 +97,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
             t = (Trip) bundle.getSerializable("key");
             Log.d(TAG, t.toString());
         }
+
         for (Map<String, String> map : localModel.getValuesToRender(t)) {
             Iterator it = map.entrySet().iterator();
             cardViewWrapper = LayoutInflater.from(getActivity()).inflate(R.layout.cardview, layout, false);
@@ -111,6 +112,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
             details.add(cardView);
         }
 
+        /*
         ViewTreeObserver viewTreeObserver = details.get(0).getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -120,7 +122,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
                     Log.d(TAG, String.valueOf(details.get(0).getMeasuredHeight()));
                 }
             });
-        }
+        }*/
 
         mapView = (MapView) v.findViewById(R.id.reportMap);
         mapView.onCreate(savedInstanceState);

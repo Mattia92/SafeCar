@@ -15,10 +15,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
@@ -45,8 +50,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by albertomariopirovano on 26/04/17.
@@ -73,9 +80,11 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     private Boolean stopTask = Boolean.FALSE;
     private ViewFlipper viewFlipper;
 
-    private TextView tripName;
-    private TextView dsiEvaluation;
+    private LinearLayout linLayout;
+    private LinearLayout f2;
     private GoogleMap map;
+    private View cardViewWrapper;
+    private ArrayList<CardView> details = new ArrayList<CardView>();
     private ArrayList<LatLng> markerPoints;
     private Trip trip;
 
@@ -116,10 +125,10 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         }
     };
 
-    public TripHandler(Context context, ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map, Object lock) {
+    public TripHandler(Context context, ViewFlipper viewFlipper, LinearLayout linLayout, LinearLayout f2, GoogleMap map, Object lock) {
         this.context = context;
         this.lock = lock;
-        setViewElements(viewFlipper, tripName, dsiEvaluation, map);
+        setViewElements(viewFlipper, linLayout, f2, map);
         this.trip = new Trip();
         this.markerPoints = new ArrayList<LatLng>();
         this.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -348,20 +357,37 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         Log.d(TAG, "onPreExecute");
     }
 
-    private void updateAfterTripVisualization2() {
+    private void restoreAfterTripVisualization(Trip trip) {
 
+        for (Map<String, String> map : localModel.getValuesToRender(trip)) {
+            Iterator it = map.entrySet().iterator();
+            cardViewWrapper = LayoutInflater.from(context).inflate(R.layout.cardview, linLayout, false);
+            Map.Entry<String, String> entry1 = (Map.Entry) it.next();
+            CardView cardView = (CardView) cardViewWrapper.findViewById(R.id.cardviewelement);
+            LinearLayout firstChild = ((LinearLayout) cardView.getChildAt(0));
+            TextView tv1 = (TextView) firstChild.getChildAt(0);
+            tv1.setText(entry1.getValue());
+            Map.Entry<String, String> entry2 = (Map.Entry) it.next();
+            TextView tv2 = (TextView) firstChild.getChildAt(1);
+            tv2.setText(entry2.getValue());
+            details.add(cardView);
+        }
+
+        drawTrip(trip.getMarkers());
+        addDetails();
 
     }
 
-    private void updateAfterTripVisualization() {
-        dsiEvaluation.setText(trip.getFinalDSI().toString());
-        tripName.setText(trip.getDepName() + " - " + trip.getArrName());
-        if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context.getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+    private void addDetails() {
+        for (CardView cv : details) {
+            f2.addView(cv);
         }
+    }
+
+    private void drawTrip(List<MapPoint> markers) {
 
         int i = 0;
-        for (MapPoint p : trip.getMarkers()) {
+        for (MapPoint p : markers) {
             Log.d(TAG, String.valueOf(p));
             LatLng point = new LatLng(p.getLat(), p.getLng());
             Log.d(TAG, String.valueOf(point.latitude));
@@ -450,7 +476,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         synchronized (lock) {
             if (viewAvailable) {
-                updateAfterTripVisualization();
+                restoreAfterTripVisualization(trip);
             } else {
                 try {
                     lock.wait();
@@ -473,9 +499,9 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         viewAvailable = Boolean.FALSE;
     }
 
-    public void setViewElements(ViewFlipper viewFlipper, TextView tripName, TextView dsiEvaluation, GoogleMap map) {
-        this.tripName = tripName;
-        this.dsiEvaluation = dsiEvaluation;
+    public void setViewElements(ViewFlipper viewFlipper, LinearLayout linLayout, LinearLayout f2, GoogleMap map) {
+        this.linLayout = linLayout;
+        this.f2 = f2;
         this.map = map;
         this.viewFlipper = viewFlipper;
     }

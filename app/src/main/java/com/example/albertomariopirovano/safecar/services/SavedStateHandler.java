@@ -37,4 +37,8 @@ public class SavedStateHandler {
     public void removeState(String id) {
         savedStates.remove(id);
     }
+
+    public Boolean isEmpty() {
+        return savedStates.isEmpty();
+    }
 }
