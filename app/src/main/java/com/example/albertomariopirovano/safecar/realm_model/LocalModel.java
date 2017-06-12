@@ -28,11 +28,13 @@ public class LocalModel {
     private User user;
     private List<Trip> trips;
     private List<Plug> plugs;
+    private Boolean dropped = Boolean.FALSE;
 
     private DatabaseReference database;
 
     public LocalModel() {
-        database = FirebaseDatabase.getInstance().getReference();
+        this.database = FirebaseDatabase.getInstance().getReference();
+        this.dropped = Boolean.FALSE;
         setTrips(new ArrayList<Trip>());
         setPlugs(new ArrayList<Plug>());
     }
@@ -42,9 +44,18 @@ public class LocalModel {
     }
 
     public void drop() {
+        this.dropped = Boolean.TRUE;
         this.user = null;
         this.trips = null;
         this.plugs = null;
+    }
+
+    public Boolean getDropped() {
+        return dropped;
+    }
+
+    public void setDropped(Boolean dropped) {
+        this.dropped = dropped;
     }
 
     public User getUser() {

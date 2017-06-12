@@ -621,7 +621,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         super.onPause();
 
         synchronized (localModel) {
-            if (localModel != null) {
+            if (localModel.getDropped() == Boolean.FALSE) {
 
                 Log.d(TAG, "onPause - building bundle for saving the current state");
 
@@ -660,6 +660,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                     details.clear();
                     List<Trip> trips = localModel.getTrips();
+                    Log.d(TAG, String.valueOf(trips.size()));
                     Collections.sort(trips, new DateComparator());
                     state.putSerializable("trip", trips.get(trips.size() - 1));
                     //state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());

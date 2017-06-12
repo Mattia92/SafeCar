@@ -151,18 +151,19 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
                 //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
 
-                //try {
-                //    Log.d(TAG, gcd.getFromLocation(wayPoint.getLat(), wayPoint.getLng(), 1).get(0).getLocality());
-                //} catch (IOException e) {
-                //    e.printStackTrace();
-                //}
+                /*try {
+                    Log.d(TAG, gcd.getFromLocation(wayPoint.getLat(), wayPoint.getLng(), 1).get(0).getLocality());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
 
                 //wayPoints.add(wayPoint);
 
-                //getLocation();
+                getLocation();
             }
             try {
-                Thread.sleep(10000);
+                //if the mappoint is very near to the last one picked drop it ( implicit cleaning )
+                Thread.sleep(160000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
