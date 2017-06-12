@@ -145,6 +145,12 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         while (!stopTask) {
 
+            try {
+                //if the mappoint is very near to the last one picked drop it ( implicit cleaning )
+                Thread.sleep(120000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if ((trip.getMarkers().size() - 2) < 8 && trip.getMarkers().size() > 0) {
                 Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
 
@@ -160,12 +166,6 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 //wayPoints.add(wayPoint);
 
                 getLocation();
-            }
-            try {
-                //if the mappoint is very near to the last one picked drop it ( implicit cleaning )
-                Thread.sleep(160000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         Log.d(TAG, "TripHandler task has been stopped !");
