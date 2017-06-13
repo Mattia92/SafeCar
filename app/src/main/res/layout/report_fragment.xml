@@ -1,72 +1,91 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    tools:context=".activity.MainActivity">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linlayout"
-        android:layout_width="match_parent"
+    <ScrollView
+            android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fillViewport="true"
+        tools:context=".activity.MainActivity">
 
         <LinearLayout
-            android:id="@+id/f1"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:weightSum="1">
+            android:id="@+id/linlayout"
+                android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/reportMap"
+            <LinearLayout
+                android:id="@+id/f1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.7">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:weightSum="1">
 
-            </com.google.android.gms.maps.MapView>
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/reportMap"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.7">
 
-            <TextView
-                android:id="@+id/tripNameVisualization"
+                </com.google.android.gms.maps.MapView>
+
+                <TextView
+                    android:id="@+id/tripNameVisualization"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.2"
+                    android:text="Trip report"
+                    android:textAlignment="center"
+                    android:textSize="40dp" />
+
+                <TextView
+                    android:id="@+id/scrollFroInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight="0.05"
+                    android:text="scroll for the details"
+                    android:textAlignment="center"
+                    android:textSize="20dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.05"
+                    android:src="@drawable/ic_arrow_upward_black_24dp"
+                    android:tint="#d7ccc8" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/f2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.2"
-                android:text="Trip report"
-                android:textAlignment="center"
-                android:textSize="40dp" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/scrollFroInfo"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="0.05"
-                android:text="scroll for the details"
-                android:textAlignment="center"
-                android:textSize="20dp" />
+                <include
+                    android:id="@+id/details_cardview"
+                    layout="@layout/cardview" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0.05"
-                android:src="@drawable/ic_arrow_upward_black_24dp"
-                android:tint="#d7ccc8" />
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/f2"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp">
+    </ScrollView>
 
-        </LinearLayout>
-
-    </LinearLayout>
-
-</ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/rescan_vis"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_autorenew_black_24dp" />
+</RelativeLayout>

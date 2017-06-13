@@ -85,9 +85,10 @@ public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<Str
             lineOptions.width(2);
             lineOptions.color(Color.RED);
         }
-
-        // Drawing polyline in the Google Map for the i-th route
-        map.addPolyline(lineOptions);
+        if (lineOptions != null) {
+            // Drawing polyline in the Google Map for the i-th route
+            map.addPolyline(lineOptions);
+        }
     }
 
     /**

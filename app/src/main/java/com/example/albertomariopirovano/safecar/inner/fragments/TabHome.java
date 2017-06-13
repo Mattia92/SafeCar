@@ -15,9 +15,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +30,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -114,14 +116,13 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private GoogleMap map;
     private LinearLayout f1;
     private LinearLayout f2;
+    private FloatingActionButton rescan_vis;
     private LinearLayout layout;
-    private View cardViewWrapper;
-    private ArrayList<CardView> details = new ArrayList<CardView>();
 
 
-    private ArrayList<Plug> toBeAdded = new ArrayList<Plug>();
-    private ArrayList<Plug> found = new ArrayList<Plug>();
-    private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
+    private ArrayList<Plug> toBeAdded;
+    private ArrayList<Plug> found;
+    private ArrayList<LatLng> markerPoints;
     private Plug targetPlug;
 
 
@@ -229,6 +230,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private TripHandler tripHandler;
     private DSIEvaluator dsiEvaluator;
+    private TableLayout detailsLayout;
 
     public String getName() {
         return name;
@@ -283,6 +285,13 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         layout = (LinearLayout) v.findViewById(R.id.linlayout);
         f1 = (LinearLayout) v.findViewById(R.id.f1);
         f2 = (LinearLayout) v.findViewById(R.id.f2);
+        rescan_vis = (FloatingActionButton) v.findViewById(R.id.rescan_vis);
+        detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
+
+        markerPoints = new ArrayList<LatLng>();
+        found = new ArrayList<Plug>();
+        toBeAdded = new ArrayList<Plug>();
+
 
         setListeners();
 
@@ -301,18 +310,25 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 ViewGroup.LayoutParams params1 = f1.getLayoutParams();
                 ViewGroup.LayoutParams params2 = f2.getLayoutParams();
 
-                Log.d(TAG, String.valueOf(height));
-                Log.d(TAG, String.valueOf(width));
-                Log.d(TAG, String.valueOf(223 * 8));
-                Log.d(TAG, String.valueOf(height));
+                //Log.d(TAG, String.valueOf(height));
+                //Log.d(TAG, String.valueOf(width));
+                //Log.d(TAG, String.valueOf(223 * 8));
+                //Log.d(TAG, String.valueOf(height));
 
                 params1.height = height;
                 params1.width = width;
                 f1.requestLayout();
 
-                params2.height = 223 * 8;
+                params2.height = 880;
                 params2.width = width;
                 f2.requestLayout();
+            }
+        });
+
+        rescan_vis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewFlipper.setDisplayedChild(0);
             }
         });
 
@@ -390,7 +406,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     pause_resumeTripTextView.setText("Take a break");
                 }
                 tripHandler = (TripHandler) oldState.getSerializable("tripHandler");
-                tripHandler.setViewElements(viewFlipper, layout, f2, map);
+                tripHandler.setViewElements(viewFlipper, detailsLayout, map);
                 dsiEvaluator = (DSIEvaluator) oldState.getSerializable("dsiEvaluator");
                 dsiEvaluator.setViewElements(hintsListView);
                 synchronized (lock1) {
@@ -495,7 +511,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            tripHandler = new TripHandler(view.getContext(), viewFlipper, layout, f2, map, lock1);
+            tripHandler = new TripHandler(view.getContext(), viewFlipper, detailsLayout, map, lock1);
             dsiEvaluator = new DSIEvaluator(getActivity(), targetPlug, hintsListView, lock2);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -658,7 +674,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     //state.putString("tripNameVisualization", tripName.getText().toString());
                     //Log.d(TAG, state.getString("tripNameVisualization"));
 
-                    details.clear();
                     List<Trip> trips = localModel.getTrips();
                     Log.d(TAG, String.valueOf(trips.size()));
                     Collections.sort(trips, new DateComparator());
@@ -681,30 +696,23 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         mapView.onLowMemory();
     }
 
-    private void addDetails() {
-        for (CardView cv : details) {
-            f2.addView(cv);
-        }
-    }
-
     private void restoreAfterTripVisualization(Trip trip) {
 
+        int i = 0;
         for (Map<String, String> map : localModel.getValuesToRender(trip)) {
+
+            TableRow row = (TableRow) detailsLayout.getChildAt(i);
             Iterator it = map.entrySet().iterator();
-            cardViewWrapper = LayoutInflater.from(getActivity()).inflate(R.layout.cardview, layout, false);
             Map.Entry<String, String> entry1 = (Map.Entry) it.next();
-            CardView cardView = (CardView) cardViewWrapper.findViewById(R.id.cardviewelement);
-            LinearLayout firstChild = ((LinearLayout) cardView.getChildAt(0));
-            TextView tv1 = (TextView) firstChild.getChildAt(0);
-            tv1.setText(entry1.getValue());
             Map.Entry<String, String> entry2 = (Map.Entry) it.next();
-            TextView tv2 = (TextView) firstChild.getChildAt(1);
-            tv2.setText(entry2.getValue());
-            details.add(cardView);
+
+            ((TextView) row.getChildAt(0)).setText(entry1.getValue());
+            ((TextView) row.getChildAt(1)).setText(entry2.getValue());
+
+            i++;
         }
 
         drawTrip(trip.getMarkers());
-        addDetails();
 
     }
 
@@ -718,7 +726,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             options.position(point);
             if (i == 0) {
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            } else if (i == 1) {
+            } else if (i == (markers.size() - 1)) {
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
             } else {
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
@@ -729,10 +737,10 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         Log.d(TAG, String.valueOf(markerPoints.size()));
         Log.d(TAG, markerPoints.get(0).toString());
-        Log.d(TAG, markerPoints.get(1).toString());
+        Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
 
         LatLng origin = markerPoints.get(0);
-        LatLng dest = markerPoints.get(1);
+        LatLng dest = markerPoints.get(markers.size() - 1);
 
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(origin, dest);
@@ -770,7 +778,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         // Waypoints
         String waypoints = "";
-        for (int i = 2; i < markerPoints.size(); i++) {
+        for (int i = 1; i < markerPoints.size() - 1; i++) {
             LatLng point = (LatLng) markerPoints.get(i);
             if (i == 2)
                 waypoints = "waypoints=";

@@ -3,6 +3,7 @@ package com.example.albertomariopirovano.safecar.inner.fragments;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -46,10 +49,8 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
     private LinearLayout f1, f2;
     private MapView mapView;
     private GoogleMap map;
+    private TableLayout detailsLayout;
     private View v;
-    private View cardViewWrapper;
-    private ArrayList<CardView> details = new ArrayList<CardView>();
-    private Integer cardViewHeight = 352;
 
     private Trip t;
     private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
@@ -64,6 +65,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
         layout = (LinearLayout) v.findViewById(R.id.linlayout);
         f1 = (LinearLayout) v.findViewById(R.id.f1);
         f2 = (LinearLayout) v.findViewById(R.id.f2);
+        detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
 
         ViewTreeObserver vto = layout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -78,18 +80,24 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
 
                 Log.d(TAG, String.valueOf(height));
                 Log.d(TAG, String.valueOf(width));
-                Log.d(TAG, String.valueOf(223 * 8));
-                Log.d(TAG, String.valueOf(height));
+                //Log.d(TAG, String.valueOf(223 * 8));
+                //Log.d(TAG, String.valueOf(height));
 
                 params1.height = height;
                 params1.width = width;
                 f1.requestLayout();
 
-                params2.height = 223 * 8;
+                params2.height = 880;
                 params2.width = width;
                 f2.requestLayout();
             }
         });
+
+        CardView cv = (CardView) v.findViewById(R.id.details_cardview);
+        cv.setVisibility(View.GONE);
+
+        FloatingActionButton b = (FloatingActionButton) v.findViewById(R.id.rescan_vis);
+        b.setVisibility(View.GONE);
 
         Bundle bundle = this.getArguments();
         t = null;
@@ -98,6 +106,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
             Log.d(TAG, t.toString());
         }
 
+        /*
         for (Map<String, String> map : localModel.getValuesToRender(t)) {
             Iterator it = map.entrySet().iterator();
             cardViewWrapper = LayoutInflater.from(getActivity()).inflate(R.layout.cardview, layout, false);
@@ -111,18 +120,20 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
             tv2.setText(entry2.getValue());
             details.add(cardView);
         }
+        */
 
-        /*
-        ViewTreeObserver viewTreeObserver = details.get(0).getViewTreeObserver();
+
+        ViewTreeObserver viewTreeObserver = detailsLayout.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    details.get(0).getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    Log.d(TAG, String.valueOf(details.get(0).getMeasuredHeight()));
+                    detailsLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    Log.d(TAG, "ALERT");
+                    Log.d(TAG, String.valueOf(detailsLayout.getMeasuredHeight()));
                 }
             });
-        }*/
+        }
 
         mapView = (MapView) v.findViewById(R.id.reportMap);
         mapView.onCreate(savedInstanceState);
@@ -148,12 +159,30 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
 
         drawTrip(t.getMarkers());
         addDetails();
+        CardView cv = (CardView) v.findViewById(R.id.details_cardview);
+        cv.setVisibility(View.VISIBLE);
 
     }
 
     private void addDetails() {
+        /*
         for (CardView cv : details) {
+
             f2.addView(cv);
+        }
+        */
+        int i = 0;
+        for (Map<String, String> map : localModel.getValuesToRender(t)) {
+
+            TableRow row = (TableRow) detailsLayout.getChildAt(i);
+            Iterator it = map.entrySet().iterator();
+            Map.Entry<String, String> entry1 = (Map.Entry) it.next();
+            Map.Entry<String, String> entry2 = (Map.Entry) it.next();
+
+            ((TextView) row.getChildAt(0)).setText(entry1.getValue());
+            ((TextView) row.getChildAt(1)).setText(entry2.getValue());
+
+            i++;
         }
     }
 
@@ -196,7 +225,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
             options.position(point);
             if (i == 0) {
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            } else if (i == 1) {
+            } else if (i == (markers.size() - 1)) {
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
             } else {
                 options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
@@ -207,10 +236,10 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
 
         Log.d(TAG, String.valueOf(markerPoints.size()));
         Log.d(TAG, markerPoints.get(0).toString());
-        Log.d(TAG, markerPoints.get(1).toString());
+        Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
 
         LatLng origin = markerPoints.get(0);
-        LatLng dest = markerPoints.get(1);
+        LatLng dest = markerPoints.get(markers.size() - 1);
 
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(origin, dest);
@@ -248,7 +277,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
 
         // Waypoints
         String waypoints = "";
-        for (int i = 2; i < markerPoints.size(); i++) {
+        for (int i = 1; i < markerPoints.size() - 1; i++) {
             LatLng point = (LatLng) markerPoints.get(i);
             if (i == 2)
                 waypoints = "waypoints=";

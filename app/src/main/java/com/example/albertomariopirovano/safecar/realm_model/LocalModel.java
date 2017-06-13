@@ -155,18 +155,6 @@ public class LocalModel {
         ArrayList<Map<String, String>> temp = new ArrayList<Map<String, String>>();
         temp.add(new HashMap<String, String>() {
             {
-                put("key", "ID");
-                put("value", t.getTripId());
-            }
-        });
-        temp.add(new HashMap<String, String>() {
-            {
-                put("key", "User");
-                put("value", t.getUserId());
-            }
-        });
-        temp.add(new HashMap<String, String>() {
-            {
                 put("key", "Arrival");
                 put("value", t.getArrName());
             }
