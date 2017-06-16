@@ -8,16 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.activity.MainActivity;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 
 /**
  * Created by mattiacrippa on 15/03/17.
  */
 
-public class SettingsShareFragment extends Fragment {
+public class SettingsShareFragment extends Fragment implements TAGInterface {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = "SettingsShareFragment";
     View v;
+
+    public String getAssignedTag() {
+        return TAG;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

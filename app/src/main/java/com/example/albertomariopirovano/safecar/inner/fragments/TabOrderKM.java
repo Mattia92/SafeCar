@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.data_comparators.KMComparator;
 import com.example.albertomariopirovano.safecar.services.FetchService;
 
@@ -20,9 +19,9 @@ import java.util.Comparator;
  * Created by albertomariopirovano on 04/04/17.
  */
 
-public class TabOrderKM extends Fragment implements TabFragment {
+public class TabOrderKM extends Fragment implements TabFragment, TAGInterface {
 
-    private static final String TAG = MainActivity.class.getSimpleName() + " | TabOrderKM";
+    private static final String TAG = "TabOrderKM";
     private String name = "KM";
     private ListView listView;
     private Comparator comparator = new KMComparator();
@@ -30,6 +29,10 @@ public class TabOrderKM extends Fragment implements TabFragment {
 
     public String getName() {
         return name;
+    }
+
+    public String getAssignedTag() {
+        return TAG;
     }
 
     @Nullable

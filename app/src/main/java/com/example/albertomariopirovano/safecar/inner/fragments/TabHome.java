@@ -3,11 +3,8 @@ package com.example.albertomariopirovano.safecar.inner.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -23,13 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -37,12 +32,10 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.concurrency.DSIEvaluator;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.data_comparators.DateComparator;
-import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
@@ -70,7 +63,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +73,10 @@ import static android.app.Activity.RESULT_OK;
  * Created by albertomariopirovano on 04/04/17.
  */
 
-public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback {
+public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback, TAGInterface {
 
 
-    private static final String TAG = MainActivity.class.getSimpleName() + " | TabHome";
+    private static final String TAG = "TabHome";
     private final static int REQUEST_ENABLE_BT = 1;
     private final static int REQUEST_ENABLE_LOC = 2;
     private String name = "Home";
@@ -101,13 +93,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private View v;
     private ViewFlipper viewFlipper;
-    private ProgressBar progressBar;
-    private Button scanButton;
-    private ListView listDevices;
     private ListView hintsListView;
-    private Button reScanButton;
-    private ImageView currentlyDrivingLogo;
-    private ImageView notCurrentlyDrivingLogo;
     private ImageView pause_resumeTrip;
     private ImageView quitTrip;
     private TextView pause_resumeTripTextView;
@@ -119,110 +105,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private FloatingActionButton rescan_vis;
     private LinearLayout layout;
 
-
-    private ArrayList<Plug> toBeAdded;
-    private ArrayList<Plug> found;
     private ArrayList<LatLng> markerPoints;
-    private Plug targetPlug;
-
-
-    private Boolean isBluetoothScanning = Boolean.FALSE;
-
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //Log.d(TAG, "discovery started");
-
-                isBluetoothScanning = Boolean.TRUE;
-                //Log.d(TAG, String.valueOf(isBluetoothScanning));
-
-                progressBar.setVisibility(View.VISIBLE);
-                //discovery starts, we can show progress dialog or perform other tasks
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //Log.d(TAG, "discovery finished");
-
-                progressBar.setVisibility(View.GONE);
-
-                if (found.isEmpty()) {
-                    Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
-                } else if (!found.isEmpty() && (toBeAdded.size() - found.size()) == 0) {
-
-                    List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-                    for (final Plug plug : toBeAdded) {
-                        data.add(new HashMap<String, String>() {
-                            {
-                                put("name", plug.getName());
-                                put("MAC", plug.getAddress_MAC());
-                            }
-                        });
-                    }
-                    SimpleAdapter adapter = new SimpleAdapter(v.getContext(), data,
-                            android.R.layout.simple_list_item_2,
-                            new String[]{"name", "MAC"},
-                            new int[]{android.R.id.text1, android.R.id.text2});
-                    listDevices.setAdapter(adapter);
-
-                    listDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            Plug clicked = toBeAdded.get(i);
-                            clicked.setIsnew(Boolean.TRUE);
-                            localModel.getPlugs().add(clicked);
-                            targetPlug = clicked;
-                            localModel.setActivePlug(clicked.getPlugId());
-
-                            viewFlipper.setDisplayedChild(2);
-                        }
-                    });
-
-                    viewFlipper.setDisplayedChild(1);
-
-                } else {
-
-                    for (Plug p1 : found) {
-                        for (Plug p2 : localModel.getPlugs()) {
-                            if (p2.getPlugId().equals(p1.getPlugId())) {
-                                targetPlug = p1;
-                                localModel.setActivePlug(p1.getPlugId());
-                            }
-                        }
-                    }
-                    viewFlipper.setDisplayedChild(2);
-                }
-
-                isBluetoothScanning = Boolean.FALSE;
-                //Log.d(TAG, String.valueOf(isBluetoothScanning));
-
-            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                //bluetooth device found
-                BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-                Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
-
-                for (Plug plug : localModel.getPlugs()) {
-                    if (plug.address_MAC.equals(device.getAddress()) && !plug.getIsDropped()) {
-                        found.add(plug);
-                        return;
-                    }
-                }
-
-                Plug newPlug = new Plug(auth.getCurrentUser().getUid(), device.getAddress(), "Anonymous");
-                newPlug.setPlugId(database.child("plugs").push().getKey());
-
-                if (!(device.getName() == null)) {
-                    newPlug.setName(device.getName());
-                }
-
-                found.add(newPlug);
-                toBeAdded.add(newPlug);
-
-            } else {
-                Log.d(TAG, "I really don't know why you are here");
-            }
-        }
-    };
-    private Boolean registeredReceiver = false;
 
     private Object lock1 = new Object();
     private Object lock2 = new Object();
@@ -231,9 +114,17 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private TripHandler tripHandler;
     private DSIEvaluator dsiEvaluator;
     private TableLayout detailsLayout;
+    private TextView detailshomepage;
+    private TextView homepagetext;
+    private Button startTrip;
+
 
     public String getName() {
         return name;
+    }
+
+    public String getAssignedTag() {
+        return TAG;
     }
 
     @Override
@@ -259,28 +150,28 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
 
-        //child 0 elements
-        progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
-        progressBar.setVisibility(View.GONE);
-        scanButton = (Button) v.findViewById(R.id.scanButton);
+        detailshomepage = (TextView) v.findViewById(R.id.detailshomepage);
+        homepagetext = (TextView) v.findViewById(R.id.homepagetext);
 
-        //child 0_bis elements
-        listDevices = (ListView) v.findViewById(R.id.listDevices);
-        reScanButton = (Button) v.findViewById(R.id.rescan_button);
+        homepagetext.setText("Welcome " + localModel.getUser().name + " !");
 
-        //child 1 elements
-        currentlyDrivingLogo = (ImageView) v.findViewById(R.id.currentlyDrivingLogo);
-        notCurrentlyDrivingLogo = (ImageView) v.findViewById(R.id.notCurrentlyDrivingLogo);
+        if (savedStateHandler.getTargetPlug() != null) {
+            detailshomepage.setText("You are using the plug: " + savedStateHandler.getTargetPlug().getName());
+        } else {
+            detailshomepage.setText("You have no paired plugs. Please go in the dedicated section and configure your driving session.");
+        }
+
+        startTrip = (Button) v.findViewById(R.id.startTrip);
+        if (savedStateHandler.getTargetPlug() == null) {
+            startTrip.setVisibility(View.GONE);
+        }
         progressBarEndTrip = (ProgressBar) v.findViewById(R.id.progressBarEndTrip);
         hintsListView = (ListView) v.findViewById(R.id.hint_list_view);
         progressBarEndTrip.setVisibility(View.GONE);
-
-        //child 2 elements
         pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
         quitTrip = (ImageView) v.findViewById(R.id.stopTrip);
         pause_resumeTripTextView = (TextView) v.findViewById(R.id.pause_resumeTripTextView);
 
-        //child 3 elements
         googleMapsHandler(savedInstanceState);
         layout = (LinearLayout) v.findViewById(R.id.linlayout);
         f1 = (LinearLayout) v.findViewById(R.id.f1);
@@ -289,9 +180,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
 
         markerPoints = new ArrayList<LatLng>();
-        found = new ArrayList<Plug>();
-        toBeAdded = new ArrayList<Plug>();
 
+        if (savedStateHandler.hasTag("TabHome")) {
+            homepagetext.setVisibility(View.GONE);
+            detailshomepage.setVisibility(View.GONE);
+            startTrip.setVisibility(View.GONE);
+        }
 
         setListeners();
 
@@ -328,6 +222,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         rescan_vis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                homepagetext.setVisibility(View.VISIBLE);
+                detailshomepage.setVisibility(View.VISIBLE);
+                startTrip.setVisibility(View.VISIBLE);
+                map.clear();
+                progressBarEndTrip.setVisibility(View.GONE);
                 viewFlipper.setDisplayedChild(0);
             }
         });
@@ -353,35 +252,14 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
         });
 
-        reScanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toBeAdded = new ArrayList<Plug>();
-                found = new ArrayList<Plug>();
-                viewFlipper.setDisplayedChild(0);
-            }
-        });
-
-        currentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
+        startTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startTrip(view);
             }
         });
 
-        notCurrentlyDrivingLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewFlipper.setDisplayedChild(0);
-            }
-        });
 
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startBluetoothScan();
-            }
-        });
     }
 
     private void loadStateIfNeeded() {
@@ -392,12 +270,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             Log.d(TAG, String.valueOf(oldState.getInt("viewFlipperKey")));
 
             if (oldState.getInt("viewFlipperKey") == 0) {
-                if (oldState.getBoolean("isBluetoothScanning")) {
-                    startBluetoothScan();
+                homepagetext.setVisibility(View.VISIBLE);
+                detailshomepage.setVisibility(View.VISIBLE);
+                if (savedStateHandler.getTargetPlug() == null) {
+                    startTrip.setVisibility(View.GONE);
                 }
-            } else if (oldState.getInt("viewFlipperKey") == 2) {
-                targetPlug = (Plug) oldState.getSerializable("targetPlug");
-            } else if (oldState.getInt("viewFlipperKey") == 3) {
+            } else if (oldState.getInt("viewFlipperKey") == 1) {
                 if (oldState.getString("pause_resumeTripTextView").equals("Resume Trip")) {
                     pause_resumeTrip.setImageResource(R.drawable.ic_play_arrow_black_24dp);
                     pause_resumeTripTextView.setText("Resume Trip");
@@ -417,11 +295,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     dsiEvaluator.reloadTaskState();
                     lock2.notifyAll();
                 }
-            } else if (oldState.getInt("viewFlipperKey") == 4) {
-                //dsiEvaluation.setText(oldState.getString("dsiEvaluationVisualization"));
-                //tripName.setText(oldState.getString("tripNameVisualization"));
-                //ArrayList<MapPoint> markers = oldState.getParcelableArrayList("markersToBePlaced");
-                //drawTrip(markers);
+            } else if (oldState.getInt("viewFlipperKey") == 2) {
                 Trip trip = (Trip) oldState.getSerializable("trip");
                 restoreAfterTripVisualization(trip);
             }
@@ -436,70 +310,20 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private void quitTrip() {
         progressBarEndTrip.setVisibility(View.VISIBLE);
+        savedStateHandler.notifyLock();
         tripHandler.stopTask();
         dsiEvaluator.stopTask();
-    }
-
-    private void startBluetoothScan() {
-        toBeAdded = new ArrayList<Plug>();
-        found = new ArrayList<Plug>();
-        if (bluetoothAdapter != null) {
-
-            //Log.d(TAG, "Bluetooth supported");
-
-            //int permissionCheck = getActivity().checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
-            //permissionCheck += getActivity().checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
-            //Log.d(TAG, String.valueOf(permissionCheck));
-            //if (permissionCheck != 0) {
-            //    Log.d(TAG, "permissionCheck != 0 (!!!!!!)");
-            //    getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
-            //}
-
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(BluetoothDevice.ACTION_FOUND);
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-            filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-
-            getActivity().registerReceiver(receiver, filter);
-
-            registeredReceiver = true;
-
-            if (!bluetoothAdapter.isEnabled()) {
-
-                //Log.d(TAG, "Bluetooth not enabled");
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-
-            } else {
-
-                //Log.d(TAG, "Bluetooth enabled");
-                //bluetoothSearchPairedDevices();
-
-                bluetoothAdapter.cancelDiscovery();
-                bluetoothAdapter.startDiscovery();
-
-            }
-
-        } else {
-            //Log.d(TAG, "Bluetooth not supported");
-            scanButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Your device doesn't support bluetooth!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
     }
 
     private void startTrip(View view) {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-            //Log.d(TAG, "Location not enabled");
+            Log.d(TAG, "Location not enabled");
             displayLocationSettingsRequest(getActivity());
 
         } else {
 
-            //Log.d(TAG, "Location enabled");
+            Log.d(TAG, "Location enabled");
 
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -512,7 +336,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 return;
             }
             tripHandler = new TripHandler(view.getContext(), viewFlipper, detailsLayout, map, lock1);
-            dsiEvaluator = new DSIEvaluator(getActivity(), targetPlug, hintsListView, lock2);
+            dsiEvaluator = new DSIEvaluator(getActivity(), hintsListView, lock2);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 tripHandler.executeOnExecutor(TripHandler.THREAD_POOL_EXECUTOR);
@@ -525,8 +349,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             } else {
                 dsiEvaluator.execute();
             }
-            viewFlipper.setDisplayedChild(3);
 
+            viewFlipper.setDisplayedChild(1);
         }
     }
 
@@ -621,11 +445,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         super.onDestroy();
 
         mapView.onDestroy();
-
-        if (registeredReceiver) {
-            //Log.d(TAG, "Receiver unregistered");
-            getActivity().unregisterReceiver(receiver);
-        }
     }
     @Override
     public void onResume() {
@@ -648,12 +467,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
 
                 if (viewFlipper.getDisplayedChild() == 0) {
-                    state.putBoolean("isBluetoothScanning", isBluetoothScanning);
-                    Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
-                } else if (viewFlipper.getDisplayedChild() == 2) {
-                    state.putSerializable("targetPlug", targetPlug); // set bluetooth targetplug
-                    Log.d(TAG, String.valueOf((Plug) state.getSerializable("targetPlug")));
-                } else if (viewFlipper.getDisplayedChild() == 3) {
+
+                } else if (viewFlipper.getDisplayedChild() == 1) {
                     synchronized (lock1) {
                         tripHandler.viewNotAvailable();
                         lock1.notifyAll();
@@ -668,7 +483,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
                     state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
                     Log.d(TAG, state.getString("pause_resumeTripTextView"));
-                } else if (viewFlipper.getDisplayedChild() == 4) {
+                } else if (viewFlipper.getDisplayedChild() == 2) {
                     //state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
                     //Log.d(TAG, state.getString("dsiEvaluationVisualization"));
                     //state.putString("tripNameVisualization", tripName.getText().toString());
@@ -684,7 +499,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
                 savedStateHandler.addState("TabHome", state);
                 Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
-                bluetoothAdapter.cancelDiscovery();
 
                 mapView.onPause();
             }

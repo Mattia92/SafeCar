@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        android:summary="Connettiti con un plug vicino a te"
+        android:title="Pair plug"
+        app:key="Pair plug"></Preference>
+
+    <Preference
+        android:summary="Gestisci i tuoi plugs"
+        android:title="Manage plugs"
+        app:key="Manage plugs"></Preference>
+
+</PreferenceScreen>

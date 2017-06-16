@@ -1,33 +1,39 @@
 package com.example.albertomariopirovano.safecar.fragments;
 
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.util.Log;
 import android.view.View;
 
-import com.example.albertomariopirovano.safecar.activity.MainActivity;
-import com.example.albertomariopirovano.safecar.settings.fragments.*;
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
+import com.example.albertomariopirovano.safecar.settings.fragments.SettingsNotificationFragment;
+import com.example.albertomariopirovano.safecar.settings.fragments.SettingsPlugs;
+import com.example.albertomariopirovano.safecar.settings.fragments.SettingsShareFragment;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mattiacrippa on 14/03/17.
  */
 
-public class SettingsFragment extends PreferenceFragmentCompat {
+public class SettingsFragment extends PreferenceFragmentCompat implements TAGInterface {
 
+    private static final String TAG = "SettingsFragment";
     View v;
     List<Fragment> listFragments;
     FragmentManager fragmentManager;
 
     public SettingsFragment() {
+    }
+
+    public String getAssignedTag() {
+        return TAG;
     }
 
     @Override
@@ -39,9 +45,9 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         listFragments = new ArrayList<>();
         listFragments.add(new SettingsShareFragment());
         listFragments.add(new SettingsNotificationFragment());
-        listFragments.add(new SettingsSmartObjectsFragment());
+        listFragments.add(new SettingsPlugs());
 
-        fragmentManager = getFragmentManager();
+        fragmentManager = getActivity().getSupportFragmentManager();
 
         Preference.OnPreferenceClickListener l = new Preference.OnPreferenceClickListener(){
             @Override
@@ -51,13 +57,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
                 if(preference.getKey().equals("Condivisione")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).addToBackStack(null).commit();
+                    Log.d(TAG, ((TAGInterface) listFragments.get(0)).getAssignedTag());
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0), ((TAGInterface) listFragments.get(0)).getAssignedTag()).addToBackStack(null).commit();
                 } else if (preference.getKey().equals("Notifiche")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1)).addToBackStack(null).commit();
+                    Log.d(TAG, ((TAGInterface) listFragments.get(1)).getAssignedTag());
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1), ((TAGInterface) listFragments.get(1)).getAssignedTag()).addToBackStack(null).commit();
                 } else if (preference.getKey().equals("Smart Objects")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2)).addToBackStack(null).commit();
+                    Log.d(TAG, ((TAGInterface) listFragments.get(2)).getAssignedTag());
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2), ((TAGInterface) listFragments.get(2)).getAssignedTag()).addToBackStack(null).commit();
                 }
 
                 return true;

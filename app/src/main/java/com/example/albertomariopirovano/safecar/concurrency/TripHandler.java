@@ -26,6 +26,7 @@ import android.widget.ViewFlipper;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -67,6 +68,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     private LocalModel localModel = LocalModel.getInstance();
     private FirebaseAuth auth = FirebaseAuth.getInstance();
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
 
     private LocationManager locationManager;
     private Criteria criteria = new Criteria();
@@ -90,7 +92,6 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     private Geocoder gcd;
 
     private Integer fakeDSI = 1000;
-    private String bestProvider;
     private Boolean viewAvailable = Boolean.TRUE;
 
     private LocationListener locationListener = new LocationListener() {
@@ -138,20 +139,25 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     protected Void doInBackground(Void... voids) {
         Log.d(TAG, "doInBackground");
 
-        startJob();
+        //startJob();
+        //Log.d(TAG, "after startJob");
 
         tStart = System.currentTimeMillis();
 
         while (!stopTask) {
 
+            /*
             try {
                 //if the mappoint is very near to the last one picked drop it ( implicit cleaning )
-                Thread.sleep(30000);
+                Log.d(TAG, "sleep this thread for a while");
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if ((trip.getMarkers().size() - 2) < 8 && trip.getMarkers().size() > 0) {
-                Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+            */
+
+            if ((trip.getMarkers().size() - 2) < 8) {
+                //Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
 
                 //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
                 //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
@@ -165,7 +171,16 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 //wayPoints.add(wayPoint);
 
                 getLocation();
+
+            } else {
+                Log.d(TAG, "else branch");
             }
+
+            Log.d(TAG, "wait on lock");
+            long s = System.currentTimeMillis();
+            savedStateHandler.waitOnLock(60000);
+            long f = System.currentTimeMillis();
+            Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
         }
         Log.d(TAG, "TripHandler task has been stopped !");
 
@@ -174,10 +189,13 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         return null;
     }
 
+    /*
     private void startJob() {
+
         Log.d(TAG, "startJob");
         getLocation();
     }
+    */
 
     private void finishJob() {
         Log.d(TAG, "finishJob");
@@ -201,8 +219,28 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         //closingPoint.setLat(closingLocation.getLatitude());
 
         //sample milano
-        trip.getMarkers().add(new MapPoint(45.622328, 9.319304)); // arcore
-        trip.getMarkers().add(new MapPoint(45.578680, 9.269462)); // milano
+        double d = Math.random();
+        Log.d(TAG, String.valueOf(d));
+
+        if (d <= 0.2) {
+            trip.getMarkers().add(new MapPoint(45.622328, 9.319304)); // arcore
+            trip.getMarkers().add(new MapPoint(45.578680, 9.269462)); // milano
+        } else if (d > 0.2 && d <= 0.4) {
+            trip.getMarkers().add(new MapPoint(45.582167, 9.349979)); // agrate
+            trip.getMarkers().add(new MapPoint(45.551752, 9.298702)); // brugherio
+        } else if (d > 0.4 && d <= 0.6) {
+            trip.getMarkers().add(new MapPoint(45.622328, 9.319304)); // arcore
+            trip.getMarkers().add(new MapPoint(45.646461, 9.307228)); // lesmo
+        } else if (d > 0.6 && d <= 0.8) {
+            trip.getMarkers().add(new MapPoint(45.614278, 9.419443)); // bellusco
+            trip.getMarkers().add(new MapPoint(45.635639, 9.412620)); // aicurzio
+        } else {
+            trip.getMarkers().add(new MapPoint(45.599730, 9.357705)); // torri bianche
+            trip.getMarkers().add(new MapPoint(45.590635, 9.332360)); // concorezzo
+        }
+
+        getLocation();
+
         Log.d(TAG, String.valueOf("Markers size: " + trip.getMarkers().size()));
 
         //startingPoint.setLng(location.getLongitude());
@@ -233,8 +271,6 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         int i = 0;
         for (MapPoint mapPoint : trip.getMarkers()) {
             if (i != trip.getMarkers().size() - 1) {
-                Log.d(TAG, String.valueOf(i));
-                Log.d(TAG, String.valueOf(trip.getMarkers().size()));
                 Location loc1 = new Location("");
                 loc1.setLatitude(trip.getMarkers().get(i).getLat());
                 loc1.setLongitude(trip.getMarkers().get(i).getLng());
@@ -244,7 +280,6 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 loc2.setLongitude(trip.getMarkers().get(i + 1).getLng());
 
                 globalDistance = globalDistance + loc1.distanceTo(loc2);
-                Log.d(TAG, String.valueOf(globalDistance));
             }
             i++;
         }
@@ -272,18 +307,9 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         this.stopTask = Boolean.TRUE;
     }
 
-    private boolean isLocationEnabled() {
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    }
-
     private void getLocation() {
-        if (isLocationEnabled()) {
-            Log.d(TAG, "location is enabled");
-            locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            criteria = new Criteria();
-            bestProvider = String.valueOf(locationManager.getBestProvider(criteria, true));
-
-            //You can still do this if you like, you might get lucky:
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            //Log.d(TAG, "Newtork provider enabled");
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -294,26 +320,61 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            Location location = locationManager.getLastKnownLocation(bestProvider);
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (location != null) {
-                Log.d(TAG, "location is enabled 2");
+                //Log.d(TAG, "Location taken with Newtork Provider is not null");
                 trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
                 Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
                 Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
             } else {
-                Log.d(TAG, "location is not enabled 2");
+                Log.d(TAG, "Location taken with Newtork Provider is null");
                 //This is what you need:
-                Looper.myLooper().prepare();
-                locationManager.requestLocationUpdates(bestProvider, 1000, 0, locationListener, Looper.getMainLooper());
+                if (Looper.myLooper() == null) {
+                    Log.d(TAG, "looper == null");
+                    Looper.myLooper().prepare();
+                }
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
             }
         } else {
-            Log.d(TAG, "location not enabled");
-            displayLocationSettingsRequest(context);
+            //Log.d(TAG, "Newtork provider NOT enabled");
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                //Log.d(TAG, "GPS provider enabled");
+
+                //You can still do this if you like, you might get lucky:
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if (location != null) {
+                    //Log.d(TAG, "Location taken with GPS Provider is not null");
+                    trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+                    Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
+                    Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+                } else {
+                    Log.d(TAG, "Location taken with GPS Provider is null");
+                    //This is what you need:
+                    if (Looper.myLooper() == null) {
+                        Log.d(TAG, "looper == null");
+                        Looper.myLooper().prepare();
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
+                }
+            } else {
+                Log.d(TAG, "GPS provider NOT enabled");
+                displayLocationSettingsRequest(context);
+            }
         }
     }
 
     private void displayLocationSettingsRequest(final Context context) {
-        Log.d(TAG, "- displayLocationSettingsRequest");
+        Log.d(TAG, "displayLocationSettingsRequest");
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API).build();
         googleApiClient.connect();
@@ -375,14 +436,6 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         }
 
         drawTrip(trip.getMarkers());
-        addDetails();
-
-    }
-
-    private void addDetails() {
-        for (CardView cv : details) {
-            f2.addView(cv);
-        }
     }
 
     private void drawTrip(List<MapPoint> markers) {
@@ -483,7 +536,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             }
         }
 
-        viewFlipper.setDisplayedChild(4);
+        viewFlipper.setDisplayedChild(2);
     }
 
     public void reloadTaskState() {

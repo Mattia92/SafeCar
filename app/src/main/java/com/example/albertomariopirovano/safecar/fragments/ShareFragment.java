@@ -10,16 +10,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 
 /**
  * Created by mattiacrippa on 14/03/17.
  */
 
-public class ShareFragment extends Fragment {
+public class ShareFragment extends Fragment implements TAGInterface {
 
+    private static final String TAG = "ShareFragment";
     private Button shareButton;
     private Intent shareIntent;
     private String shareBody = "This is a great app. You should try !";
+
+    public String getAssignedTag() {
+        return TAG;
+    }
 
     @Nullable
     @Override

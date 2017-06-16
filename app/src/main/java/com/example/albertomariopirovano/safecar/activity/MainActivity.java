@@ -2,6 +2,7 @@ package com.example.albertomariopirovano.safecar.activity;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -33,6 +35,7 @@ import com.example.albertomariopirovano.safecar.fragments.HomeFragment;
 import com.example.albertomariopirovano.safecar.fragments.ProfileFragment;
 import com.example.albertomariopirovano.safecar.fragments.SettingsFragment;
 import com.example.albertomariopirovano.safecar.fragments.ShareFragment;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.example.albertomariopirovano.safecar.realm_model.NavItem;
 import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
@@ -117,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Load first fragment as default
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0)).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0), ((TAGInterface) listFragments.get(0)).getAssignedTag()).commit();
 
         setTitle(listNavItems.get(0).getTitle());
         lvNav.setItemChecked(0, true);
@@ -132,7 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-                transaction.replace(R.id.main_content, listFragments.get(position)).commit();
+                Log.d(TAG, ((TAGInterface) listFragments.get(position)).getAssignedTag());
+
+                transaction.replace(R.id.main_content, listFragments.get(position), ((TAGInterface) listFragments.get(position)).getAssignedTag()).commit();
 
                 setTitle(listNavItems.get(position).getTitle());
                 lvNav.setItemChecked(position, true);
@@ -331,12 +336,58 @@ public class MainActivity extends AppCompatActivity {
                 if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
                     return true;
                 }
+
+                Fragment f = getSupportFragmentManager().findFragmentByTag("ManageplugsFragment");
+                if (f != null && f.isVisible()) {
+                    Log.d(TAG, "ManageplugsFragment VISIBLE");
+                    onBackPressed();
+                    setTitle("Smart Objects");
+                    return super.onOptionsItemSelected(item);
+                }
+                f = getSupportFragmentManager().findFragmentByTag("PairPlugFragment");
+                if (f != null && f.isVisible()) {
+                    Log.d(TAG, "PairPlugFragment VISIBLE");
+                    onBackPressed();
+                    setTitle("Smart Objects");
+                    return super.onOptionsItemSelected(item);
+                }
+                f = getSupportFragmentManager().findFragmentByTag("SettingsPlugs");
+                if (f != null && f.isVisible()) {
+                    Log.d(TAG, "SettingsPlugs VISIBLE");
+                    onBackPressed();
+                    setEnabledNavigationDrawer(true);
+                    setTitle(getString(R.string.action_settings));
+                    return super.onOptionsItemSelected(item);
+                }
+                f = getSupportFragmentManager().findFragmentByTag("SettingsNotificationFragment");
+                if (f != null && f.isVisible()) {
+                    Log.d(TAG, "SettingsNotificationFragment VISIBLE");
+                    onBackPressed();
+                    setEnabledNavigationDrawer(true);
+                    setTitle(getString(R.string.action_settings));
+                    return super.onOptionsItemSelected(item);
+                }
+                f = getSupportFragmentManager().findFragmentByTag("SettingsShareFragment");
+                if (f != null && f.isVisible()) {
+                    Log.d(TAG, "SettingsShareFragment VISIBLE");
+                    onBackPressed();
+                    setEnabledNavigationDrawer(true);
+                    setTitle(getString(R.string.action_settings));
+                    return super.onOptionsItemSelected(item);
+                }
+                f = getSupportFragmentManager().findFragmentByTag("ReportFragment");
+                if (f != null && f.isVisible()) {
+                    Log.d(TAG, "ReportFragment VISIBLE");
+                    onBackPressed();
+                    setEnabledNavigationDrawer(true);
+                    setTitle("Home");
+                    return super.onOptionsItemSelected(item);
+                }
+
                 onBackPressed();
                 setEnabledNavigationDrawer(true);
-                setTitle(getString(R.string.action_settings));
-
+                setTitle("Home");
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -345,6 +396,81 @@ public class MainActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         actionBarDrawerToggle.syncState();
     }
+
+    @Override
+    public void onBackPressed() {
+
+        Fragment f = getSupportFragmentManager().findFragmentByTag("SettingsFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "SettingsFragment VISIBLE");
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    })
+                    .show();
+        }
+
+        f = getSupportFragmentManager().findFragmentByTag("SettingsPlugs");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "SettingsPlugs VISIBLE");
+            setEnabledNavigationDrawer(true);
+            setTitle(getString(R.string.action_settings));
+            super.onBackPressed();
+            return;
+        }
+        f = getSupportFragmentManager().findFragmentByTag("PairPlugFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "PairPlugFragment VISIBLE");
+            setTitle(getString(R.string.action_settings));
+            super.onBackPressed();
+            return;
+        }
+        f = getSupportFragmentManager().findFragmentByTag("ManageplugsFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "ManageplugsFragment VISIBLE");
+            setTitle(getString(R.string.action_settings));
+            super.onBackPressed();
+            return;
+        }
+        f = getSupportFragmentManager().findFragmentByTag("SettingsNotificationFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "SettingsNotificationFragment VISIBLE");
+            setEnabledNavigationDrawer(true);
+            setTitle(getString(R.string.action_settings));
+            super.onBackPressed();
+            return;
+        }
+        f = getSupportFragmentManager().findFragmentByTag("SettingsShareFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "SettingsShareFragment VISIBLE");
+            setEnabledNavigationDrawer(true);
+            setTitle(getString(R.string.action_settings));
+            super.onBackPressed();
+            return;
+        }
+        f = getSupportFragmentManager().findFragmentByTag("ReportFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "ReportFragment VISIBLE");
+            setEnabledNavigationDrawer(true);
+            setTitle("Home");
+            super.onBackPressed();
+            return;
+        }
+
+
+        super.onBackPressed();
+    }
+
 
     @Override
     public void onDestroy() {

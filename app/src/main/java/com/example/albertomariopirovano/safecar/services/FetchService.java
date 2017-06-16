@@ -73,9 +73,7 @@ public class FetchService {
         @Override
         protected List<Map<String, String>> doInBackground(Void... voids) {
 
-            Log.d(TAG, "insertTrips");
-
-            Log.d(TAG, "insertTrips - load trips task num: " + numTask);
+            Log.d(TAG, "Trips loaded for the " + numTask + " time");
 
             for (Trip t : localModel.getTrips()) {
                 userTrips.add(t);
@@ -104,8 +102,6 @@ public class FetchService {
                     new int[]{android.R.id.text1, android.R.id.text2});
             l.setAdapter(adapter);
 
-            Log.d(TAG, "insertTrips - setting listener");
-
             final FragmentManager fragmentManager = ((MainActivity) v.getContext()).getSupportFragmentManager();
 
             l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -113,15 +109,13 @@ public class FetchService {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
                     Trip t = userTrips.get(i);
-                    Log.d(TAG, "insertTrips - " + view.findViewById(android.R.id.text1).toString());
-                    Log.d(TAG, "insertTrips - " + view.findViewById(android.R.id.text2).toString());
 
                     ReportFragment rf = new ReportFragment();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("key", t);
                     rf.setArguments(bundle);
                     ((MainActivity) v.getContext()).setEnabledNavigationDrawer(false);
-                    fragmentManager.beginTransaction().replace(R.id.main_content, rf).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.main_content, rf, rf.getAssignedTag()).addToBackStack(null).commit();
                 }
             });
         }

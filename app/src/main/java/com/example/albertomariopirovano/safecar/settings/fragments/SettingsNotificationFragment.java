@@ -4,14 +4,21 @@ import android.os.Bundle;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 
 /**
  * Created by mattiacrippa on 15/03/17.
  */
 
-public class SettingsNotificationFragment extends PreferenceFragmentCompat {
+public class SettingsNotificationFragment extends PreferenceFragmentCompat implements TAGInterface {
+
+    private static final String TAG = "SettingsNotificationFragment";
 
     public SettingsNotificationFragment() {
+    }
+
+    public String getAssignedTag() {
+        return TAG;
     }
 
     @Override

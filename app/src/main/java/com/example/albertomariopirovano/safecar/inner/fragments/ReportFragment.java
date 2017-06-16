@@ -41,7 +41,7 @@ import java.util.Map;
  * Created by albertomariopirovano on 04/04/17.
  */
 
-public class ReportFragment extends Fragment implements OnMapReadyCallback {
+public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGInterface {
 
     private static final String TAG = "ReportFragment";
 
@@ -55,6 +55,10 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback {
     private Trip t;
     private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
     private LocalModel localModel = LocalModel.getInstance();
+
+    public String getAssignedTag() {
+        return TAG;
+    }
 
     @Nullable
     @Override

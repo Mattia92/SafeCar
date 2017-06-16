@@ -17,8 +17,8 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabFragment;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabHome;
 import com.example.albertomariopirovano.safecar.inner.fragments.TabOrderDSI;
@@ -34,9 +34,9 @@ import java.util.List;
  * Created by mattiacrippa on 14/03/17.
  */
 
-public class HomeFragment extends Fragment implements OnPageChangeListener, OnTabChangeListener {
+public class HomeFragment extends Fragment implements OnPageChangeListener, OnTabChangeListener, TAGInterface {
 
-    private static final String TAG = MainActivity.class.getSimpleName() + " | HomeFragment";
+    private static final String TAG = "HomeFragment";
     //int i = 0;
     View v;
     private ViewPager viewPager;
@@ -53,6 +53,10 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+    }
+
+    public String getAssignedTag() {
+        return TAG;
     }
 
     @Override

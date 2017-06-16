@@ -6,7 +6,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.example.albertomariopirovano.safecar.firebase_model.Plug;
+import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,20 +19,19 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
     private static final String TAG = "DSIEvaluator";
     private final Activity activity;
-    private final Plug targetPlug;
     private final Object lock;
     private Boolean stopTask = Boolean.FALSE;
     private Integer currentDSI;
     private ArrayList<String> hintsList;
     private Boolean rebootImageview = Boolean.FALSE;
     private Boolean viewAvailable = Boolean.TRUE;
+    private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
 
     private int counter = 0;
 
     private ArrayAdapter<String> hintsAdapter;
 
-    public DSIEvaluator(Activity activity, Plug targetPlug, ListView hintsListView, Object lock) {
-        this.targetPlug = targetPlug;
+    public DSIEvaluator(Activity activity, ListView hintsListView, Object lock) {
         this.activity = activity;
         this.currentDSI = 0;
         this.lock = lock;
@@ -80,11 +79,19 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
             updateDSI();
 
+            /*
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            */
+
+            Log.d(TAG, "wait on lock");
+            long s = System.currentTimeMillis();
+            savedStateHandler.waitOnLock(10000);
+            long f = System.currentTimeMillis();
+            Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
         }
         Log.d(TAG, "DSIEvaluation task has been stopped ! ");
 
@@ -93,7 +100,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
     private void connectWithPlug() {
         Log.d(TAG, "connectWithPlug");
-        Log.d(TAG, targetPlug.toString());
+        Log.d(TAG, savedStateHandler.getTargetPlug().toString());
         //modify the state of the asynctask
     }
 

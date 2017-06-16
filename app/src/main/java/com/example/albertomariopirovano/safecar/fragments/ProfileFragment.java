@@ -20,7 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
-import com.example.albertomariopirovano.safecar.activity.MainActivity;
+import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,9 +35,9 @@ import java.io.FileNotFoundException;
  * Created by albertomariopirovano on 03/04/17.
  */
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements TAGInterface {
 
-    private static final String TAG = MainActivity.class.getSimpleName() + " | ProfileFragment";
+    private static final String TAG = "ProfileFragment";
 
     private LocalModel localModel = LocalModel.getInstance();
     private File directory;
@@ -144,5 +144,9 @@ public class ProfileFragment extends Fragment {
         }
 
         return v;
+    }
+
+    public String getAssignedTag() {
+        return TAG;
     }
 }

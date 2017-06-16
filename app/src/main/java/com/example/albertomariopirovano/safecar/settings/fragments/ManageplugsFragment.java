@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.adapters.RecyclerAdapter;
@@ -23,15 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by mattiacrippa on 15/03/17.
+ * Created by albertomariopirovano on 16/06/17.
  */
 
-public class SettingsSmartObjectsFragment extends Fragment implements TAGInterface {
+public class ManageplugsFragment extends Fragment implements TAGInterface {
 
-    private static final String TAG = "SettingsSmartObjectsFragment";
-    View v;
-    private TextView clickableSpeaker, clickablePlug;
-    private TextView hiddenSpeaker;
+    private static final String TAG = "ManageplugsFragment";
+    private View v;
+    private Button showPlugs;
     private RecyclerView recyclerView;
     private RecyclerAdapter plugAdapter;
     private LocalModel localModel = LocalModel.getInstance();
@@ -69,46 +68,20 @@ public class SettingsSmartObjectsFragment extends Fragment implements TAGInterfa
 
         super.onCreate(savedInstanceState);
 
-        v = inflater.inflate(R.layout.settings_smartobj_layout, container, false);
-
-        clickableSpeaker = (TextView) v.findViewById(R.id.pairing_speakers);
-        clickablePlug = (TextView) v.findViewById(R.id.gestione_plug);
-        hiddenSpeaker = (TextView) v.findViewById(R.id.pairing_speakers_hidden);
+        v = inflater.inflate(R.layout.manageplugs, container, false);
+        showPlugs = (Button) v.findViewById(R.id.toggleplugs);
         setupList(v);
-        //plugList = new ArrayList<String>();
 
-        //TODO(Fetch plug for user)
-        // fatto nel metodo createList()
-        //for(int i = 0; i < 3; i++) {
-        //    plugList.add("Plug " + i);
-        //}
-
-
-        clickableSpeaker.setOnClickListener(new View.OnClickListener() {
+        showPlugs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(hiddenSpeaker.isShown()){
-                    slide_up(getActivity(), hiddenSpeaker);
-                    hiddenSpeaker.setVisibility(View.GONE);
-                }
-                else{
-                    hiddenSpeaker.setVisibility(View.VISIBLE);
-                    slide_down(getActivity(), hiddenSpeaker);
-                }
-            }
-        });
-        // hide until its title is clicked
-        hiddenSpeaker.setVisibility(View.GONE);
-
-        clickablePlug.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(recyclerView.isShown()){
+                if (recyclerView.isShown()) {
                     slide_up(getActivity(), recyclerView);
+                    showPlugs.setText("Show plugs !");
                     recyclerView.setVisibility(View.GONE);
-                }
-                else{
+                } else {
                     recyclerView.setVisibility(View.VISIBLE);
+                    showPlugs.setText("Hide plugs !");
                     slide_down(getActivity(), recyclerView);
                 }
             }
