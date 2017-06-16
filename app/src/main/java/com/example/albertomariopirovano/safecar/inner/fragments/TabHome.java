@@ -77,7 +77,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
 
     private static final String TAG = "TabHome";
-    private final static int REQUEST_ENABLE_BT = 1;
     private final static int REQUEST_ENABLE_LOC = 2;
     private String name = "Home";
 
@@ -147,6 +146,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         Log.d(TAG, "onCreateView");
 
         v = inflater.inflate(R.layout.test, container, false);
+
+        localModel.setDropped(Boolean.FALSE);
 
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
 
@@ -274,6 +275,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 detailshomepage.setVisibility(View.VISIBLE);
                 if (savedStateHandler.getTargetPlug() == null) {
                     startTrip.setVisibility(View.GONE);
+                } else {
+                    startTrip.setVisibility(View.VISIBLE);
                 }
             } else if (oldState.getInt("viewFlipperKey") == 1) {
                 if (oldState.getString("pause_resumeTripTextView").equals("Resume Trip")) {
@@ -454,11 +457,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause");
 
         synchronized (localModel) {
             if (localModel.getDropped() == Boolean.FALSE) {
 
-                Log.d(TAG, "onPause - building bundle for saving the current state");
+                Log.d(TAG, "building bundle for saving the current state");
 
                 Bundle state = new Bundle();
 
@@ -501,6 +505,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
 
                 mapView.onPause();
+            } else {
+                Log.d(TAG, "local model is flag as dropped");
             }
         }
     }

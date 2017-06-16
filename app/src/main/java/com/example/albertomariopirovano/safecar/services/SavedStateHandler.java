@@ -26,6 +26,10 @@ public class SavedStateHandler {
         return ourInstance;
     }
 
+    public void removeTargetPlug() {
+        this.targetPlug = null;
+    }
+
     public Plug getTargetPlug() {
         return targetPlug;
     }

@@ -222,6 +222,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         double d = Math.random();
         Log.d(TAG, String.valueOf(d));
 
+        /*
         if (d <= 0.2) {
             trip.getMarkers().add(new MapPoint(45.622328, 9.319304)); // arcore
             trip.getMarkers().add(new MapPoint(45.578680, 9.269462)); // milano
@@ -238,6 +239,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             trip.getMarkers().add(new MapPoint(45.599730, 9.357705)); // torri bianche
             trip.getMarkers().add(new MapPoint(45.590635, 9.332360)); // concorezzo
         }
+        */
 
         getLocation();
 
@@ -458,14 +460,15 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         }
 
         Log.d(TAG, String.valueOf(markerPoints.size()));
-        Log.d(TAG, markerPoints.get(0).toString());
-        Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
+        //Log.d(TAG, markerPoints.get(0).toString());
+        //Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
 
         LatLng origin = markerPoints.get(0);
         LatLng dest = markerPoints.get(markers.size() - 1);
 
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(origin, dest);
+        Log.d(TAG, url);
 
         DownloadTask downloadTask = new DownloadTask(map);
 
@@ -499,12 +502,12 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         String sensor = "sensor=false";
 
         // Waypoints
-        String waypoints = "";
+        String waypoints = "waypoints=";
         for (int i = 1; i < markerPoints.size() - 1; i++) {
             LatLng point = (LatLng) markerPoints.get(i);
-            if (i == 2)
-                waypoints = "waypoints=";
+            //Log.d(TAG, point.toString());
             waypoints += point.latitude + "," + point.longitude + "|";
+            //Log.d(TAG, waypoints);
         }
 
         // Building the parameters to the web service

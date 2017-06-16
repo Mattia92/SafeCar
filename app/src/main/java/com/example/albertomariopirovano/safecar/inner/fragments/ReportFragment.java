@@ -215,7 +215,6 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
         mapView.onPause();
     }
 

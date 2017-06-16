@@ -285,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
                 localModel.drop();
 
                 savedStateHandler.removeState("TabHome");
+                savedStateHandler.removeTargetPlug();
 
                 Log.d(TAG, "Logout current user");
 
@@ -466,7 +467,6 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
             return;
         }
-
 
         super.onBackPressed();
     }
