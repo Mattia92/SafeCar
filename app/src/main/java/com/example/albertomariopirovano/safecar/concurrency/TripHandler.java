@@ -318,8 +318,17 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     }
 
     private void getLocation() {
-        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            //Log.d(TAG, "Newtork provider enabled");
+
+
+        if (Looper.myLooper() == null) {
+            Log.d(TAG, "looper == null");
+            Looper.myLooper().prepare();
+        }
+
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            Log.d(TAG, "GPS provider enabled");
+
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
@@ -330,10 +339,31 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            if (location != null) {
-                //Log.d(TAG, "Location taken with Newtork Provider is not null");
-                trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+
+                }
+
+                @Override
+                public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                }
+
+                @Override
+                public void onProviderEnabled(String s) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String s) {
+
+                }
+            });
+            Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (locationGPS != null) {
+                Log.d(TAG, "Location taken with GPS Provider is not null");
+                trip.getMarkers().add(new MapPoint(locationGPS.getLatitude(), locationGPS.getLongitude()));
 
                 ((Activity) context).runOnUiThread(new Runnable() {
                     public void run() {
@@ -344,55 +374,69 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
                 Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
             } else {
-                Log.d(TAG, "Location taken with Newtork Provider is null");
-                //This is what you need:
-                if (Looper.myLooper() == null) {
-                    Log.d(TAG, "looper == null");
-                    Looper.myLooper().prepare();
-                }
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
-            }
-        } else {
-            //Log.d(TAG, "Newtork provider NOT enabled");
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                //Log.d(TAG, "GPS provider enabled");
+                Log.d(TAG, "Location taken with GPS Provider is null");
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    Log.d(TAG, "Newtork provider enabled");
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
 
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                }
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if (location != null) {
-                    //Log.d(TAG, "Location taken with GPS Provider is not null");
-                    trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+                        }
 
-                    ((Activity) context).runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(context, trip.getMarkers().get(trip.getMarkers().size() - 1).toString(), Toast.LENGTH_SHORT).show();
+                        @Override
+                        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+                        }
+
+                        @Override
+                        public void onProviderEnabled(String s) {
+
+                        }
+
+                        @Override
+                        public void onProviderDisabled(String s) {
+
                         }
                     });
+                    Location locationNETWORK = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if (locationNETWORK != null) {
+                        Log.d(TAG, "Location taken with Newtork Provider is not null");
+                        trip.getMarkers().add(new MapPoint(locationNETWORK.getLatitude(), locationNETWORK.getLongitude()));
 
-                    Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
-                    Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
-                } else {
-                    Log.d(TAG, "Location taken with GPS Provider is null");
-                    //This is what you need:
-                    if (Looper.myLooper() == null) {
-                        Log.d(TAG, "looper == null");
-                        Looper.myLooper().prepare();
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(context, trip.getMarkers().get(trip.getMarkers().size() - 1).toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                        Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
+                        Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+                    } else {
+                        Log.d(TAG, "Location taken with Newtork Provider is null");
+                        //This is what you need:
+                        if (Looper.myLooper() == null) {
+                            Log.d(TAG, "looper == null");
+                            Looper.myLooper().prepare();
+                        }
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
                     }
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
+                } else {
+                    Log.d(TAG, "Newtork provider NOT enabled");
                 }
-            } else {
-                Log.d(TAG, "GPS provider NOT enabled");
-                displayLocationSettingsRequest(context);
             }
+        } else {
+            Log.d(TAG, "GPS provider NOT enabled");
+            displayLocationSettingsRequest(context);
         }
     }
 

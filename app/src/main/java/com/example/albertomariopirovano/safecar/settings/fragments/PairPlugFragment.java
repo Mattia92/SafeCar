@@ -84,8 +84,6 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.d(TAG, "discovery finished");
 
-                registeredReceiver = false;
-
                 progressBar.setVisibility(View.GONE);
 
                 if (found.isEmpty()) {
@@ -149,6 +147,9 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
 
                 isBluetoothScanning = Boolean.FALSE;
                 Log.d(TAG, String.valueOf(isBluetoothScanning));
+
+                getActivity().unregisterReceiver(receiver);
+                registeredReceiver = false;
 
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
