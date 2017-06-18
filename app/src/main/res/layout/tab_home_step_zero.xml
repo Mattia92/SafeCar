@@ -21,14 +21,100 @@
         android:textColor="#000000"
         android:textSize="25sp" />
 
+    <LinearLayout
+        android:id="@+id/targetPlugLinLay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="0.3"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Current plug:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/my_primary" />
+
+        <TableLayout
+            android:id="@+id/targetPlug"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:id="@+id/row_1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="0.4"
+                    android:alpha="0.65"
+                    android:background="@color/my_primary"
+                    android:gravity="center"
+                    android:text="[0,0]"
+                    android:textColor="#fff" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:alpha="0.65"
+                    android:background="@color/my_primary"
+                    android:gravity="center"
+                    android:text="[0,1]"
+                    android:textColor="#fff" />
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/row_2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="0.4"
+                    android:alpha="0.65"
+                    android:background="@color/my_primary"
+                    android:gravity="center"
+                    android:text="[1,0]"
+                    android:textColor="#fff" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:alpha="0.65"
+                    android:background="@color/my_primary"
+                    android:gravity="center"
+                    android:text="[1,1]"
+                    android:textColor="#fff" />
+            </TableRow>
+
+        </TableLayout>
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/scanButton"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="40dp"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="20dp"
         android:layout_weight="0.1"
         android:text="Scan" />
 
@@ -40,6 +126,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:layout_weight="0.4" />
+        android:layout_weight="0.3" />
+
 
 </LinearLayout>

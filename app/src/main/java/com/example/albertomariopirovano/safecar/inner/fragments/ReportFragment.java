@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,8 +44,8 @@ import java.util.Map;
 
 public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGInterface {
 
+    public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "ReportFragment";
-
     private LinearLayout layout;
     private LinearLayout f1, f2;
     private MapView mapView;
@@ -55,6 +56,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     private Trip t;
     private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
     private LocalModel localModel = LocalModel.getInstance();
+    private FloatingActionButton rescan_vis;
 
     public String getAssignedTag() {
         return TAG;
@@ -70,6 +72,11 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         f1 = (LinearLayout) v.findViewById(R.id.f1);
         f2 = (LinearLayout) v.findViewById(R.id.f2);
         detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
+        rescan_vis = (FloatingActionButton) v.findViewById(R.id.rescan_vis);
+
+        rescan_vis.setImageResource(R.drawable.ic_clear_black_24dp);
+
+        getActivity().setTitle("After trip report");
 
         ViewTreeObserver vto = layout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -82,8 +89,8 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 ViewGroup.LayoutParams params1 = f1.getLayoutParams();
                 ViewGroup.LayoutParams params2 = f2.getLayoutParams();
 
-                Log.d(TAG, String.valueOf(height));
-                Log.d(TAG, String.valueOf(width));
+                //Log.d(TAG, String.valueOf(height));
+                //Log.d(TAG, String.valueOf(width));
                 //Log.d(TAG, String.valueOf(223 * 8));
                 //Log.d(TAG, String.valueOf(height));
 
@@ -100,32 +107,19 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         CardView cv = (CardView) v.findViewById(R.id.details_cardview);
         cv.setVisibility(View.GONE);
 
-        FloatingActionButton b = (FloatingActionButton) v.findViewById(R.id.rescan_vis);
-        b.setVisibility(View.GONE);
-
         Bundle bundle = this.getArguments();
         t = null;
         if(bundle != null) {
             t = (Trip) bundle.getSerializable("key");
             Log.d(TAG, t.toString());
+            rescan_vis.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    localModel.dropTrip(t.getTripId());
+                    getActivity().onBackPressed();
+                }
+            });
         }
-
-        /*
-        for (Map<String, String> map : localModel.getValuesToRender(t)) {
-            Iterator it = map.entrySet().iterator();
-            cardViewWrapper = LayoutInflater.from(getActivity()).inflate(R.layout.cardview, layout, false);
-            Map.Entry<String, String> entry1 = (Map.Entry) it.next();
-            CardView cardView = (CardView) cardViewWrapper.findViewById(R.id.cardviewelement);
-            LinearLayout firstChild = ((LinearLayout) cardView.getChildAt(0));
-            TextView tv1 = (TextView) firstChild.getChildAt(0);
-            tv1.setText(entry1.getValue());
-            Map.Entry<String, String> entry2 = (Map.Entry) it.next();
-            TextView tv2 = (TextView) firstChild.getChildAt(1);
-            tv2.setText(entry2.getValue());
-            details.add(cardView);
-        }
-        */
-
 
         ViewTreeObserver viewTreeObserver = detailsLayout.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
@@ -152,29 +146,31 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     public void onMapReady(GoogleMap googleMap) {
 
         Log.d(TAG, "onMapReady");
-
         map = googleMap;
 
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        map.setMyLocationEnabled(true);
 
         drawTrip(t.getMarkers());
         addDetails();
         CardView cv = (CardView) v.findViewById(R.id.details_cardview);
         cv.setVisibility(View.VISIBLE);
 
+        switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            case PackageManager.PERMISSION_DENIED:
+                Log.d(TAG, "ACCESS COARSE LOCATION denied");
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        REQUEST_ACCESS_COARSE_LOCATION);
+                break;
+            case PackageManager.PERMISSION_GRANTED:
+                break;
+        }
+        map.setMyLocationEnabled(true);
+
     }
 
     private void addDetails() {
-        /*
-        for (CardView cv : details) {
-
-            f2.addView(cv);
-        }
-        */
+        Log.d(TAG, "addDetails");
         int i = 0;
         for (Map<String, String> map : localModel.getValuesToRender(t)) {
 
@@ -219,7 +215,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     }
 
     private void drawTrip(List<MapPoint> markers) {
-
+        Log.d(TAG, "drawTrip");
         int i = 0;
         for (MapPoint p : markers) {
             LatLng point = new LatLng(p.getLat(), p.getLng());
@@ -246,6 +242,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
 
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(origin, dest);
+        Log.d(TAG, url);
 
         DownloadTask downloadTask = new DownloadTask(map);
 
@@ -268,7 +265,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
+        Log.d(TAG, "getDirectionsUrl");
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
 
@@ -279,11 +276,9 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         String sensor = "sensor=false";
 
         // Waypoints
-        String waypoints = "";
+        String waypoints = "waypoints=";
         for (int i = 1; i < markerPoints.size() - 1; i++) {
             LatLng point = (LatLng) markerPoints.get(i);
-            if (i == 2)
-                waypoints = "waypoints=";
             waypoints += point.latitude + "," + point.longitude + "|";
         }
 

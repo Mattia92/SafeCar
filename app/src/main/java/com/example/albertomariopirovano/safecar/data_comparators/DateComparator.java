@@ -12,6 +12,6 @@ import java.util.Comparator;
 public class DateComparator implements Comparator<Trip> {
 
     public int compare(Trip trip1, Trip trip2){
-        return trip1.date.compareTo(trip2.date);
+        return trip2.date.compareTo(trip1.date);
     }
 }

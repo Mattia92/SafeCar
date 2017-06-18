@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
@@ -61,6 +62,7 @@ import java.util.Map;
 
 public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializable {
 
+    public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "TripHandler";
     private final static int REQUEST_ENABLE_LOC = 2;
     private final Object lock;
@@ -100,6 +102,12 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             Log.d(TAG, "onLocationChanged");
             locationManager.removeUpdates(this);
             trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+
+            ((Activity) context).runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(context, trip.getMarkers().get(trip.getMarkers().size() - 1).toString(), Toast.LENGTH_SHORT).show();
+                }
+            });
 
             //startingPoint.setLng(location.getLongitude());
             //startingPoint.setLat(location.getLatitude());
@@ -156,7 +164,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             }
             */
 
-            if ((trip.getMarkers().size() - 2) < 8) {
+            if (trip.getMarkers().size() + 1 < 8) {
                 //Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
 
                 //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
@@ -173,12 +181,12 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 getLocation();
 
             } else {
-                Log.d(TAG, "else branch");
+                Log.d(TAG, "No more markers allowed");
             }
 
             Log.d(TAG, "wait on lock");
             long s = System.currentTimeMillis();
-            savedStateHandler.waitOnLock(60000);
+            savedStateHandler.waitOnLock(20000);
             long f = System.currentTimeMillis();
             Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
         }
@@ -326,6 +334,13 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             if (location != null) {
                 //Log.d(TAG, "Location taken with Newtork Provider is not null");
                 trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(context, trip.getMarkers().get(trip.getMarkers().size() - 1).toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
                 Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
             } else {
@@ -342,7 +357,6 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 //Log.d(TAG, "GPS provider enabled");
 
-                //You can still do this if you like, you might get lucky:
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -357,6 +371,13 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 if (location != null) {
                     //Log.d(TAG, "Location taken with GPS Provider is not null");
                     trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
+
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context, trip.getMarkers().get(trip.getMarkers().size() - 1).toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                     Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
                     Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
                 } else {

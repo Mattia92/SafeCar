@@ -3,6 +3,7 @@ package com.example.albertomariopirovano.safecar.inner.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ public class TabOrderDate extends Fragment implements TabFragment, TAGInterface 
     private ListView listView;
     private Comparator comparator = new DateComparator();
     private FetchService dataService = FetchService.getInstance();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public String getName() {
         return name;
@@ -41,13 +43,23 @@ public class TabOrderDate extends Fragment implements TabFragment, TAGInterface 
 
         Log.d(TAG, "onCreateView");
 
-        View v = inflater.inflate(R.layout.tab_order_date, container, false);
+        final View v = inflater.inflate(R.layout.tab_order_date, container, false);
 
         listView = (ListView) v.findViewById(R.id.listDate);
 
         if(listView == null) {
             System.out.println("Null list view");
         }
+
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefreshHomeDate);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "onRefresh");
+                dataService.insertTrips("date", v, getComparator(), listView, 0, 10);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         Log.d("TabOrderDate", "insertTrips");
         dataService.insertTrips("date", v, getComparator(), listView, 0, 10);

@@ -6,18 +6,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -42,6 +48,7 @@ import java.util.Map;
 
 public class PairPlugFragment extends Fragment implements TAGInterface {
 
+    public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "PairPlugFragment";
     private final static int REQUEST_ENABLE_BT = 1;
     private View v;
@@ -61,20 +68,23 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     private DatabaseReference database;
     private LocalModel localModel = LocalModel.getInstance();
     private Button reScanButton;
-
+    private TableLayout targetPlugTable;
+    private LinearLayout targetPlugLinLay;
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                //Log.d(TAG, "discovery started");
+                Log.d(TAG, "discovery started");
 
                 isBluetoothScanning = Boolean.TRUE;
-                //Log.d(TAG, String.valueOf(isBluetoothScanning));
+                Log.d(TAG, String.valueOf(isBluetoothScanning));
 
                 progressBar.setVisibility(View.VISIBLE);
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                //Log.d(TAG, "discovery finished");
+                Log.d(TAG, "discovery finished");
+
+                registeredReceiver = false;
 
                 progressBar.setVisibility(View.GONE);
 
@@ -122,11 +132,23 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                             }
                         }
                     }
+                    scanButton.setText("Change your target plug");
+                    entry_text_home.setText("You are already paired with a plug.");
+
+                    TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
+                    ((TextView) row1.getChildAt(0)).setText("Name");
+                    ((TextView) row1.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getName());
+                    TableRow row2 = (TableRow) targetPlugTable.getChildAt(1);
+                    ((TextView) row2.getChildAt(0)).setText("MAC address");
+                    ((TextView) row2.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getAddress_MAC());
+
+                    targetPlugLinLay.setVisibility(View.VISIBLE);
+
                     viewFlipper.setDisplayedChild(0);
                 }
 
                 isBluetoothScanning = Boolean.FALSE;
-                //Log.d(TAG, String.valueOf(isBluetoothScanning));
+                Log.d(TAG, String.valueOf(isBluetoothScanning));
 
             } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 //bluetooth device found
@@ -185,10 +207,32 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         scanButton = (Button) v.findViewById(R.id.scanButton);
         listDevices = (ListView) v.findViewById(R.id.listDevices);
         reScanButton = (Button) v.findViewById(R.id.rescan_button);
+        targetPlugTable = (TableLayout) v.findViewById(R.id.targetPlug);
+        targetPlugLinLay = (LinearLayout) v.findViewById(R.id.targetPlugLinLay);
+        targetPlugLinLay.setVisibility(View.GONE);
+
+        if (savedStateHandler.getTargetPlug() != null) {
+            scanButton.setText("Change your target plug");
+            entry_text_home.setText("You are already paired with a plug.");
+
+            TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
+            ((TextView) row1.getChildAt(0)).setText("Name");
+            ((TextView) row1.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getName());
+            TableRow row2 = (TableRow) targetPlugTable.getChildAt(1);
+            ((TextView) row2.getChildAt(0)).setText("MAC address");
+            ((TextView) row2.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getAddress_MAC());
+
+            targetPlugLinLay.setVisibility(View.VISIBLE);
+        } else {
+            scanButton.setText("Pair your target plug");
+            targetPlugLinLay.setVisibility(View.GONE);
+        }
 
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                savedStateHandler.removeTargetPlug();
+                targetPlugLinLay.setVisibility(View.GONE);
                 startBluetoothScan();
             }
         });
@@ -196,6 +240,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         reScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                targetPlugLinLay.setVisibility(View.GONE);
                 toBeAdded = new ArrayList<Plug>();
                 found = new ArrayList<Plug>();
                 scanButton.setVisibility(View.VISIBLE);
@@ -234,8 +279,20 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 //Log.d(TAG, "Bluetooth enabled");
                 //bluetoothSearchPairedDevices();
 
-                bluetoothAdapter.cancelDiscovery();
-                bluetoothAdapter.startDiscovery();
+                switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    case PackageManager.PERMISSION_DENIED:
+                        Log.d(TAG, "ACCESS COARSE LOCATION denied");
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                                REQUEST_ACCESS_COARSE_LOCATION);
+                        break;
+                    case PackageManager.PERMISSION_GRANTED:
+
+                        entry_text_home.setText("Searching for plugs ...");
+                        bluetoothAdapter.cancelDiscovery();
+                        bluetoothAdapter.startDiscovery();
+                        break;
+                }
 
             }
 
@@ -255,7 +312,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         super.onDestroy();
 
         if (registeredReceiver) {
-            //Log.d(TAG, "Receiver unregistered");
+            Log.d(TAG, "Receiver unregistered");
             getActivity().unregisterReceiver(receiver);
         }
     }
@@ -290,6 +347,21 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
             if (oldState.getBoolean("isBluetoothScanning")) {
                 startBluetoothScan();
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_ACCESS_COARSE_LOCATION) {
+            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                bluetoothAdapter.cancelDiscovery();
+                bluetoothAdapter.startDiscovery();
+            } else {
+
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+            }
+            return;
         }
     }
 }

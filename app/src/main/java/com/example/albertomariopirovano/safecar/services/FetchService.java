@@ -76,7 +76,9 @@ public class FetchService {
             Log.d(TAG, "Trips loaded for the " + numTask + " time");
 
             for (Trip t : localModel.getTrips()) {
-                userTrips.add(t);
+                if (t.getDropped().equals(Boolean.FALSE)) {
+                    userTrips.add(t);
+                }
             }
 
             Collections.sort(userTrips, c);

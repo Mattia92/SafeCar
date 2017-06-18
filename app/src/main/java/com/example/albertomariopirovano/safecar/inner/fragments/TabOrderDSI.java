@@ -3,6 +3,7 @@ package com.example.albertomariopirovano.safecar.inner.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ public class TabOrderDSI extends Fragment implements TabFragment, TAGInterface {
     private ListView listView;
     private Comparator comparator = new DSIComparator();
     private FetchService dataService = FetchService.getInstance();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public String getName() {
         return name;
@@ -41,13 +43,24 @@ public class TabOrderDSI extends Fragment implements TabFragment, TAGInterface {
 
         Log.d(TAG, "onCreateView");
 
-        View v = inflater.inflate(R.layout.tab_order_dsi, container, false);
+        final View v = inflater.inflate(R.layout.tab_order_dsi, container, false);
 
         listView = (ListView) v.findViewById(R.id.listDSI);
 
         if(listView == null) {
             System.out.println("Null list view");
         }
+
+        swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefreshHomeDSI);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "onRefresh");
+                dataService.insertTrips("DSI", v, getComparator(), listView, 0, 10);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         Log.d("TabOrderDSI", "insertTrips");
         dataService.insertTrips("DSI", v, getComparator(), listView, 0, 10);
 

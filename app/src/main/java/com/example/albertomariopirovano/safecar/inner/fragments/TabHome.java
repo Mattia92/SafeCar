@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,11 +77,10 @@ import static android.app.Activity.RESULT_OK;
 public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback, TAGInterface {
 
 
+    public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "TabHome";
     private final static int REQUEST_ENABLE_LOC = 2;
     private String name = "Home";
-
-
     private FirebaseAuth auth;
     private LocalModel localModel = LocalModel.getInstance();
     private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
@@ -420,7 +420,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 //Log.d(TAG, "Bluetooth not activated even if asked");
                 Toast.makeText(getActivity().getApplicationContext(), "Bluetooth not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
             }
-        } else if(requestCode == 2) {
+        } else if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
 
                 //Log.d(TAG, "Location activated");
@@ -443,17 +443,20 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
         }
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
 
         mapView.onDestroy();
     }
+
     @Override
     public void onResume() {
         mapView.onResume();
         super.onResume();
     }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -496,7 +499,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                     List<Trip> trips = localModel.getTrips();
                     Log.d(TAG, String.valueOf(trips.size()));
                     Collections.sort(trips, new DateComparator());
-                    state.putSerializable("trip", trips.get(trips.size() - 1));
+                    state.putSerializable("trip", trips.get(0));
                     //state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
                     //Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
                 }
@@ -510,6 +513,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
         }
     }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
@@ -597,11 +601,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         String sensor = "sensor=false";
 
         // Waypoints
-        String waypoints = "";
+        String waypoints = "waypoints=";
         for (int i = 1; i < markerPoints.size() - 1; i++) {
             LatLng point = (LatLng) markerPoints.get(i);
-            if (i == 2)
-                waypoints = "waypoints=";
             waypoints += point.latitude + "," + point.longitude + "|";
         }
 
@@ -616,6 +618,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         return url;
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -624,12 +627,32 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         map = googleMap;
 
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        map.setMyLocationEnabled(true);
 
         loadStateIfNeeded();
+
+        switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            case PackageManager.PERMISSION_DENIED:
+                Log.d(TAG, "ACCESS COARSE LOCATION denied");
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                        REQUEST_ACCESS_COARSE_LOCATION);
+                break;
+            case PackageManager.PERMISSION_GRANTED:
+                break;
+        }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_ACCESS_COARSE_LOCATION) {
+            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                map.setMyLocationEnabled(true);
+            } else {
+
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+            }
+            return;
+        }
+    }
 }

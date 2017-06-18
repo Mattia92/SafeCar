@@ -87,7 +87,7 @@ public class LocalModel {
         Log.d(TAG, "synchronize cloud database");
 
         for (final Trip trip : trips) {
-            if (trip.getIsnew()) {
+            if (trip.getIsnew() && !trip.getDropped()) {
                 database.child("trips").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -99,6 +99,9 @@ public class LocalModel {
 
                     }
                 });
+            }
+            if (trip.getDropped()) {
+                database.child("trips").child(trip.getTripId()).removeValue();
             }
         }
 
@@ -146,6 +149,14 @@ public class LocalModel {
         for (Plug plug : plugs) {
             if (plug.getAddress_MAC().equals(MAC_key)) {
                 plug.setIsDropped(Boolean.TRUE);
+            }
+        }
+    }
+
+    public void dropTrip(String trip_id) {
+        for (Trip trip : trips) {
+            if (trip.getTripId().equals(trip_id)) {
+                trip.setDropped(Boolean.TRUE);
             }
         }
     }

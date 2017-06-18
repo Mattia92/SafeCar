@@ -33,6 +33,7 @@ public class Trip implements Serializable {
     public String arrName;
 
     public Boolean isnew = Boolean.FALSE;
+    public Boolean isDropped = Boolean.FALSE;
     public String tripId;
 
     public Trip() {
@@ -171,5 +172,13 @@ public class Trip implements Serializable {
                 ", isnew=" + isnew +
                 ", tripId='" + tripId + '\'' +
                 '}';
+    }
+
+    public Boolean getDropped() {
+        return isDropped;
+    }
+
+    public void setDropped(Boolean dropped) {
+        isDropped = dropped;
     }
 }

@@ -420,7 +420,63 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .show();
         }
-
+        f = getSupportFragmentManager().findFragmentByTag("HomeFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "HomeFragment VISIBLE");
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    })
+                    .show();
+        }
+        f = getSupportFragmentManager().findFragmentByTag("ProfileFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "ProfileFragment VISIBLE");
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    })
+                    .show();
+        }
+        f = getSupportFragmentManager().findFragmentByTag("ShareFragment");
+        if (f != null && f.isVisible()) {
+            Log.d(TAG, "ShareFragment VISIBLE");
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            return;
+                        }
+                    })
+                    .show();
+        }
         f = getSupportFragmentManager().findFragmentByTag("SettingsPlugs");
         if (f != null && f.isVisible()) {
             Log.d(TAG, "SettingsPlugs VISIBLE");
@@ -459,6 +515,7 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
             return;
         }
+
         f = getSupportFragmentManager().findFragmentByTag("ReportFragment");
         if (f != null && f.isVisible()) {
             Log.d(TAG, "ReportFragment VISIBLE");
@@ -467,8 +524,6 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
             return;
         }
-
-        super.onBackPressed();
     }
 
 
