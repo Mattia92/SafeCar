@@ -60,6 +60,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
                     if (rebootImageview) {
                         hintsAdapter.clear();
                         hintsAdapter.addAll(hintsList);
+                        rebootImageview = Boolean.FALSE;
                     } else {
                         hintsAdapter.add(hint);
                     }
