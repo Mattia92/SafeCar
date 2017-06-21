@@ -59,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:text="FloatActionButton"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/my_primary" />
+                    android:textColor="@color/colorAccent" />
 
                 <TextView
                     android:layout_width="match_parent"

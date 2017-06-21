@@ -49,7 +49,7 @@ public class SplashScreen extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        font = Typeface.createFromAsset(getAssets(), "fonts/Pacifico.ttf");
+        font = Typeface.createFromAsset(getAssets(), "fonts/Noteworthy-Bold.ttf");
 
         splash_text = (TextView) findViewById(R.id.splash_text);
         splash_text.setTypeface(font);

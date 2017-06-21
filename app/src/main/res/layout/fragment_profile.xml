@@ -26,7 +26,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/temp_back" />
+            android:src="@drawable/road_background"/>
 
         <ImageView
             android:id="@+id/imgProfilePic"
@@ -34,7 +34,7 @@
             android:layout_height="160dp"
             android:layout_below="@+id/header_cover_image"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="-95dp"
+            android:layout_marginTop="-65dp"
             android:elevation="5dp"
             android:padding="20dp"
             android:scaleType="centerCrop" />
@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_below="@+id/header_cover_image"
-            android:background="#4867a0"
+            android:background="#FFFFFF"
             android:elevation="4dp">
 
             <TextView
@@ -54,7 +54,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="15dip"
                 android:layout_marginTop="15dip"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textSize="20sp" />
 
             <TextView
@@ -62,8 +62,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="120dp"
-                android:textColor="#fff"
+                android:layout_marginTop="90dp"
+                android:textColor="#000000"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
@@ -74,7 +74,7 @@
                 android:layout_below="@+id/txtName"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:textColor="#fff"
+                android:textColor="#000000"
                 android:textSize="15dp" />
 
             <LinearLayout
@@ -94,7 +94,7 @@
                     android:layout_marginRight="15dip"
                     android:layout_weight="0.1"
                     android:src="@drawable/ic_directions_car_black_24dp"
-                    android:tint="#ffffff" />
+                    android:tint="#000000" />
 
                 <ProgressBar
                     android:id="@+id/customProgress"
@@ -113,7 +113,7 @@
                     android:layout_weight="0.002"
                     android:gravity="center_vertical"
                     android:text="90%"
-                    android:textColor="#ffffff"
+                    android:textColor="#000000"
                     android:textSize="20sp" />
 
             </LinearLayout>
@@ -127,7 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="#43a8e7"
+            android:background="#FFFFFF"
             android:orientation="vertical">
 
         </LinearLayout>

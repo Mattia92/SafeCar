@@ -154,7 +154,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         detailshomepage = (TextView) v.findViewById(R.id.detailshomepage);
         homepagetext = (TextView) v.findViewById(R.id.homepagetext);
 
-        homepagetext.setText("Welcome " + localModel.getUser().name + " !");
+        String str = localModel.getUser().name;
+
+        if(str.contains(" ")){
+            str = str.substring(0, str.indexOf(" "));
+        }
+        homepagetext.setText("Welcome " + str + "!");
 
         if (savedStateHandler.getTargetPlug() != null) {
             detailshomepage.setText("You are using the plug: " + savedStateHandler.getTargetPlug().getName());

@@ -27,7 +27,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@android:color/holo_blue_light">
+        android:background="#E0E0E0">
 
         <TextView
             android:id="@+id/text"
@@ -36,6 +36,6 @@
             android:textSize="18sp"
             android:gravity="center"
             android:layout_gravity="center"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/black"/>
     </FrameLayout>
 </com.chauthai.swipereveallayout.SwipeRevealLayout>
