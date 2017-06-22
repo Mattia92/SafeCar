@@ -37,7 +37,7 @@ public class SignupActivity extends AppCompatActivity {
     private static final String TAG = SignupActivity.class.getSimpleName();
     private LocalModel localModel = LocalModel.getInstance();
 
-    private EditText inputEmail, inputPassword;
+    private EditText inputName, inputSurname, inputEmail, inputPassword;
     private Button btnSignIn, btnSignUp;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
@@ -54,6 +54,8 @@ public class SignupActivity extends AppCompatActivity {
 
         btnSignIn = (Button) findViewById(R.id.sign_in_button);
         btnSignUp = (Button) findViewById(R.id.sign_up_button);
+        inputName = (EditText) findViewById(R.id.name_signup);
+        inputSurname = (EditText) findViewById(R.id.surname_signup);
         inputEmail = (EditText) findViewById(R.id.email_signup);
         inputPassword = (EditText) findViewById(R.id.pwd_signup);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -71,6 +73,7 @@ public class SignupActivity extends AppCompatActivity {
 
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
+                final String name = inputName.getText() + " " + inputSurname.getText();
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
@@ -104,10 +107,8 @@ public class SignupActivity extends AppCompatActivity {
                                 } else {
                                     Log.d("createUserPassword", "userId = " + task.getResult().getUser().getUid());
                                     //String userID = database.child("users").push().getKey();
-                                    database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(task.getResult().getUser().getUid(), task.getResult().getUser().getEmail()));
+                                    database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(task.getResult().getUser().getUid(), name, task.getResult().getUser().getEmail(), null));
                                     initLocalDB(auth.getCurrentUser());
-                                    startActivity(new Intent(SignupActivity.this, MainActivity.class));
-                                    finish();
                                 }
                             }
                         });
@@ -211,6 +212,9 @@ public class SignupActivity extends AppCompatActivity {
                         public void onCancelled(DatabaseError databaseError) {
                         }
                     });
+
+                    startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                    finish();
                 }
 
                 @Override

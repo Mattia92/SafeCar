@@ -187,15 +187,18 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "testRealmDB - 2.0] " + profilePngFile.getAbsolutePath() + " - doesn't exist");
         }
 
-        for (Trip t : localModel.getTrips()) {
-            Log.d(TAG, t.toString());
+        if (localModel.getTrips() != null) {
+            for (Trip t : localModel.getTrips()) {
+                Log.d(TAG, t.toString());
+            }
+            Log.d(TAG, "testRealmDB - 3] local trips cached");
         }
-        Log.d(TAG, "testRealmDB - 3] local trips cached");
-
-        for (Plug p : localModel.getPlugs()) {
-            Log.d(TAG, p.toString());
+        if (localModel.getPlugs() != null) {
+            for (Plug p : localModel.getPlugs()) {
+                Log.d(TAG, p.toString());
+            }
+            Log.d(TAG, "testRealmDB - 4] local plugs cached");
         }
-        Log.d(TAG, "testRealmDB - 4] local plugs cached");
     }
 
     private void handleDrawerProfileDetails() {

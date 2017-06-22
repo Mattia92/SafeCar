@@ -23,12 +23,40 @@
             app:srcCompat="@drawable/temp_logo" />
 
         <EditText
+            android:id="@+id/name_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            app:layout_constraintLeft_toRightOf="@+id/v_guideline_1"
+            app:layout_constraintRight_toLeftOf="@+id/v_guideline_2"
+            app:layout_constraintTop_toBottomOf="@+id/h_guideline_3" />
+
+        <EditText
+            android:id="@+id/surname_signup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Surname"
+            android:inputType="textPersonName"
+            android:text=""
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            app:layout_constraintLeft_toRightOf="@+id/v_guideline_1"
+            app:layout_constraintRight_toLeftOf="@+id/v_guideline_2"
+            app:layout_constraintTop_toBottomOf="@+id/h_guideline_3" />
+
+        <EditText
             android:id="@+id/email_signup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Email or Phone"
-            android:inputType="textPersonName"
+            android:inputType="textEmailAddress"
             android:text=""
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/white"
