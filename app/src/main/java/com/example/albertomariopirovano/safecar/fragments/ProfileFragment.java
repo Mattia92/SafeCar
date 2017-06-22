@@ -2,10 +2,13 @@ package com.example.albertomariopirovano.safecar.fragments;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -119,18 +122,22 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
         levelTextView.setText("Level " + localModel.getUser().level);
 
+        Bitmap b = null;
         if (localModel.getUser().photoURL != null) {
             Log.d("ProfileFragment", "load profile image");
             try {
-                imageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+                b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         } else {
             Log.d("ProfileFragment", "load standard profile image");
-            imageView.setImageResource(R.drawable.user);
+            b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
         }
-
+        RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
+        img.setCircular(true);
+        imageView.setImageDrawable(img);
+ 
         if (!TextUtils.isEmpty(localModel.getUser().name)) {
             nameTextView.setText(localModel.getUser().name);
         } else {
@@ -149,4 +156,5 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     public String getAssignedTag() {
         return TAG;
     }
+
 }

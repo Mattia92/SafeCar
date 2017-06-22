@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -219,17 +222,21 @@ public class MainActivity extends AppCompatActivity {
             emailTextView.setText("No email provided");
         }
 
+        Bitmap b = null;
         if (localModel.getUser().photoURL == null) {
             Log.d(TAG, "handleDrawerProfileDetails - load standard profile image");
-            iconImageView.setImageResource(R.drawable.user);
+            b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
         } else {
             Log.d(TAG, "handleDrawerProfileDetails - load Google+ profile image");
             try {
-                iconImageView.setImageBitmap(BitmapFactory.decodeStream(new FileInputStream(profilePngFile)));
+                b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
+        RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
+        img.setCircular(true);
+        iconImageView.setImageDrawable(img);
 
     }
 

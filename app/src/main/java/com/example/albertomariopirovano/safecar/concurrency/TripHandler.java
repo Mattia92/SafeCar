@@ -186,7 +186,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
             Log.d(TAG, "wait on lock");
             long s = System.currentTimeMillis();
-            savedStateHandler.waitOnLock(20000);
+            savedStateHandler.waitOnLock(40000);
             long f = System.currentTimeMillis();
             Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
         }
