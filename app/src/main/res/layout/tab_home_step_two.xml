@@ -38,14 +38,16 @@
             android:gravity="center"
             android:orientation="vertical"
             android:text="Hints"
-            android:textSize="20sp" />
+            android:textColor="@color/my_primary_text"
+            android:textSize="20sp"
+            android:backgroundTint="@color/colorPrimaryDark"/>
 
         <ListView
             android:id="@+id/hint_list_view"
-            android:layout_width="match_parent"
+            android:layout_width="314dp"
             android:layout_height="match_parent"
             android:layout_gravity="top"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"/>
 
     </LinearLayout>
 

@@ -3,8 +3,8 @@
     android:shape="rectangle">
     <!-- use this for transparent -->
     <!-- <solid android:color="#00000000" /> -->
-    <solid android:color="#e1dede" />
+    <solid android:color="@color/my_primary_text"/>
     <stroke
         android:width="2dip"
-        android:color="#767676" />
+        android:color="@color/colorPrimaryDark" />
 </shape>
