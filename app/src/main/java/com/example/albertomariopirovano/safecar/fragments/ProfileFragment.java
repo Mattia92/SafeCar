@@ -58,7 +58,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     private TextView levelTextView;
     private LinearLayout layout;
     private RelativeLayout f1;
-    private LinearLayout f2;
+    //private LinearLayout f2;
     private View v;
     private CardView cardviewelement;
 
@@ -77,7 +77,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
         layout = (LinearLayout) v.findViewById(R.id.linlayout);
         f1 = (RelativeLayout) v.findViewById(R.id.f1);
-        f2 = (LinearLayout) v.findViewById(R.id.f2);
+        //f2 = (LinearLayout) v.findViewById(R.id.f2);
 
         ViewTreeObserver vto = layout.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -88,15 +88,15 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                 int height = layout.getHeight();
 
                 ViewGroup.LayoutParams params1 = f1.getLayoutParams();
-                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
+                //ViewGroup.LayoutParams params2 = f2.getLayoutParams();
 
                 params1.height = height;
                 params1.width = width;
                 f1.requestLayout();
 
-                params2.height = height / 2;
-                params2.width = width;
-                f2.requestLayout();
+                //params2.height = height / 2;
+                //params2.width = width;
+                //f2.requestLayout();
             }
         });
 
@@ -125,6 +125,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
         Bitmap b = null;
         if (localModel.getUser().photoURL != null) {
             Log.d("ProfileFragment", "load profile image");
+            //b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
             try {
                 b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
             } catch (FileNotFoundException e) {
