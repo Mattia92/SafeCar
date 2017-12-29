@@ -6,6 +6,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 
 import java.io.Serializable;
@@ -130,6 +131,11 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
         addHint(hint);
         //update the state of the asynctask basing on the state modified by connectWithPlug
+
+        if(MainActivity.isApplicationSentToBackground(activity)) {
+            Log.d(TAG, "App in background");
+            MainActivity.addNotification(activity, hint);
+        }
     }
 
     private String fakeHint() {

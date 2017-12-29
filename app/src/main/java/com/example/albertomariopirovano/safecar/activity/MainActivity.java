@@ -1,5 +1,10 @@
 package com.example.albertomariopirovano.safecar.activity;
 
+import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -17,6 +22,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -536,9 +542,52 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    /**
+     * Checks if the application is being sent in the background (i.e behind
+     * another application's Activity).
+     *
+     * @param context the context
+     * @return <code>true</code> if another application will be above this one.
+     */
+    public static boolean isApplicationSentToBackground(final Context context) {
+        ActivityManager am = (ActivityManager)    context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName topActivity = tasks.get(0).topActivity;
+            if (!topActivity.getPackageName().equals(context.getPackageName())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static void addNotification(Context context, String message) {
+
+        int icon = R.drawable.temp_logo;
+        long when = System.currentTimeMillis();
+        String appname = context.getResources().getString(R.string.app_name);
+        NotificationManager notificationManager = (NotificationManager) context
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Notification notification;
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
+                new Intent(context, MainActivity.class), 0);
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(
+                context);
+        notification = builder.setContentIntent(contentIntent)
+                .setSmallIcon(icon).setTicker(appname).setWhen(0)
+                .setAutoCancel(true).setContentTitle(appname)
+                .setContentText(message).build();
+
+        notificationManager.notify(0 , notification);
+
     }
 }
