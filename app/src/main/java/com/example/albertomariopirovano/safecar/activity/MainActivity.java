@@ -48,12 +48,14 @@ import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 import com.example.albertomariopirovano.safecar.realm_model.NavItem;
 import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
+import com.example.albertomariopirovano.safecar.utils.CircleTransform;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -228,22 +230,29 @@ public class MainActivity extends AppCompatActivity {
             emailTextView.setText("No email provided");
         }
 
-        Bitmap b = null;
-        if (localModel.getUser().photoURL == null) {
+        Bitmap b;
+        if (localModel.getUser().photoURL == null || localModel.getUser().photoURL.isEmpty()) {
             Log.d(TAG, "handleDrawerProfileDetails - load standard profile image");
             b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
+            RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
+            img.setCircular(true);
+            iconImageView.setImageDrawable(img);
         } else {
             Log.d(TAG, "handleDrawerProfileDetails - load Google+ profile image");
-            try {
-                b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            //try {
+            //    b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
+            //} catch (FileNotFoundException e) {
+            //    e.printStackTrace();
+            //}
+            Picasso.with(getApplicationContext())
+                    .load(localModel.getUser().photoURL)
+                    .transform(new CircleTransform())
+                    .fit()
+                    .into(iconImageView);
         }
-        RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
-        img.setCircular(true);
-        iconImageView.setImageDrawable(img);
-
+        //RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
+        //img.setCircular(true);
+        //iconImageView.setImageDrawable(img);
     }
 
     public void addLogoutListener(FirebaseAuth a) {

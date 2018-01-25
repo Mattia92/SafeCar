@@ -124,7 +124,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
         levelTextView.setText("Level " + localModel.getUser().level);
 
-        Bitmap b = null;
+        Bitmap b;
         if (localModel.getUser().photoURL != null && !localModel.getUser().photoURL.isEmpty()) {
             Log.d("ProfileFragment", "load profile image");
             //try {
