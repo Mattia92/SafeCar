@@ -333,7 +333,8 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
 
                 savedStateHandler.addState("PairPlugFragment", state);
                 Log.d(TAG, String.valueOf(savedStateHandler.hasTag("PairPlugFragment")));
-                bluetoothAdapter.cancelDiscovery();
+                if(bluetoothAdapter != null)
+                    bluetoothAdapter.cancelDiscovery();
             }
         }
     }
