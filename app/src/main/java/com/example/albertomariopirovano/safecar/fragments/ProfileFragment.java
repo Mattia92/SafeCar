@@ -25,10 +25,12 @@ import android.widget.TextView;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.example.albertomariopirovano.safecar.utils.CircleTransform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -123,21 +125,29 @@ public class ProfileFragment extends Fragment implements TAGInterface {
         levelTextView.setText("Level " + localModel.getUser().level);
 
         Bitmap b = null;
-        if (localModel.getUser().photoURL != null) {
+        if (localModel.getUser().photoURL != null && !localModel.getUser().photoURL.isEmpty()) {
             Log.d("ProfileFragment", "load profile image");
-            //b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
-            try {
-                b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            //try {
+            //    b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
+            //} catch (FileNotFoundException e) {
+            //    e.printStackTrace();
+            //}
+            Picasso.with(getContext())
+                    .load(localModel.getUser().photoURL)
+                    .transform(new CircleTransform())
+                    .fit()
+                    .into(imageView);
         } else {
             Log.d("ProfileFragment", "load standard profile image");
             b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
+            RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
+            img.setCircular(true);
+            imageView.setImageDrawable(img);
         }
-        RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
-        img.setCircular(true);
-        imageView.setImageDrawable(img);
+
+        //RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
+        //img.setCircular(true);
+        //imageView.setImageDrawable(img);
  
         if (!TextUtils.isEmpty(localModel.getUser().name)) {
             nameTextView.setText(localModel.getUser().name);
