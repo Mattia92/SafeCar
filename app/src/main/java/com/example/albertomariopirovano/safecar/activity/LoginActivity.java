@@ -363,7 +363,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    Log.d(TAG, "onCreate - [PASSWOD BASED] signin successful");
+                                    Log.d(TAG, "onCreate - [PASSWORD BASED] signin successful");
                                     database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
                                     initLocalDB(auth.getCurrentUser());
                                 }

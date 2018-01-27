@@ -73,10 +73,27 @@ public class SignupActivity extends AppCompatActivity {
 
                 String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
-                final String name = inputName.getText() + " " + inputSurname.getText();
+                String name = inputName.getText().toString().trim();
+                String surname = inputSurname.getText().toString().trim();
+                final String completeName = firstLetterCaps(name) + " " + firstLetterCaps(surname);
+
+                if (TextUtils.isEmpty(name)) {
+                    Toast.makeText(getApplicationContext(), "Enter name!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (TextUtils.isEmpty(surname)) {
+                    Toast.makeText(getApplicationContext(), "Enter surname!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (!isEmailValid(email)) {
+                    Toast.makeText(getApplicationContext(), "Enter valid email address!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -107,7 +124,7 @@ public class SignupActivity extends AppCompatActivity {
                                 } else {
                                     Log.d("createUserPassword", "userId = " + task.getResult().getUser().getUid());
                                     //String userID = database.child("users").push().getKey();
-                                    database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(task.getResult().getUser().getUid(), name, task.getResult().getUser().getEmail(), null));
+                                    database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(task.getResult().getUser().getUid(), completeName, task.getResult().getUser().getEmail(), null));
                                     initLocalDB(auth.getCurrentUser());
                                 }
                             }
@@ -225,4 +242,14 @@ public class SignupActivity extends AppCompatActivity {
         }
     }
 
+    public static boolean isEmailValid(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    static public String firstLetterCaps(String data)
+    {
+        String firstLetter = data.substring(0,1).toUpperCase();
+        String restLetters = data.substring(1).toLowerCase();
+        return firstLetter + restLetters;
+    }
 }
