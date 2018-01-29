@@ -37,6 +37,7 @@ import com.example.albertomariopirovano.safecar.concurrency.DSIEvaluator;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.data_comparators.DateComparator;
+import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
@@ -171,6 +172,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         if (savedStateHandler.getTargetPlug() == null) {
             startTrip.setVisibility(View.GONE);
         }
+
+        /* Fot testing on emulator without bluetooth (comment if above)
+        startTrip.setVisibility(View.VISIBLE);
+        savedStateHandler.setTargetPlug(new Plug());
+        */
+
         progressBarEndTrip = (ProgressBar) v.findViewById(R.id.progressBarEndTrip);
         hintsListView = (ListView) v.findViewById(R.id.hint_list_view);
         progressBarEndTrip.setVisibility(View.GONE);
@@ -249,9 +256,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             public void onClick(View view) {
                 if (pause_resumeTripTextView.getText().equals("Take a break")) {
                     pause_resumeTrip.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                    pauseTrip();
                     pause_resumeTripTextView.setText("Resume Trip");
                 } else {
                     pause_resumeTrip.setImageResource(R.drawable.ic_pause_black_24dp);
+                    resumeTrip();
                     pause_resumeTripTextView.setText("Take a break");
                 }
 
@@ -321,6 +330,18 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         savedStateHandler.notifyLock();
         tripHandler.stopTask();
         dsiEvaluator.stopTask();
+    }
+
+    private void pauseTrip() {
+        savedStateHandler.notifyLock();
+        tripHandler.pauseTask();
+        dsiEvaluator.pauseTask();
+    }
+
+    private void resumeTrip() {
+        savedStateHandler.notifyLock();
+        tripHandler.resumeTask();
+        dsiEvaluator.resumeTask();
     }
 
     private void startTrip(View view) {
