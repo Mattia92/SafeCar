@@ -56,14 +56,15 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 Log.d(TAG, "runOnUiThread");
-                hintsList.add(hint);
+                hintsList.add(0, hint);
                 if (viewAvailable) {
                     if (rebootImageview) {
                         hintsAdapter.clear();
                         hintsAdapter.addAll(hintsList);
                         rebootImageview = Boolean.FALSE;
                     } else {
-                        hintsAdapter.add(hint);
+                        //hintsAdapter.add(hint);
+                        hintsAdapter.insert(hint, 0);
                     }
                 }
             }
