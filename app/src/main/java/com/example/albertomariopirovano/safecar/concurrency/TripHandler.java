@@ -81,6 +81,8 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     private float globalDistance = 0;
     private long tStart;
     private Boolean stopTask = Boolean.FALSE;
+    private Boolean pauseTask = Boolean.FALSE;
+
     private ViewFlipper viewFlipper;
 
     private LinearLayout linLayout;
@@ -152,7 +154,8 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         tStart = System.currentTimeMillis();
 
-        while (!stopTask) {
+        do {
+            while (!stopTask && !pauseTask) {
 
             /*
             try {
@@ -164,11 +167,11 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             }
             */
 
-            if (trip.getMarkers().size() + 1 < 8) {
-                //Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+                if (trip.getMarkers().size() + 1 < 8) {
+                    //Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
 
-                //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-                //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
+                    //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+                    //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
 
                 /*try {
                     Log.d(TAG, gcd.getFromLocation(wayPoint.getLat(), wayPoint.getLng(), 1).get(0).getLocality());
@@ -176,20 +179,27 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                     e.printStackTrace();
                 }*/
 
-                //wayPoints.add(wayPoint);
+                    //wayPoints.add(wayPoint);
 
-                getLocation();
+                    getLocation();
 
-            } else {
-                Log.d(TAG, "No more markers allowed");
+                } else {
+                    Log.d(TAG, "No more markers allowed");
+                }
+
+                Log.d(TAG, "wait on lock");
+                long s = System.currentTimeMillis();
+                savedStateHandler.waitOnLock(40000);
+                long f = System.currentTimeMillis();
+                Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
             }
 
-            Log.d(TAG, "wait on lock");
-            long s = System.currentTimeMillis();
-            savedStateHandler.waitOnLock(40000);
-            long f = System.currentTimeMillis();
-            Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
-        }
+            while (pauseTask) {
+                //wait until resume trip
+            }
+
+        } while (!stopTask);
+
         Log.d(TAG, "TripHandler task has been stopped !");
 
         finishJob();
@@ -315,6 +325,15 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
     public void stopTask() {
         this.stopTask = Boolean.TRUE;
+        this.pauseTask = Boolean.FALSE;
+    }
+
+    public void pauseTask() {
+        this.pauseTask = Boolean.TRUE;
+    }
+
+    public void resumeTask() {
+        this.pauseTask = Boolean.FALSE;
     }
 
     private void getLocation() {

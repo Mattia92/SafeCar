@@ -22,6 +22,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
     private final Activity activity;
     private final Object lock;
     private Boolean stopTask = Boolean.FALSE;
+    private Boolean pauseTask = Boolean.FALSE;
     private Integer currentDSI;
     private ArrayList<String> hintsList;
     private Boolean rebootImageview = Boolean.FALSE;
@@ -77,9 +78,10 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
         connectWithPlug();
 
-        while (!stopTask) {
+        do {
+            while (!stopTask && !pauseTask) {
 
-            updateDSI();
+                updateDSI();
 
             /*
             try {
@@ -89,12 +91,19 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
             }
             */
 
-            Log.d(TAG, "wait on lock");
-            long s = System.currentTimeMillis();
-            savedStateHandler.waitOnLock(10000);
-            long f = System.currentTimeMillis();
-            Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
-        }
+                Log.d(TAG, "wait on lock");
+                long s = System.currentTimeMillis();
+                savedStateHandler.waitOnLock(10000);
+                long f = System.currentTimeMillis();
+                Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
+            }
+
+            while (pauseTask) {
+                //wait until resume trip
+            }
+
+        } while (!stopTask);
+
         Log.d(TAG, "DSIEvaluation task has been stopped ! ");
 
         return null;
@@ -160,6 +169,15 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
     public void stopTask() {
         this.stopTask = Boolean.TRUE;
+        this.pauseTask = Boolean.FALSE;
+    }
+
+    public void pauseTask() {
+        this.pauseTask = Boolean.TRUE;
+    }
+
+    public void resumeTask() {
+        this.pauseTask = Boolean.FALSE;
     }
 
     public void setViewElements(ListView hintsListView) {
