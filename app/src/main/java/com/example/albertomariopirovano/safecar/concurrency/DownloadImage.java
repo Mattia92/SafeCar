@@ -29,18 +29,18 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(String... urls) {
-        Log.d("DownloadImage", "doInBackground");
+        Log.i("DownloadImage", "doInBackground");
         Bitmap image = fetchImage(urls[0]);
         saveBitmap(image);
         return image;
     }
 
     protected void onPostExecute(Bitmap bitmap) {
-        Log.d("DownloadImage", "onPostExecute");
+        Log.i("DownloadImage", "onPostExecute");
     }
 
     private Bitmap fetchImage(String urlstr) {
-        Log.d("DownloadImage", "fetchImage");
+        Log.i("DownloadImage", "fetchImage");
         try {
             URL url;
             url = new URL(urlstr);
@@ -53,9 +53,9 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
             img = BitmapFactory.decodeStream(is);
             return img;
         } catch (MalformedURLException e) {
-            Log.d("RemoteImageHandler", "fetchImage passed invalid URL: " + urlstr);
+            Log.i("RemoteImageHandler", "fetchImage passed invalid URL: " + urlstr);
         } catch (IOException e) {
-            Log.d("RemoteImageHandler", "fetchImage IO exception: " + e);
+            Log.i("RemoteImageHandler", "fetchImage IO exception: " + e);
         }
         return null;
     }
@@ -66,7 +66,7 @@ public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
             out = new FileOutputStream(targetFile);
             bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
             // PNG is a lossless format, the compression factor (100) is ignored
-            Log.d("DownloadImage", "saveBitmap");
+            Log.i("DownloadImage", "saveBitmap");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

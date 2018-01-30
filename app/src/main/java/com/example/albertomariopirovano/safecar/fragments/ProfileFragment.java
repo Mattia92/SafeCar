@@ -115,8 +115,8 @@ public class ProfileFragment extends Fragment implements TAGInterface {
         profilePngFile = new File(directory, "profile.png");
 
 
-        Log.d(TAG, "customizing user profile");
-        Log.d(TAG, localModel.getUser().toString());
+        Log.i(TAG, "customizing user profile");
+        Log.i(TAG, localModel.getUser().toString());
 
         customProgress.setProgress(Integer.parseInt(localModel.getUser().percentage));
         customProgress.setSecondaryProgress(Integer.parseInt(localModel.getUser().percentage) + 1);
@@ -126,7 +126,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
         Bitmap b;
         if (localModel.getUser().photoURL != null && !localModel.getUser().photoURL.isEmpty()) {
-            Log.d("ProfileFragment", "load profile image");
+            Log.i("ProfileFragment", "load profile image");
             //try {
             //    b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
             //} catch (FileNotFoundException e) {
@@ -138,7 +138,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                     .fit()
                     .into(imageView);
         } else {
-            Log.d("ProfileFragment", "load standard profile image");
+            Log.i("ProfileFragment", "load standard profile image");
             b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
             RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
             img.setCircular(true);

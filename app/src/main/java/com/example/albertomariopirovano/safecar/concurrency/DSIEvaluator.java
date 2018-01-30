@@ -42,21 +42,21 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
     }
 
     public void reloadTaskState() {
-        Log.d(TAG, "reloadTaskState");
+        Log.i(TAG, "reloadTaskState");
         this.rebootImageview = Boolean.TRUE;
         this.viewAvailable = Boolean.TRUE;
     }
 
     public void viewNotAvailable() {
-        Log.d(TAG, "viewNotAvailable");
+        Log.i(TAG, "viewNotAvailable");
         viewAvailable = Boolean.FALSE;
     }
 
     private void addHint(final String hint) {
-        Log.d(TAG, "addHint");
+        Log.i(TAG, "addHint");
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                Log.d(TAG, "runOnUiThread");
+                Log.i(TAG, "runOnUiThread");
                 hintsList.add(0, hint);
                 if (viewAvailable) {
                     if (rebootImageview) {
@@ -74,7 +74,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
     @Override
     protected Void doInBackground(Void... voids) {
-        Log.d(TAG, "doInBackground");
+        Log.i(TAG, "doInBackground");
 
         connectWithPlug();
 
@@ -91,11 +91,11 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
             }
             */
 
-                Log.d(TAG, "wait on lock");
+                Log.i(TAG, "wait on lock");
                 long s = System.currentTimeMillis();
                 savedStateHandler.waitOnLock(10000);
                 long f = System.currentTimeMillis();
-                Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
+                Log.i(TAG, "awakened from lock t = " + String.valueOf(f - s));
             }
 
             while (pauseTask) {
@@ -104,24 +104,24 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
         } while (!stopTask);
 
-        Log.d(TAG, "DSIEvaluation task has been stopped ! ");
+        Log.i(TAG, "DSIEvaluation task has been stopped ! ");
 
         return null;
     }
 
     private void connectWithPlug() {
-        Log.d(TAG, "connectWithPlug");
-        Log.d(TAG, savedStateHandler.getTargetPlug().toString());
+        Log.i(TAG, "connectWithPlug");
+        Log.i(TAG, savedStateHandler.getTargetPlug().toString());
         //modify the state of the asynctask
     }
 
     private void computeDSI() {
-        Log.d(TAG, "computeDSI");
+        Log.i(TAG, "computeDSI");
         currentDSI = 1000;
     }
 
     private void updateDSI() {
-        Log.d(TAG, "updateDSI");
+        Log.i(TAG, "updateDSI");
         computeDSI();
         String hint = "";
         if (currentDSI >= 100) {
@@ -142,7 +142,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         //update the state of the asynctask basing on the state modified by connectWithPlug
 
         if(MainActivity.isApplicationSentToBackground(activity)) {
-            Log.d(TAG, "App in background");
+            Log.i(TAG, "App in background");
             MainActivity.addNotification(activity, hint);
         }
     }

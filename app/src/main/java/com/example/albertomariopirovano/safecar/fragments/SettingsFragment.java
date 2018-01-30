@@ -57,15 +57,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
 
                 if(preference.getKey().equals("Condivisione")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    Log.d(TAG, ((TAGInterface) listFragments.get(0)).getAssignedTag());
+                    Log.i(TAG, ((TAGInterface) listFragments.get(0)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0), ((TAGInterface) listFragments.get(0)).getAssignedTag()).addToBackStack(null).commit();
                 } else if (preference.getKey().equals("Notifiche")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    Log.d(TAG, ((TAGInterface) listFragments.get(1)).getAssignedTag());
+                    Log.i(TAG, ((TAGInterface) listFragments.get(1)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1), ((TAGInterface) listFragments.get(1)).getAssignedTag()).addToBackStack(null).commit();
                 } else if (preference.getKey().equals("Smart Objects")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    Log.d(TAG, ((TAGInterface) listFragments.get(2)).getAssignedTag());
+                    Log.i(TAG, ((TAGInterface) listFragments.get(2)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2), ((TAGInterface) listFragments.get(2)).getAssignedTag()).addToBackStack(null).commit();
                 }
 

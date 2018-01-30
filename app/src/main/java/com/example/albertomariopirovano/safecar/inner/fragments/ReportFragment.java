@@ -1,15 +1,19 @@
 package com.example.albertomariopirovano.safecar.inner.fragments;
 
 import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -23,6 +27,7 @@ import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.example.albertomariopirovano.safecar.utils.OnSwipeListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,7 +47,7 @@ import java.util.Map;
  * Created by albertomariopirovano on 04/04/17.
  */
 
-public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGInterface {
+public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGInterface, View.OnTouchListener{
 
     public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "ReportFragment";
@@ -52,6 +57,8 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     private GoogleMap map;
     private TableLayout detailsLayout;
     private View v;
+
+    private GestureDetector gestureDetector;
 
     private Trip t;
     private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
@@ -89,10 +96,10 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 ViewGroup.LayoutParams params1 = f1.getLayoutParams();
                 ViewGroup.LayoutParams params2 = f2.getLayoutParams();
 
-                //Log.d(TAG, String.valueOf(height));
-                //Log.d(TAG, String.valueOf(width));
-                //Log.d(TAG, String.valueOf(223 * 8));
-                //Log.d(TAG, String.valueOf(height));
+                //Log.i(TAG, String.valueOf(height));
+                //Log.i(TAG, String.valueOf(width));
+                //Log.i(TAG, String.valueOf(223 * 8));
+                //Log.i(TAG, String.valueOf(height));
 
                 params1.height = height;
                 params1.width = width;
@@ -111,7 +118,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         t = null;
         if(bundle != null) {
             t = (Trip) bundle.getSerializable("key");
-            Log.d(TAG, t.toString());
+            Log.i(TAG, "Trip to be visualized : " + t.toString());
             rescan_vis.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -127,8 +134,8 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 @Override
                 public void onGlobalLayout() {
                     detailsLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    Log.d(TAG, "ALERT");
-                    Log.d(TAG, String.valueOf(detailsLayout.getMeasuredHeight()));
+                    Log.i(TAG, "ALERT");
+                    Log.i(TAG, String.valueOf(detailsLayout.getMeasuredHeight()));
                 }
             });
         }
@@ -145,7 +152,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        Log.d(TAG, "onMapReady");
+        Log.i(TAG, "The map is ready");
         map = googleMap;
 
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -157,7 +164,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
 
         switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
             case PackageManager.PERMISSION_DENIED:
-                Log.d(TAG, "ACCESS COARSE LOCATION denied");
+                Log.i(TAG, "ACCESS COARSE LOCATION denied");
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                         REQUEST_ACCESS_COARSE_LOCATION);
@@ -170,7 +177,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     }
 
     private void addDetails() {
-        Log.d(TAG, "addDetails");
+        Log.i(TAG, "Adding trip details");
         int i = 0;
         for (Map<String, String> map : localModel.getValuesToRender(t)) {
 
@@ -195,16 +202,12 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        Log.d(TAG, "onDestroy");
-
         mapView.onDestroy();
     }
 
     @Override
     public void onResume() {
         mapView.onResume();
-        Log.d(TAG, "onResume");
         super.onResume();
     }
 
@@ -215,7 +218,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     }
 
     private void drawTrip(List<MapPoint> markers) {
-        Log.d(TAG, "drawTrip");
+        Log.i(TAG, "Drawing trip path");
         int i = 0;
         for (MapPoint p : markers) {
             LatLng point = new LatLng(p.getLat(), p.getLng());
@@ -233,16 +236,16 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
             i++;
         }
 
-        Log.d(TAG, String.valueOf(markerPoints.size()));
-        Log.d(TAG, markerPoints.get(0).toString());
-        Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
+        Log.i(TAG, "Number of markers: " + String.valueOf(markerPoints.size()));
+        Log.i(TAG, "First marker: " + markerPoints.get(0).toString());
+        Log.i(TAG, "Last marker: " + markerPoints.get(markers.size() - 1).toString());
 
         LatLng origin = markerPoints.get(0);
         LatLng dest = markerPoints.get(markers.size() - 1);
 
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(origin, dest);
-        Log.d(TAG, url);
+        Log.i(TAG, "Url: " + url);
 
         DownloadTask downloadTask = new DownloadTask(map);
 
@@ -265,7 +268,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     }
 
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
-        Log.d(TAG, "getDirectionsUrl");
+        Log.i(TAG, "Getting google map directions json");
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
 

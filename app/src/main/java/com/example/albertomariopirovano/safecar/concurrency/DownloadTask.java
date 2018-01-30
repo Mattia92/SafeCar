@@ -37,7 +37,7 @@ public class DownloadTask extends AsyncTask<String, Void, String> {
             // Fetching the data from web service
             data = downloadUrl(url[0]);
         } catch (Exception e) {
-            Log.d("Background Task", e.toString());
+            Log.i("Background Task", e.toString());
         }
         return data;
     }

@@ -41,27 +41,27 @@ public class TabOrderDate extends Fragment implements TabFragment, TAGInterface 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView");
+        Log.i(TAG, "Creating view");
 
         final View v = inflater.inflate(R.layout.tab_order_date, container, false);
 
         listView = (ListView) v.findViewById(R.id.listDate);
 
         if(listView == null) {
-            System.out.println("Null list view");
+            Log.i(TAG,"Null list view");
         }
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefreshHomeDate);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.i(TAG, "onRefresh");
+                Log.i(TAG, "Refreshed");
                 dataService.insertTrips("date", v, getComparator(), listView, 0, 10);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
 
-        Log.d("TabOrderDate", "insertTrips");
+        Log.i(TAG, "Hidden trip insertion task");
         dataService.insertTrips("date", v, getComparator(), listView, 0, 10);
 
         return v;

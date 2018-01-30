@@ -41,27 +41,27 @@ public class TabOrderKM extends Fragment implements TabFragment, TAGInterface {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView");
+        Log.i(TAG, "Creating view");
 
         final View v = inflater.inflate(R.layout.tab_order_km, container, false);
 
         listView = (ListView) v.findViewById(R.id.listKM);
 
         if(listView == null) {
-            System.out.println("Null list view");
+            Log.i(TAG,"Null list view");
         }
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefreshHomeKM);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.i(TAG, "onRefresh");
+                Log.i(TAG, "Refreshed");
                 dataService.insertTrips("KM", v, getComparator(), listView, 0, 10);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
-        
-        Log.d("TabOrderKM", "insertTrips");
+
+        Log.i(TAG, "Hidden trip insertion task");
         dataService.insertTrips("KM", v, getComparator(), listView, 0, 10);
 
         return v;

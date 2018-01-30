@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Log.i(TAG, "onConnectionFailed:" + connectionResult);
     }
 
     /*@Override
@@ -107,14 +107,14 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
         if (opr.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
             // and the GoogleSignInResult will be available instantly.
-            Log.d(TAG, "Got cached sign-in");
+            Log.i(TAG, "Got cached sign-in");
             GoogleSignInResult result = opr.get();
             handleSignInResult(result);
         } else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
             // single sign-on will occur in this branch.
-            Log.d(TAG, "No cached Google sign-in");
+            Log.i(TAG, "No cached Google sign-in");
             progressBar.setVisibility(View.VISIBLE);
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                     } else {
                         // Google Sign In failed, update UI appropriately
                         // [START_EXCLUDE]
-                        Log.d(TAG, "onStart:failed");
+                        Log.i(TAG, "onStart:failed");
                         // [END_EXCLUDE]
                     }
                     //handleSignInResult(googleSignInResult);
@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
             } else {
                 // Google Sign In failed, update UI appropriately
                 // [START_EXCLUDE]
-                Log.d(TAG, "onActivityResult:failed");
+                Log.i(TAG, "onActivityResult:failed");
                 // [END_EXCLUDE]
             }
             //handleSignInResult(result);
@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle - userID: " + acct.getId());
+        Log.i(TAG, "firebaseAuthWithGoogle - userID: " + acct.getId());
         // [START_EXCLUDE silent]
         progressBar.setVisibility(View.VISIBLE);
         // [END_EXCLUDE]
@@ -170,18 +170,18 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "firebaseAuthWithGoogle - [GOOGLE+ BASED] signin successfull");
+                            Log.i(TAG, "firebaseAuthWithGoogle - [GOOGLE+ BASED] signin successfull");
                             final FirebaseUser user = auth.getCurrentUser();
                             database.child("users").orderByChild("authUID").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.exists()) {
-                                        Log.d("firebaseAuthWithGoogle", "user already present, let's set active to true");
+                                        Log.i("firebaseAuthWithGoogle", "user already present, let's set active to true");
                                         database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
-                                        Log.d(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
+                                        Log.i(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl());
                                         initLocalDB(user);
                                     } else {
-                                        Log.d("firebaseAuthWithGoogle", "user not present, let's add him");
+                                        Log.i("firebaseAuthWithGoogle", "user not present, let's add him");
                                         //String userID = database.child("users").push().getKey();
                                         database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString()));
                                     }
@@ -221,7 +221,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
         Intent whereToGoNext = new Intent(LoginActivity.this, MainActivity.class);
 
         if (currentUser.getPhotoUrl() != null && !profilePngFile.exists()) {
-            Log.d(TAG, "cacheUserProfileImage - download profile image");
+            Log.i(TAG, "Caching user profile image");
             try {
                 new DownloadImage(profilePngFile).execute(currentUser.getPhotoUrl().toString()).get();
             } catch (InterruptedException e) {
@@ -233,13 +233,15 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
 
         progressBar.setVisibility(View.GONE);
 
+        Log.i("> Switching activity <", "Login Activity -> Main Activity");
+
         startActivity(whereToGoNext);
         finish();
     }
 
     private void initLocalDB(FirebaseUser currentUser) {
 
-        Log.d(TAG, "initLocalDb");
+        Log.i(TAG, "Initializing local database. Downloading cloud data into a local copy");
 
         try {
             new UserHandler(currentUser).execute().get();
@@ -263,13 +265,13 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
 
         if (auth.getCurrentUser() != null) {
 
-            Log.d(TAG, "skip -> " + auth.getCurrentUser().getEmail() + " " + auth.getCurrentUser().getDisplayName());
+            Log.i(TAG, "User already signed in, skipping autentication activity: User > email: " + auth.getCurrentUser().getEmail() + " > name:" + auth.getCurrentUser().getDisplayName());
             database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
             initLocalDB(auth.getCurrentUser());
 
         } else {
 
-            Log.d(TAG, "no skip");
+            Log.i(TAG, "Launching autentication activity");
 
         }
 
@@ -363,7 +365,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                         Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
                                     }
                                 } else {
-                                    Log.d(TAG, "onCreate - [PASSWORD BASED] signin successful");
+                                    Log.i(TAG, "onCreate - [PASSWORD BASED] signin successful");
                                     database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(true);
                                     initLocalDB(auth.getCurrentUser());
                                 }
@@ -402,23 +404,23 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        Log.i(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
 
-            Log.d(TAG, "Signed in successfully, name: " + acct.getDisplayName());
+            Log.i(TAG, "Signed in successfully, name: " + acct.getDisplayName());
 
             String personName = acct.getDisplayName();
             String personPhotoUrl = acct.getPhotoUrl().toString();
             String email = acct.getEmail();
 
-            Log.d(TAG, "Name: " + personName + ", email: " + email
+            Log.i(TAG, "Name: " + personName + ", email: " + email
                     + ", Image: " + personPhotoUrl);
 
         } else {
             // Signed out, show unauthenticated UI.
-            Log.d(TAG, "Signed out successfully");
+            Log.i(TAG, "Signed out successfully");
             Toast.makeText(LoginActivity.this, getString(R.string.auth_failed), Toast.LENGTH_LONG).show();
         }
     }
@@ -506,15 +508,15 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
         @Override
         protected Void doInBackground(Void... voids) {
 
-            Log.d(TAG, "UserHandler - doInBackground");
+            Log.i(TAG, "UserHandler - starting user related data download task");
 
-            Log.d(TAG, user.getUid());
+            Log.i(TAG, "> uid:" + user.getUid());
 
             database.child("users").orderByChild("authUID").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                    Log.d(TAG, "UserHandler - doInBackground user localModel");
+                    Log.i(TAG, "UserHandler -[1]- downloading user profile from cloud firebase database");
                     int i = 0;
                     for (DataSnapshot snap : dataSnapshot.getChildren()) {
                         if (i == 0) {
@@ -522,44 +524,45 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                             i++;
                         }
                     }
+                    Log.i(TAG, localModel.getUser().toString());
 
                     database.child("trips").orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                            Log.d(TAG, "UserHandler - doInBackground user localTrips");
+                            Log.i(TAG, "UserHandler -[2]- downloading user trips from cloud firebase database");
                             ArrayList<Trip> tripList = new ArrayList<Trip>();
                             for (DataSnapshot parsedTrip : dataSnapshot.getChildren()) {
                                 Trip trip = parsedTrip.getValue(Trip.class);
                                 trip.setTripId(parsedTrip.getKey());
-                                Log.d(TAG, trip.toString());
+                                Log.i(TAG, trip.toString());
                                 tripList.add(trip);
                             }
 
-                            Log.d(TAG, String.valueOf(tripList.isEmpty()));
+                            Log.i(TAG, "> Cloud trip-list is empty: " + String.valueOf(tripList.isEmpty()));
 
                             localModel.setTrips(tripList);
 
-                            Log.d(TAG, String.valueOf(localModel.getTrips().isEmpty()));
+                            Log.i(TAG, "> Realm local trip-list is empty: " + String.valueOf(localModel.getTrips().isEmpty()));
 
                             database.child("plugs").orderByChild("userId").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                                    Log.d(TAG, "UserHandler - doInBackground user localPlugs");
+                                    Log.i(TAG, "UserHandler -[3]- downloading user plugs from cloud firebase database");
                                     ArrayList<Plug> plugList = new ArrayList<Plug>();
                                     for (DataSnapshot parsedPlug : dataSnapshot.getChildren()) {
                                         Plug plug = parsedPlug.getValue(Plug.class);
                                         plug.setPlugId(parsedPlug.getKey());
-                                        Log.d(TAG, plug.toString());
+                                        Log.i(TAG, plug.toString());
                                         plugList.add(plug);
                                     }
 
-                                    Log.d(TAG, String.valueOf(plugList.isEmpty()));
+                                    Log.i(TAG, "> Cloud plug-list is empty: " + String.valueOf(plugList.isEmpty()));
 
                                     localModel.setPlugs(plugList);
 
-                                    Log.d(TAG, String.valueOf(localModel.getPlugs().isEmpty()));
+                                    Log.i(TAG, "> Realm local plug-list is empty: " + String.valueOf(localModel.getPlugs().isEmpty()));
 
                                     cacheUserProfileImage(user);
                                 }

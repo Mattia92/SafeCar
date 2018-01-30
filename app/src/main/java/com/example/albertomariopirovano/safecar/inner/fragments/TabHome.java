@@ -144,7 +144,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView");
+        Log.i(TAG, "Creating view");
 
         v = inflater.inflate(R.layout.test, container, false);
 
@@ -217,10 +217,10 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 ViewGroup.LayoutParams params1 = f1.getLayoutParams();
                 ViewGroup.LayoutParams params2 = f2.getLayoutParams();
 
-                //Log.d(TAG, String.valueOf(height));
-                //Log.d(TAG, String.valueOf(width));
-                //Log.d(TAG, String.valueOf(223 * 8));
-                //Log.d(TAG, String.valueOf(height));
+                //Log.i(TAG, String.valueOf(height));
+                //Log.i(TAG, String.valueOf(width));
+                //Log.i(TAG, String.valueOf(223 * 8));
+                //Log.i(TAG, String.valueOf(height));
 
                 params1.height = height;
                 params1.width = width;
@@ -279,10 +279,10 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
     private void loadStateIfNeeded() {
         if (savedStateHandler.hasTag("TabHome")) {
-            Log.d(TAG, "loading previous state");
+            Log.i(TAG, "Loading previous state");
             Bundle oldState = savedStateHandler.retrieveState("TabHome");
 
-            Log.d(TAG, String.valueOf(oldState.getInt("viewFlipperKey")));
+            Log.i(TAG, "Getting element from bundle: " + String.valueOf(oldState.getInt("viewFlipperKey")));
 
             if (oldState.getInt("viewFlipperKey") == 0) {
                 homepagetext.setVisibility(View.VISIBLE);
@@ -347,12 +347,12 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private void startTrip(View view) {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-            Log.d(TAG, "Location not enabled");
+            Log.i(TAG, "Location not enabled");
             displayLocationSettingsRequest(getActivity());
 
         } else {
 
-            Log.d(TAG, "Location enabled");
+            Log.i(TAG, "Location enabled");
 
             if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -403,21 +403,21 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 final com.google.android.gms.common.api.Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        //Log.d(TAG, "All location settings are satisfied.");
+                        //Log.i(TAG, "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        //Log.d(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+                        //Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
 
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
                             status.startResolutionForResult((Activity) context, REQUEST_ENABLE_LOC);
                         } catch (IntentSender.SendIntentException e) {
-                            //Log.d(TAG, "PendingIntent unable to execute request.");
+                            //Log.i(TAG, "PendingIntent unable to execute request.");
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        //Log.d(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        //Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
                         break;
                 }
             }
@@ -439,17 +439,17 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
 
-                //Log.d(TAG, "Bluetooth activated");
+                //Log.i(TAG, "Bluetooth activated");
                 Toast.makeText(getActivity().getApplicationContext(), "Bluetooth activated !", Toast.LENGTH_SHORT).show();
             } else {
 
-                //Log.d(TAG, "Bluetooth not activated even if asked");
+                //Log.i(TAG, "Bluetooth not activated even if asked");
                 Toast.makeText(getActivity().getApplicationContext(), "Bluetooth not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
 
-                //Log.d(TAG, "Location activated");
+                //Log.i(TAG, "Location activated");
                 Toast.makeText(getActivity().getApplicationContext(), "Location activated !", Toast.LENGTH_SHORT).show();
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
@@ -464,7 +464,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
             } else {
 
-                //Log.d(TAG, "Location not activated even if asked");
+                //Log.i(TAG, "Location not activated even if asked");
                 Toast.makeText(getActivity().getApplicationContext(), "Location not activated even if asked. Activate it for using the service !", Toast.LENGTH_SHORT).show();
             }
         }
@@ -486,18 +486,18 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        Log.i(TAG, "Changing fragment");
 
         synchronized (localModel) {
             if (localModel.getDropped() == Boolean.FALSE) {
 
-                Log.d(TAG, "building bundle for saving the current state");
+                Log.i(TAG, "Building bundle to save the current state");
 
                 Bundle state = new Bundle();
 
                 //viewflipper state
                 state.putInt("viewFlipperKey", viewFlipper.getDisplayedChild());
-                Log.d(TAG, String.valueOf(state.getInt("viewFlipperKey")));
+                Log.i(TAG, "Adding element to bundle: " + String.valueOf(state.getInt("viewFlipperKey")));
 
                 if (viewFlipper.getDisplayedChild() == 0) {
 
@@ -511,31 +511,32 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                         lock2.notifyAll();
                     }
                     state.putSerializable("tripHandler", tripHandler); // tripHandler.reloadTaskState();
-                    Log.d(TAG, String.valueOf((TripHandler) state.getSerializable("tripHandler")));
+                    Log.i(TAG, "Adding element to bundle: " + String.valueOf((TripHandler) state.getSerializable("tripHandler")));
                     state.putSerializable("dsiEvaluator", dsiEvaluator); //dsiEvaluator.reloadTaskState();
-                    Log.d(TAG, String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
+                    Log.i(TAG, "Adding element to bundle: " + String.valueOf((DSIEvaluator) state.getSerializable("dsiEvaluator")));
                     state.putString("pause_resumeTripTextView", pause_resumeTripTextView.getText().toString());
-                    Log.d(TAG, state.getString("pause_resumeTripTextView"));
+                    Log.i(TAG, "Adding element to bundle: " + state.getString("pause_resumeTripTextView"));
                 } else if (viewFlipper.getDisplayedChild() == 2) {
                     //state.putString("dsiEvaluationVisualization", dsiEvaluation.getText().toString());
-                    //Log.d(TAG, state.getString("dsiEvaluationVisualization"));
+                    //Log.i(TAG, state.getString("dsiEvaluationVisualization"));
                     //state.putString("tripNameVisualization", tripName.getText().toString());
-                    //Log.d(TAG, state.getString("tripNameVisualization"));
+                    //Log.i(TAG, state.getString("tripNameVisualization"));
 
                     List<Trip> trips = localModel.getTrips();
-                    Log.d(TAG, String.valueOf(trips.size()));
+                    Log.i(TAG, String.valueOf(trips.size()));
                     Collections.sort(trips, new DateComparator());
                     state.putSerializable("trip", trips.get(0));
+                    Log.i(TAG, "Adding element to bundle: " + String.valueOf((Trip) state.getSerializable("trip")));
                     //state.putParcelableArrayList("markersToBePlaced", (ArrayList<? extends Parcelable>) trips.get(trips.size() - 1).getMarkers());
-                    //Log.d(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
+                    //Log.i(TAG, String.valueOf(state.getParcelableArrayList("markersToBePlaced")));
                 }
 
                 savedStateHandler.addState("TabHome", state);
-                Log.d(TAG, String.valueOf(savedStateHandler.hasTag("TabHome")));
+                Log.i(TAG, "Saved state is present: " + String.valueOf(savedStateHandler.hasTag("TabHome")));
 
                 mapView.onPause();
             } else {
-                Log.d(TAG, "local model is flag as dropped");
+                Log.i(TAG, "Local model has been flagged as dropped");
             }
         }
     }
@@ -585,9 +586,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             i++;
         }
 
-        Log.d(TAG, String.valueOf(markerPoints.size()));
-        Log.d(TAG, markerPoints.get(0).toString());
-        Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
+        Log.i(TAG, String.valueOf(markerPoints.size()));
+        Log.i(TAG, markerPoints.get(0).toString());
+        Log.i(TAG, markerPoints.get(markers.size() - 1).toString());
 
         LatLng origin = markerPoints.get(0);
         LatLng dest = markerPoints.get(markers.size() - 1);
@@ -648,7 +649,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        Log.d(TAG, "onMapReady");
+        Log.i(TAG, "The map is ready");
 
         map = googleMap;
 
@@ -658,7 +659,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
             case PackageManager.PERMISSION_DENIED:
-                Log.d(TAG, "ACCESS COARSE LOCATION denied");
+                Log.i(TAG, "ACCESS COARSE LOCATION denied");
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                         REQUEST_ACCESS_COARSE_LOCATION);

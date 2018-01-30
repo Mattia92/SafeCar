@@ -62,7 +62,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(TAG, "onDestroyView");
+        Log.i(TAG, "Destroying view");
     }
 
     @Override
@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView");
+        Log.i(TAG, "Creating view");
 
         v = inflater.inflate(R.layout.tabs_viewpager_layout, container, false);
 

@@ -74,15 +74,15 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                Log.d(TAG, "discovery started");
+                Log.i(TAG, "discovery started");
 
                 isBluetoothScanning = Boolean.TRUE;
-                Log.d(TAG, String.valueOf(isBluetoothScanning));
+                Log.i(TAG, String.valueOf(isBluetoothScanning));
 
                 progressBar.setVisibility(View.VISIBLE);
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Log.d(TAG, "discovery finished");
+                Log.i(TAG, "discovery finished");
 
                 progressBar.setVisibility(View.GONE);
 
@@ -146,7 +146,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 }
 
                 isBluetoothScanning = Boolean.FALSE;
-                Log.d(TAG, String.valueOf(isBluetoothScanning));
+                Log.i(TAG, String.valueOf(isBluetoothScanning));
 
                 getActivity().unregisterReceiver(receiver);
                 registeredReceiver = false;
@@ -155,7 +155,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 //bluetooth device found
                 BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-                Log.d(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
+                Log.i(TAG, "Found device: NAME: " + device.getName() + " - MAC_ADDRESS" + device.getAddress());
 
                 for (Plug plug : localModel.getPlugs()) {
                     if (plug.address_MAC.equals(device.getAddress()) && !plug.getIsDropped()) {
@@ -175,7 +175,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 toBeAdded.add(newPlug);
 
             } else {
-                Log.d(TAG, "I really don't know why you are here");
+                Log.i(TAG, "I really don't know why you are here");
             }
         }
     };
@@ -271,18 +271,18 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
 
             if (!bluetoothAdapter.isEnabled()) {
 
-                //Log.d(TAG, "Bluetooth not enabled");
+                //Log.i(TAG, "Bluetooth not enabled");
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
             } else {
 
-                //Log.d(TAG, "Bluetooth enabled");
+                //Log.i(TAG, "Bluetooth enabled");
                 //bluetoothSearchPairedDevices();
 
                 switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     case PackageManager.PERMISSION_DENIED:
-                        Log.d(TAG, "ACCESS COARSE LOCATION denied");
+                        Log.i(TAG, "ACCESS COARSE LOCATION denied");
                         ActivityCompat.requestPermissions(getActivity(),
                                 new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},
                                 REQUEST_ACCESS_COARSE_LOCATION);
@@ -298,7 +298,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
             }
 
         } else {
-            //Log.d(TAG, "Bluetooth not supported");
+            //Log.i(TAG, "Bluetooth not supported");
             scanButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -313,7 +313,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         super.onDestroy();
 
         if (registeredReceiver) {
-            Log.d(TAG, "Receiver unregistered");
+            Log.i(TAG, "Receiver unregistered");
             getActivity().unregisterReceiver(receiver);
         }
     }
@@ -324,15 +324,15 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
 
         synchronized (localModel) {
             if (localModel.getDropped() == Boolean.FALSE) {
-                Log.d(TAG, "onPause - building bundle for saving the current state");
+                Log.i(TAG, "onPause - building bundle for saving the current state");
 
                 Bundle state = new Bundle();
 
                 state.putBoolean("isBluetoothScanning", isBluetoothScanning);
-                Log.d(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
+                Log.i(TAG, String.valueOf(state.getBoolean("isBluetoothScanning")));
 
                 savedStateHandler.addState("PairPlugFragment", state);
-                Log.d(TAG, String.valueOf(savedStateHandler.hasTag("PairPlugFragment")));
+                Log.i(TAG, String.valueOf(savedStateHandler.hasTag("PairPlugFragment")));
                 if(bluetoothAdapter != null)
                     bluetoothAdapter.cancelDiscovery();
             }
@@ -341,7 +341,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
 
     private void loadStateIfNeeded() {
         if (savedStateHandler.hasTag("PairPlugFragment")) {
-            Log.d(TAG, "loading previous state");
+            Log.i(TAG, "loading previous state");
             Bundle oldState = savedStateHandler.retrieveState("PairPlugFragment");
 
             scanButton.setVisibility(View.VISIBLE);

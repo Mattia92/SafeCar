@@ -41,27 +41,27 @@ public class TabOrderDuration extends Fragment implements TabFragment, TAGInterf
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        Log.d(TAG, "onCreateView");
+        Log.i(TAG, "Creating view");
 
         final View v = inflater.inflate(R.layout.tab_order_duration, container, false);
 
         listView = (ListView) v.findViewById(R.id.listDuration);
 
         if(listView == null) {
-            System.out.println("Null list view");
+            Log.i(TAG,"Null list view");
         }
 
         swipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefreshHomeDuration);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.i(TAG, "onRefresh");
+                Log.i(TAG, "Refreshed");
                 dataService.insertTrips("duration", v, getComparator(), listView, 0, 10);
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
 
-        Log.d("TabOrderDuration", "insertTrips");
+        Log.i(TAG, "Hidden trip insertion task");
         dataService.insertTrips("duration", v, getComparator(), listView, 0, 10);
 
         return v;

@@ -101,7 +101,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Log.d(TAG, "onLocationChanged");
+            Log.i(TAG, "onLocationChanged");
             locationManager.removeUpdates(this);
             trip.getMarkers().add(new MapPoint(location.getLatitude(), location.getLongitude()));
 
@@ -115,8 +115,8 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             //startingPoint.setLat(location.getLatitude());
 
             MapPoint mp = trip.getMarkers().get(trip.getMarkers().size() - 1);
-            Log.d(TAG, mp.toString());
-            Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+            Log.i(TAG, mp.toString());
+            Log.i(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
         }
 
         @Override
@@ -147,10 +147,10 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
     @Override
     protected Void doInBackground(Void... voids) {
-        Log.d(TAG, "doInBackground");
+        Log.i(TAG, "doInBackground");
 
         //startJob();
-        //Log.d(TAG, "after startJob");
+        //Log.i(TAG, "after startJob");
 
         tStart = System.currentTimeMillis();
 
@@ -160,7 +160,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             /*
             try {
                 //if the mappoint is very near to the last one picked drop it ( implicit cleaning )
-                Log.d(TAG, "sleep this thread for a while");
+                Log.i(TAG, "sleep this thread for a while");
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -168,13 +168,13 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             */
 
                 if (trip.getMarkers().size() + 1 < 8) {
-                    //Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+                    //Log.i(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
 
                     //Location wayLocation = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
                     //MapPoint wayPoint = new MapPoint(wayLocation.getLatitude(), wayLocation.getLongitude());
 
                 /*try {
-                    Log.d(TAG, gcd.getFromLocation(wayPoint.getLat(), wayPoint.getLng(), 1).get(0).getLocality());
+                    Log.i(TAG, gcd.getFromLocation(wayPoint.getLat(), wayPoint.getLng(), 1).get(0).getLocality());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }*/
@@ -184,14 +184,14 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                     getLocation();
 
                 } else {
-                    Log.d(TAG, "No more markers allowed");
+                    Log.i(TAG, "No more markers allowed");
                 }
 
-                Log.d(TAG, "wait on lock");
+                Log.i(TAG, "wait on lock");
                 long s = System.currentTimeMillis();
                 savedStateHandler.waitOnLock(40000);
                 long f = System.currentTimeMillis();
-                Log.d(TAG, "awakened from lock t = " + String.valueOf(f - s));
+                Log.i(TAG, "awakened from lock t = " + String.valueOf(f - s));
             }
 
             while (pauseTask) {
@@ -200,7 +200,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         } while (!stopTask);
 
-        Log.d(TAG, "TripHandler task has been stopped !");
+        Log.i(TAG, "TripHandler task has been stopped !");
 
         finishJob();
 
@@ -210,13 +210,13 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     /*
     private void startJob() {
 
-        Log.d(TAG, "startJob");
+        Log.i(TAG, "startJob");
         getLocation();
     }
     */
 
     private void finishJob() {
-        Log.d(TAG, "finishJob");
+        Log.i(TAG, "finishJob");
 
         if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -238,7 +238,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         //sample milano
         double d = Math.random();
-        Log.d(TAG, String.valueOf(d));
+        Log.i(TAG, String.valueOf(d));
 
         /*
         if (d <= 0.2) {
@@ -261,7 +261,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         getLocation();
 
-        Log.d(TAG, String.valueOf("Markers size: " + trip.getMarkers().size()));
+        Log.i(TAG, String.valueOf("Markers size: " + trip.getMarkers().size()));
 
         //startingPoint.setLng(location.getLongitude());
         //startingPoint.setLat(location.getLatitude());
@@ -283,7 +283,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         for (MapPoint t : trip.getMarkers()) {
             try {
-                Log.d(TAG, gcd.getFromLocation(t.getLat(), t.getLng(), 1).get(0).getLocality());
+                Log.i(TAG, gcd.getFromLocation(t.getLat(), t.getLng(), 1).get(0).getLocality());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -318,7 +318,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         trip.setDepName(addresses_start.get(0).getLocality());
         trip.setArrName(addresses_close.get(0).getLocality());
 
-        Log.d(TAG, trip.toString());
+        Log.i(TAG, trip.toString());
 
         localModel.getTrips().add(trip);
     }
@@ -340,13 +340,13 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
 
         if (Looper.myLooper() == null) {
-            Log.d(TAG, "looper == null");
+            Log.i(TAG, "looper == null");
             Looper.myLooper().prepare();
         }
 
 
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Log.d(TAG, "GPS provider enabled");
+            Log.i(TAG, "GPS provider enabled");
 
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -381,7 +381,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             });
             Location locationGPS = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (locationGPS != null) {
-                Log.d(TAG, "Location taken with GPS Provider is not null");
+                Log.i(TAG, "Location taken with GPS Provider is not null");
                 trip.getMarkers().add(new MapPoint(locationGPS.getLatitude(), locationGPS.getLongitude()));
 
                 ((Activity) context).runOnUiThread(new Runnable() {
@@ -390,12 +390,12 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                     }
                 });
 
-                Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
-                Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+                Log.i(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
+                Log.i(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
             } else {
-                Log.d(TAG, "Location taken with GPS Provider is null");
+                Log.i(TAG, "Location taken with GPS Provider is null");
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    Log.d(TAG, "Newtork provider enabled");
+                    Log.i(TAG, "Newtork provider enabled");
                     if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
                         //    ActivityCompat#requestPermissions
@@ -429,7 +429,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                     });
                     Location locationNETWORK = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (locationNETWORK != null) {
-                        Log.d(TAG, "Location taken with Newtork Provider is not null");
+                        Log.i(TAG, "Location taken with Newtork Provider is not null");
                         trip.getMarkers().add(new MapPoint(locationNETWORK.getLatitude(), locationNETWORK.getLongitude()));
 
                         ((Activity) context).runOnUiThread(new Runnable() {
@@ -438,29 +438,29 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                             }
                         });
 
-                        Log.d(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
-                        Log.d(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
+                        Log.i(TAG, trip.getMarkers().get(trip.getMarkers().size() - 1).toString());
+                        Log.i(TAG, "Markers size: " + String.valueOf(trip.getMarkers().size()));
                     } else {
-                        Log.d(TAG, "Location taken with Newtork Provider is null");
+                        Log.i(TAG, "Location taken with Newtork Provider is null");
                         //This is what you need:
                         if (Looper.myLooper() == null) {
-                            Log.d(TAG, "looper == null");
+                            Log.i(TAG, "looper == null");
                             Looper.myLooper().prepare();
                         }
                         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener, Looper.getMainLooper());
                     }
                 } else {
-                    Log.d(TAG, "Newtork provider NOT enabled");
+                    Log.i(TAG, "Newtork provider NOT enabled");
                 }
             }
         } else {
-            Log.d(TAG, "GPS provider NOT enabled");
+            Log.i(TAG, "GPS provider NOT enabled");
             displayLocationSettingsRequest(context);
         }
     }
 
     private void displayLocationSettingsRequest(final Context context) {
-        Log.d(TAG, "displayLocationSettingsRequest");
+        Log.i(TAG, "displayLocationSettingsRequest");
         GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API).build();
         googleApiClient.connect();
@@ -480,21 +480,21 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
                 final com.google.android.gms.common.api.Status status = result.getStatus();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
-                        Log.d(TAG, "All location settings are satisfied.");
+                        Log.i(TAG, "All location settings are satisfied.");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        Log.d(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
+                        Log.i(TAG, "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
 
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the result
                             // in onActivityResult().
                             status.startResolutionForResult((Activity) context, REQUEST_ENABLE_LOC);
                         } catch (IntentSender.SendIntentException e) {
-                            Log.d(TAG, "PendingIntent unable to execute request.");
+                            Log.i(TAG, "PendingIntent unable to execute request.");
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Log.d(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
                         break;
                 }
             }
@@ -502,7 +502,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     }
 
     protected void onPreExecute() {
-        Log.d(TAG, "onPreExecute");
+        Log.i(TAG, "onPreExecute");
     }
 
     private void restoreAfterTripVisualization(Trip trip) {
@@ -543,16 +543,16 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
             i++;
         }
 
-        Log.d(TAG, String.valueOf(markerPoints.size()));
-        //Log.d(TAG, markerPoints.get(0).toString());
-        //Log.d(TAG, markerPoints.get(markers.size() - 1).toString());
+        Log.i(TAG, String.valueOf(markerPoints.size()));
+        //Log.i(TAG, markerPoints.get(0).toString());
+        //Log.i(TAG, markerPoints.get(markers.size() - 1).toString());
 
         LatLng origin = markerPoints.get(0);
         LatLng dest = markerPoints.get(markers.size() - 1);
 
         // Getting URL to the Google Directions API
         String url = getDirectionsUrl(origin, dest);
-        Log.d(TAG, url);
+        Log.i(TAG, url);
 
         DownloadTask downloadTask = new DownloadTask(map);
 
@@ -589,9 +589,9 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
         String waypoints = "waypoints=";
         for (int i = 1; i < markerPoints.size() - 1; i++) {
             LatLng point = (LatLng) markerPoints.get(i);
-            //Log.d(TAG, point.toString());
+            //Log.i(TAG, point.toString());
             waypoints += point.latitude + "," + point.longitude + "|";
-            //Log.d(TAG, waypoints);
+            //Log.i(TAG, waypoints);
         }
 
         // Building the parameters to the web service
@@ -609,7 +609,7 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        Log.d(TAG, "onPostExecute");
+        Log.i(TAG, "onPostExecute");
 
         synchronized (lock) {
             if (viewAvailable) {
@@ -627,12 +627,12 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
     }
 
     public void reloadTaskState() {
-        Log.d(TAG, "reloadTaskState");
+        Log.i(TAG, "reloadTaskState");
         viewAvailable = Boolean.TRUE;
     }
 
     public void viewNotAvailable() {
-        Log.d(TAG, "viewNotAvailable");
+        Log.i(TAG, "viewNotAvailable");
         viewAvailable = Boolean.FALSE;
     }
 

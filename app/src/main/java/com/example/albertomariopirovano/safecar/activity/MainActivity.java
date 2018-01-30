@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-                Log.d(TAG, ((TAGInterface) listFragments.get(position)).getAssignedTag());
+                Log.i(TAG, ((TAGInterface) listFragments.get(position)).getAssignedTag());
 
                 transaction.replace(R.id.main_content, listFragments.get(position), ((TAGInterface) listFragments.get(position)).getAssignedTag()).commit();
 
@@ -178,37 +178,38 @@ public class MainActivity extends AppCompatActivity {
 
         handleDrawerProfileDetails();
 
+        Log.i(TAG, "Preparing fragments");
+
     }
 
 
     private void testRealmDB() {
 
-        Log.d(TAG, "testRealmDB - testing Realm cache");
+        Log.i(TAG, "Testing just parsed realm local cache");
 
         User u = localModel.getUser();
 
-        Log.d(TAG, u.toString());
-        Log.d(TAG, "testRealmDB - 1] local user cached successfully");
+        Log.i(TAG, "User dropped: " + localModel.getDropped().toString());
 
+        if (u != null) {
+            Log.i(TAG, u.toString());
+            Log.i(TAG, "1] Local user cached successfully");
+        }
 
         if (profilePngFile.exists()) {
-            Log.d(TAG, "testRealmDB - 2.0] " + profilePngFile.getAbsolutePath() + " - exists");
-            Log.d(TAG, "testRealmDB - 2.1] local user-profile image cached");
+            Log.i(TAG, "2.0] " + profilePngFile.getAbsolutePath() + " exists");
+            Log.i(TAG, "2.1] local user-profile image cached");
         } else {
-            Log.d(TAG, "testRealmDB - 2.0] " + profilePngFile.getAbsolutePath() + " - doesn't exist");
+            Log.i(TAG, "2.0] " + profilePngFile.getAbsolutePath() + " doesn't exist");
         }
 
         if (localModel.getTrips() != null) {
-            for (Trip t : localModel.getTrips()) {
-                Log.d(TAG, t.toString());
-            }
-            Log.d(TAG, "testRealmDB - 3] local trips cached");
+            Log.i(TAG, "3] local trips cached");
+            Log.i(TAG, "> This user has " + String.valueOf(localModel.getTrips().size()) + " trips");
         }
         if (localModel.getPlugs() != null) {
-            for (Plug p : localModel.getPlugs()) {
-                Log.d(TAG, p.toString());
-            }
-            Log.d(TAG, "testRealmDB - 4] local plugs cached");
+            Log.i(TAG, "4] local plugs cached");
+            Log.i(TAG, "> This user has " + String.valueOf(localModel.getPlugs().size()) + " plugs");
         }
     }
 
@@ -232,13 +233,13 @@ public class MainActivity extends AppCompatActivity {
 
         Bitmap b;
         if (localModel.getUser().photoURL == null || localModel.getUser().photoURL.isEmpty()) {
-            Log.d(TAG, "handleDrawerProfileDetails - load standard profile image");
+            Log.i(TAG, "Loading standard profile image");
             b = BitmapFactory.decodeResource(getResources(), R.drawable.user);
             RoundedBitmapDrawable img = RoundedBitmapDrawableFactory.create(getResources(), b);
             img.setCircular(true);
             iconImageView.setImageDrawable(img);
         } else {
-            Log.d(TAG, "handleDrawerProfileDetails - load Google+ profile image");
+            Log.i(TAG, "Loading Google+ profile image");
             //try {
             //    b = BitmapFactory.decodeStream(new FileInputStream(profilePngFile));
             //} catch (FileNotFoundException e) {
@@ -261,11 +262,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                Log.d(TAG, "addLogoutListener");
                 if (user == null) {
-                    Log.d(TAG, "addLogoutListener - null user");
+                    Log.i(TAG, "There is no user binded with this session. Reload the LoginActivity");
                     // user auth state is changed - user is null
                     // launch login activity
+
+                    Log.i("> Switching activity <", "Main Activity -> Login Activity");
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
                 }
@@ -288,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Log.d("MainActivity", "onOptionsItemSelected");
+        Log.i(TAG, "Option item has been selected");
 
         switch (item.getItemId()) {
 
@@ -298,9 +300,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (profilePngFile.exists()) {
                     if (profilePngFile.delete()) {
-                        Log.d(TAG, "file Deleted :" + profilePngFile.getPath());
+                        Log.i(TAG, "Profile image deleted :" + profilePngFile.getPath());
                     } else {
-                        Log.d(TAG, "file not Deleted :" + profilePngFile.getPath());
+                        Log.i(TAG, "Profile image not delated :" + profilePngFile.getPath());
                     }
                 }
 
@@ -312,7 +314,9 @@ public class MainActivity extends AppCompatActivity {
                 savedStateHandler.removeState("TabHome");
                 savedStateHandler.removeTargetPlug();
 
-                Log.d(TAG, "Logout current user");
+                Log.i(TAG, "Logging out current user");
+
+                Log.i("> Switching activity <", "Main Activity -> Login Activity");
 
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
@@ -324,9 +328,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if (profilePngFile.exists()) {
                     if (profilePngFile.delete()) {
-                        Log.d(TAG, "file Deleted :" + profilePngFile.getPath());
+                        Log.i(TAG, "file Deleted :" + profilePngFile.getPath());
                     } else {
-                        Log.d(TAG, "file not Deleted :" + profilePngFile.getPath());
+                        Log.i(TAG, "file not Deleted :" + profilePngFile.getPath());
                     }
                 }
 
@@ -346,68 +350,19 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                 } else {
-                    Log.d(TAG, "Your are trying to eliminate an account while you already performed logout !");
+                    Log.i(TAG, "Your are trying to eliminate an account while you already performed logout !");
                 }
 
                 localModel.drop();
 
-                Log.d(TAG, "Delete current user");
+                Log.i(TAG, "Deleting current user");
 
                 return true;
 
             default:
 
-                Log.d(TAG, "DEFAULT CASE !");
-
                 if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
                     return true;
-                }
-
-                Fragment f = getSupportFragmentManager().findFragmentByTag("ManageplugsFragment");
-                if (f != null && f.isVisible()) {
-                    Log.d(TAG, "ManageplugsFragment VISIBLE");
-                    onBackPressed();
-                    setTitle("Smart Objects");
-                    return super.onOptionsItemSelected(item);
-                }
-                f = getSupportFragmentManager().findFragmentByTag("PairPlugFragment");
-                if (f != null && f.isVisible()) {
-                    Log.d(TAG, "PairPlugFragment VISIBLE");
-                    onBackPressed();
-                    setTitle("Smart Objects");
-                    return super.onOptionsItemSelected(item);
-                }
-                f = getSupportFragmentManager().findFragmentByTag("SettingsPlugs");
-                if (f != null && f.isVisible()) {
-                    Log.d(TAG, "SettingsPlugs VISIBLE");
-                    onBackPressed();
-                    setEnabledNavigationDrawer(true);
-                    setTitle(getString(R.string.action_settings));
-                    return super.onOptionsItemSelected(item);
-                }
-                f = getSupportFragmentManager().findFragmentByTag("SettingsNotificationFragment");
-                if (f != null && f.isVisible()) {
-                    Log.d(TAG, "SettingsNotificationFragment VISIBLE");
-                    onBackPressed();
-                    setEnabledNavigationDrawer(true);
-                    setTitle(getString(R.string.action_settings));
-                    return super.onOptionsItemSelected(item);
-                }
-                f = getSupportFragmentManager().findFragmentByTag("SettingsShareFragment");
-                if (f != null && f.isVisible()) {
-                    Log.d(TAG, "SettingsShareFragment VISIBLE");
-                    onBackPressed();
-                    setEnabledNavigationDrawer(true);
-                    setTitle(getString(R.string.action_settings));
-                    return super.onOptionsItemSelected(item);
-                }
-                f = getSupportFragmentManager().findFragmentByTag("ReportFragment");
-                if (f != null && f.isVisible()) {
-                    Log.d(TAG, "ReportFragment VISIBLE");
-                    onBackPressed();
-                    setEnabledNavigationDrawer(true);
-                    setTitle("Home");
-                    return super.onOptionsItemSelected(item);
                 }
 
                 onBackPressed();
@@ -428,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment f = getSupportFragmentManager().findFragmentByTag("SettingsFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "SettingsFragment VISIBLE");
+            Log.i(TAG, "SettingsFragment VISIBLE");
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure you want to exit?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -447,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
         }
         f = getSupportFragmentManager().findFragmentByTag("HomeFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "HomeFragment VISIBLE");
+            Log.i(TAG, "HomeFragment VISIBLE");
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure you want to exit?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -466,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
         }
         f = getSupportFragmentManager().findFragmentByTag("ProfileFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "ProfileFragment VISIBLE");
+            Log.i(TAG, "ProfileFragment VISIBLE");
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure you want to exit?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -485,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
         }
         f = getSupportFragmentManager().findFragmentByTag("ShareFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "ShareFragment VISIBLE");
+            Log.i(TAG, "ShareFragment VISIBLE");
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure you want to exit?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -504,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
         }
         f = getSupportFragmentManager().findFragmentByTag("SettingsPlugs");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "SettingsPlugs VISIBLE");
+            Log.i(TAG, "SettingsPlugs VISIBLE");
             setEnabledNavigationDrawer(true);
             setTitle(getString(R.string.action_settings));
             super.onBackPressed();
@@ -512,21 +467,21 @@ public class MainActivity extends AppCompatActivity {
         }
         f = getSupportFragmentManager().findFragmentByTag("PairPlugFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "PairPlugFragment VISIBLE");
+            Log.i(TAG, "PairPlugFragment VISIBLE");
             setTitle(getString(R.string.action_settings));
             super.onBackPressed();
             return;
         }
         f = getSupportFragmentManager().findFragmentByTag("ManageplugsFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "ManageplugsFragment VISIBLE");
+            Log.i(TAG, "ManageplugsFragment VISIBLE");
             setTitle(getString(R.string.action_settings));
             super.onBackPressed();
             return;
         }
         f = getSupportFragmentManager().findFragmentByTag("SettingsNotificationFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "SettingsNotificationFragment VISIBLE");
+            Log.i(TAG, "SettingsNotificationFragment VISIBLE");
             setEnabledNavigationDrawer(true);
             setTitle(getString(R.string.action_settings));
             super.onBackPressed();
@@ -534,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
         }
         f = getSupportFragmentManager().findFragmentByTag("SettingsShareFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "SettingsShareFragment VISIBLE");
+            Log.i(TAG, "SettingsShareFragment VISIBLE");
             setEnabledNavigationDrawer(true);
             setTitle(getString(R.string.action_settings));
             super.onBackPressed();
@@ -543,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
 
         f = getSupportFragmentManager().findFragmentByTag("ReportFragment");
         if (f != null && f.isVisible()) {
-            Log.d(TAG, "ReportFragment VISIBLE");
+            Log.i(TAG, "ReportFragment VISIBLE");
             setEnabledNavigationDrawer(true);
             setTitle("Home");
             super.onBackPressed();

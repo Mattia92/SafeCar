@@ -84,7 +84,7 @@ public class LocalModel {
 
     public void updateCloudModel() {
 
-        Log.d(TAG, "synchronize cloud database");
+        Log.i(TAG, "synchronize cloud database");
 
         for (final Trip trip : trips) {
             if (trip.getIsnew() && !trip.getDropped()) {
@@ -127,7 +127,7 @@ public class LocalModel {
             }
         }
 
-        Log.d(TAG, "update resources before exit");
+        Log.i(TAG, "update resources before exit");
 
         database.child("users").child(user.authUID).child("percentage").setValue(user.percentage);
         database.child("users").child(user.authUID).child("level").setValue(user.level);

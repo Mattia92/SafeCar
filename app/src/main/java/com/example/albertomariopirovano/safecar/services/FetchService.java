@@ -46,8 +46,9 @@ public class FetchService {
 
     public void insertTrips(final String attributeToShow, final View v, final Comparator c, final ListView l, int startRange, int endRange) {
 
-        new PopolateTrips(c, attributeToShow, v, l, startRange, endRange).execute();
         numTask++;
+        Log.i(TAG, "Asynchronous trip loading task id is: " + String.valueOf(numTask));
+        new PopolateTrips(c, attributeToShow, v, l, startRange, endRange).execute();
 
     }
 
@@ -72,8 +73,6 @@ public class FetchService {
 
         @Override
         protected List<Map<String, String>> doInBackground(Void... voids) {
-
-            Log.d(TAG, "Trips loaded for the " + numTask + " time");
 
             for (Trip t : localModel.getTrips()) {
                 if (t.getDropped().equals(Boolean.FALSE)) {

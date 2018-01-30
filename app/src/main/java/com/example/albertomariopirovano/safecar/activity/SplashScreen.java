@@ -71,6 +71,9 @@ public class SplashScreen extends Activity {
                 // Start your app main activity
 
                 Intent i = new Intent(SplashScreen.this, LoginActivity.class);
+
+                Log.i("> Switching activity <", "Splash Activity -> Login Activity");
+
                 startActivity(i);
 
                 // close this activity
@@ -81,7 +84,7 @@ public class SplashScreen extends Activity {
 
     private void initRealmLocalDb() {
 
-        Log.d(TAG, "initRealmLocalDb");
+        Log.i(TAG, "initRealmLocalDb");
 
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()

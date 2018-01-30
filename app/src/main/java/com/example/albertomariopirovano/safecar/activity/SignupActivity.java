@@ -122,7 +122,7 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Log.d("createUserPassword", "userId = " + task.getResult().getUser().getUid());
+                                    Log.i("createUserPassword", "userId = " + task.getResult().getUser().getUid());
                                     //String userID = database.child("users").push().getKey();
                                     database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(task.getResult().getUser().getUid(), completeName, task.getResult().getUser().getEmail(), null));
                                     initLocalDB(auth.getCurrentUser());
@@ -151,7 +151,7 @@ public class SignupActivity extends AppCompatActivity {
 
     private void initLocalDB(FirebaseUser currentUser) {
 
-        Log.d(TAG, "initLocalDb");
+        Log.i(TAG, "initLocalDb");
 
         try {
             new UserHandler(currentUser).execute().get();
@@ -173,15 +173,15 @@ public class SignupActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            Log.d(TAG, "UserHandler - doInBackground");
+            Log.i(TAG, "UserHandler - doInBackground");
 
-            Log.d(TAG, user.getUid());
+            Log.i(TAG, user.getUid());
 
             database.child("users").orderByChild("authUID").equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                    Log.d(TAG, "UserHandler - doInBackground user localModel");
+                    Log.i(TAG, "UserHandler - doInBackground user localModel");
                     int i = 0;
                     for (DataSnapshot snap : dataSnapshot.getChildren()) {
                         if (i == 0) {
@@ -194,7 +194,7 @@ public class SignupActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                            Log.d(TAG, "UserHandler - doInBackground user localTrips");
+                            Log.i(TAG, "UserHandler - doInBackground user localTrips");
                             ArrayList<Trip> tripList = new ArrayList<Trip>();
                             for (DataSnapshot parsedTrip : dataSnapshot.getChildren()) {
                                 Trip trip = parsedTrip.getValue(Trip.class);
@@ -207,7 +207,7 @@ public class SignupActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                                    Log.d(TAG, "UserHandler - doInBackground user localPlugs");
+                                    Log.i(TAG, "UserHandler - doInBackground user localPlugs");
                                     ArrayList<Plug> plugList = new ArrayList<Plug>();
                                     for (DataSnapshot parsedPlug : dataSnapshot.getChildren()) {
                                         Plug plug = parsedPlug.getValue(Plug.class);
