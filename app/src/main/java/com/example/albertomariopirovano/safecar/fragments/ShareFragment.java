@@ -19,7 +19,6 @@ import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 public class ShareFragment extends Fragment implements TAGInterface {
 
     private static final String TAG = "ShareFragment";
-    private Button shareButton;
     private Intent shareIntent;
     private String shareBody = "This is a great app. You should try !";
 
@@ -33,7 +32,7 @@ public class ShareFragment extends Fragment implements TAGInterface {
 
         View v = inflater.inflate(R.layout.fragment_share, container, false);
 
-        shareButton = (Button) v.findViewById(R.id.shareButton);
+        Button shareButton = (Button) v.findViewById(R.id.shareButton);
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

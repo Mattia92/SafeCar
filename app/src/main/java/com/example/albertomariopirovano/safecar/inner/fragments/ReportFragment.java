@@ -1,15 +1,19 @@
 package com.example.albertomariopirovano.safecar.inner.fragments;
 
 import android.content.pm.PackageManager;
-import android.graphics.Path;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.CardView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -17,17 +21,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
-import com.example.albertomariopirovano.safecar.utils.OnSwipeListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,6 +45,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -58,12 +68,12 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     private TableLayout detailsLayout;
     private View v;
 
-    private GestureDetector gestureDetector;
-
     private Trip t;
     private ArrayList<LatLng> markerPoints = new ArrayList<LatLng>();
     private LocalModel localModel = LocalModel.getInstance();
-    private FloatingActionButton rescan_vis;
+    private int oldY = 0;
+    private ArrayList<Animation> returnList_tv;
+    private ArrayList<Animation> returnList_iv;
 
     public String getAssignedTag() {
         return TAG;
@@ -79,9 +89,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         f1 = (LinearLayout) v.findViewById(R.id.f1);
         f2 = (LinearLayout) v.findViewById(R.id.f2);
         detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
-        rescan_vis = (FloatingActionButton) v.findViewById(R.id.rescan_vis);
-
-        rescan_vis.setImageResource(R.drawable.ic_clear_black_24dp);
+        FloatingActionButton rescan_vis = (FloatingActionButton) v.findViewById(R.id.rescan_vis);
 
         getActivity().setTitle("After trip report");
 
@@ -98,6 +106,11 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 params1.height = height;
                 params1.width = width;
                 f1.requestLayout();
+                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
+
+                params2.height = height;
+                params2.width = width;
+                f2.requestLayout();
             }
         });
 
@@ -124,7 +137,91 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
             mapView.getMapAsync(this);
         }
 
+        final TextView tv = (TextView) v.findViewById(R.id.scrollFroInfo);
+        final ImageView iv = (ImageView) v.findViewById(R.id.scrollIcon);
+        final ScrollView scv = (ScrollView) v.findViewById(R.id.scrollContext);
+
+        scv.fullScroll(ScrollView.FOCUS_UP);
+        returnList_tv = setUpFadeAnimation(tv);
+        returnList_iv = setUpFadeAnimation(iv);
+
+        scv.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                if (!(getActivity() == null)) {
+                    int scrollY = scv.getScrollY();
+
+                    if (oldY < scrollY){
+                        scv.fullScroll(ScrollView.FOCUS_DOWN);
+                        returnList_tv.get(0).setAnimationListener(null);
+                        returnList_tv.get(1).setAnimationListener(null);
+                        returnList_iv.get(0).setAnimationListener(null);
+                        returnList_iv.get(1).setAnimationListener(null);
+                        tv.setVisibility(View.GONE);
+                        iv.setVisibility(View.GONE);
+                    } else {
+                        scv.fullScroll(ScrollView.FOCUS_UP);
+                        tv.setVisibility(View.VISIBLE);
+                        iv.setVisibility(View.VISIBLE);
+                        returnList_tv = setUpFadeAnimation(tv);
+                        returnList_iv = setUpFadeAnimation(iv);
+                    }
+
+                    oldY = scrollY;
+                }
+            }
+        });
         return v;
+    }
+
+    private ArrayList<Animation> setUpFadeAnimation(final View view) {
+        // Start from 0.1f if you desire 90% fade animation
+        final Animation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(3000);
+        fadeIn.setStartOffset(1000);
+        // End to 0.1f if you desire 90% fade animation
+        final Animation fadeOut = new AlphaAnimation(1.0f, 0.0f);
+        fadeOut.setDuration(3000);
+        fadeOut.setStartOffset(1000);
+
+        fadeIn.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                // start fadeOut when fadeIn ends (continue)
+                view.startAnimation(fadeOut);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+        });
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                // start fadeIn when fadeOut ends (repeat)
+                view.startAnimation(fadeIn);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+        });
+
+        view.startAnimation(fadeOut);
+        ArrayList<Animation> returnList = new ArrayList<Animation>();
+        returnList.add(fadeIn);
+        returnList.add(fadeOut);
+
+        return returnList;
     }
 
     @Override
@@ -150,11 +247,13 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 break;
         }
         map.setMyLocationEnabled(true);
-        popolate_trip_details();
+        popolate_report();
     }
 
-    private void popolate_trip_details() {
+
+    private void popolate_report() {
         addDetails();
+        /*
         ViewTreeObserver viewTreeObserver = f2.getViewTreeObserver();
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -167,7 +266,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                     f2.requestLayout();
                 }
             });
-        }
+        }*/
     }
 
     private void addDetails() {
@@ -210,6 +309,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         super.onPause();
         mapView.onPause();
     }
+
 
     private void drawTrip(List<MapPoint> markers) {
         Log.i(TAG, "Drawing trip path");
@@ -261,6 +361,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         map.animateCamera(cu);
     }
 
+
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
         Log.i(TAG, "Getting google map directions json");
         // Origin of route
@@ -290,4 +391,5 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
 
         return url;
     }
+
 }
