@@ -47,7 +47,7 @@ import java.util.Map;
  * Created by albertomariopirovano on 04/04/17.
  */
 
-public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGInterface, View.OnTouchListener{
+public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGInterface {
 
     public final static int REQUEST_ACCESS_COARSE_LOCATION = 1;
     private static final String TAG = "ReportFragment";
@@ -94,20 +94,10 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 int height = layout.getMeasuredHeight();
 
                 ViewGroup.LayoutParams params1 = f1.getLayoutParams();
-                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
-
-                //Log.i(TAG, String.valueOf(height));
-                //Log.i(TAG, String.valueOf(width));
-                //Log.i(TAG, String.valueOf(223 * 8));
-                //Log.i(TAG, String.valueOf(height));
 
                 params1.height = height;
                 params1.width = width;
                 f1.requestLayout();
-
-                params2.height = 880;
-                params2.width = width;
-                f2.requestLayout();
             }
         });
 
@@ -124,18 +114,6 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 public void onClick(View view) {
                     localModel.dropTrip(t.getTripId());
                     getActivity().onBackPressed();
-                }
-            });
-        }
-
-        ViewTreeObserver viewTreeObserver = detailsLayout.getViewTreeObserver();
-        if (viewTreeObserver.isAlive()) {
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    detailsLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    Log.i(TAG, "ALERT");
-                    Log.i(TAG, String.valueOf(detailsLayout.getMeasuredHeight()));
                 }
             });
         }
@@ -158,7 +136,6 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
         drawTrip(t.getMarkers());
-        addDetails();
         CardView cv = (CardView) v.findViewById(R.id.details_cardview);
         cv.setVisibility(View.VISIBLE);
 
@@ -173,7 +150,24 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 break;
         }
         map.setMyLocationEnabled(true);
+        popolate_trip_details();
+    }
 
+    private void popolate_trip_details() {
+        addDetails();
+        ViewTreeObserver viewTreeObserver = f2.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    f2.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    ViewGroup.LayoutParams params3 = f2.getLayoutParams();
+                    params3.height = f2.getMeasuredHeight();
+                    params3.width = f2.getMeasuredWidth();
+                    f2.requestLayout();
+                }
+            });
+        }
     }
 
     private void addDetails() {
