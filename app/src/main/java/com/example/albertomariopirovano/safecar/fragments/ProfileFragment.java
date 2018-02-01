@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
+import com.example.albertomariopirovano.safecar.utils.Badges;
 import com.example.albertomariopirovano.safecar.utils.CircleTransform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -66,6 +68,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     private RelativeLayout f1;
     private View v;
     private CardView cardviewelement;
+    private Badges badges;
 
     private TableLayout detailsLayout;
 
@@ -148,11 +151,35 @@ public class ProfileFragment extends Fragment implements TAGInterface {
             emailTextView.setText("No email provided");
         }
 
+        populateBadgesView();
+
         return v;
     }
 
     public String getAssignedTag() {
         return TAG;
+    }
+
+    public void populateBadgesView() {
+        badges = new Badges();
+
+        for (int i = 0; i < detailsLayout.getChildCount(); i++) {
+            View child = detailsLayout.getChildAt(i);
+
+            if (child instanceof TableRow) {
+                TableRow row = (TableRow) child;
+                int rowElem = row.getChildCount();
+
+                for (int x = 0; x < rowElem; x++) {
+                    LinearLayout badge = (LinearLayout) row.getChildAt(x);
+                    ImageView badge_icon = (ImageView) badge.getChildAt(0);
+                    TextView badge_name = (TextView) badge.getChildAt(1);
+
+                    badge_icon.setImageResource(badges.getLockedIconAt(x + i * rowElem));
+                    badge_name.setText(badges.getBadgeNameAt(x + i * rowElem));
+                }
+            }
+        }
     }
 
     /*private void addDetails() {

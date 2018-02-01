@@ -44,13 +44,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -63,13 +63,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -82,13 +82,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -110,13 +110,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -129,13 +129,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -148,13 +148,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -176,13 +176,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -195,13 +195,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -214,13 +214,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -242,13 +242,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -261,13 +261,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -280,13 +280,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -308,13 +308,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -327,13 +327,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
@@ -346,13 +346,13 @@
 
                     <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:background="@drawable/ic_loyalty_black_24px"/>
+                        android:layout_height="100dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:text="This is a description of the badge"/>
+                        android:text="This is a description of the badge"
+                        android:gravity="center"/>
 
                 </LinearLayout>
 
