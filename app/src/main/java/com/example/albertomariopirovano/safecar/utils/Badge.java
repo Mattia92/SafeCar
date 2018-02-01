@@ -1,9 +1,14 @@
 package com.example.albertomariopirovano.safecar.utils;
 
+import android.util.Log;
+
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.firebase_model.Trip;
+import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by mattiacrippa on 31/01/18.
@@ -43,6 +48,44 @@ public class Badge {
         badges.add(new Badge("1000 DSI Trip", "DSI", R.drawable.ic_adjust_black_24dp, 1000));
     }
 
+    public static void checkBadges(ArrayList<Badge> badges, LocalModel localModel) {
+        Float totKM = 0.0f;
+        Double totHours = 0.0;
+        int maxDSI = Integer.MIN_VALUE;
+        int numTrips = localModel.getTrips().size();
+
+        for (Trip t : localModel.getTrips()) {
+            totKM += t.getKm();
+            totHours += t.getTimeDuration();
+            if(t.getFinalDSI() > maxDSI){
+                maxDSI = t.getFinalDSI();
+            }
+        }
+
+        for (int i = 0; i < badges.size(); i++) {
+            switch(badges.get(i).getBadgeType()) {
+                case "NumTrip":
+                    if(numTrips >= badges.get(i).getUnlockingCondition())
+                        badges.get(i).setUnlocked(Boolean.TRUE);
+                    break;
+                case "KM":
+                    if(totKM >= badges.get(i).getUnlockingCondition())
+                        badges.get(i).setUnlocked(Boolean.TRUE);
+                    break;
+                case "Duration":
+                    if(totHours >= badges.get(i).getUnlockingCondition())
+                        badges.get(i).setUnlocked(Boolean.TRUE);
+                    break;
+                case "DSI":
+                    if(maxDSI >= badges.get(i).getUnlockingCondition())
+                        badges.get(i).setUnlocked(Boolean.TRUE);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     public String getBadgeName() {
         return badgeName;
     }
@@ -61,5 +104,9 @@ public class Badge {
 
     public boolean isUnlocked() {
         return isUnlocked;
+    }
+
+    public void setUnlocked(boolean unlocked) {
+        isUnlocked = unlocked;
     }
 }

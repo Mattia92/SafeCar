@@ -4,10 +4,14 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.LightingColorFilter;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.CardView;
@@ -164,6 +168,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     public void populateBadgesView() {
         badges = new ArrayList<>();
         Badge.loadBadges(badges);
+        Badge.checkBadges(badges, localModel);
 
         for (int i = 0; i < detailsLayout.getChildCount(); i++) {
             View child = detailsLayout.getChildAt(i);
@@ -176,8 +181,15 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                     LinearLayout badge = (LinearLayout) row.getChildAt(x);
                     ImageView badge_icon = (ImageView) badge.getChildAt(0);
                     TextView badge_name = (TextView) badge.getChildAt(1);
+                    Drawable icon = ContextCompat.getDrawable(getContext(), badges.get(x + i * rowElem).getBadgeIcon());
+                    icon = icon.mutate();
 
-                    badge_icon.setImageResource(badges.get(x + i * rowElem).getBadgeIcon());
+                    if (badges.get(x + i * rowElem).isUnlocked()) {
+                        icon.setColorFilter(new LightingColorFilter(0xFFD700, 0xFFD700));
+                    } else {
+                        icon.setColorFilter(new LightingColorFilter(Color.GRAY, Color.GRAY));
+                    }
+                    badge_icon.setImageDrawable(icon);
                     badge_name.setText(badges.get(x + i * rowElem).getBadgeName());
                 }
             }
