@@ -49,9 +49,9 @@
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
                     android:layout_weight="0.05"
+                    android:textSize="20dp"
                     android:text="swipe up for the details"
-                    android:textAlignment="center"
-                    android:textSize="30dp" />
+                    android:textAlignment="center" />
 
                 <ImageView
                     android:id="@+id/scrollIcon"
@@ -78,7 +78,7 @@
                     android:textAlignment="center"
                     android:layout_marginBottom="30dp"
                     android:layout_marginLeft="30dp"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginRight="30dp"
                     android:layout_marginTop="30dp"
                     android:textSize="30dp" />
                 <include

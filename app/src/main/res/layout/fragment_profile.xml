@@ -14,10 +14,8 @@
         <RelativeLayout
             android:id="@+id/f1"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:weightSum="1">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
         <ImageView
             android:id="@+id/header_cover_image"
@@ -43,7 +41,7 @@
         <RelativeLayout
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_below="@+id/header_cover_image"
             android:background="@color/my_icons"
             android:elevation="4dp">
@@ -122,6 +120,10 @@
         </RelativeLayout>
 
         </RelativeLayout>
+
+        <include
+            android:id="@+id/details_cardview"
+            layout="@layout/cardviewicons"/>
 
     </LinearLayout>
 

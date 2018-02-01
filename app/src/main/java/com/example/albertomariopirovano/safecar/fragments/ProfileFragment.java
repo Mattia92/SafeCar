@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -35,6 +37,8 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by albertomariopirovano on 03/04/17.
@@ -64,6 +68,8 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     private View v;
     private CardView cardviewelement;
 
+    private TableLayout detailsLayout;
+
     private DatabaseReference database;
     private FirebaseAuth auth;
 
@@ -79,6 +85,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
         layout = (LinearLayout) v.findViewById(R.id.linlayout);
         f1 = (RelativeLayout) v.findViewById(R.id.f1);
+        detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
         //f2 = (LinearLayout) v.findViewById(R.id.f2);
 
         ViewTreeObserver vto = layout.getViewTreeObserver();
@@ -114,6 +121,8 @@ public class ProfileFragment extends Fragment implements TAGInterface {
         directory = cw.getDir("safecar", Context.MODE_PRIVATE);
         profilePngFile = new File(directory, "profile.png");
 
+        //TextView cardViewTitle = (TextView) v.findViewById(R.id.cardViewTitle);
+        //cardViewTitle.setText("Badges:");
 
         Log.i(TAG, "customizing user profile");
         Log.i(TAG, localModel.getUser().toString());
@@ -167,5 +176,22 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     public String getAssignedTag() {
         return TAG;
     }
+
+    /*private void addDetails() {
+        Log.i(TAG, "Adding badges details");
+        int i = 0;
+        for (Map<String, String> map : localModel.getValuesToRender(t)) {
+
+            TableRow row = (TableRow) detailsLayout.getChildAt(i);
+            Iterator it = map.entrySet().iterator();
+            Map.Entry<String, String> entry1 = (Map.Entry) it.next();
+            Map.Entry<String, String> entry2 = (Map.Entry) it.next();
+
+            ((TextView) row.getChildAt(0)).setText(entry1.getValue());
+            ((TextView) row.getChildAt(1)).setText(entry2.getValue());
+
+            i++;
+        }
+    }*/
 
 }
