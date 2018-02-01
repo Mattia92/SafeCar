@@ -28,7 +28,7 @@ import android.widget.TextView;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
-import com.example.albertomariopirovano.safecar.utils.Badges;
+import com.example.albertomariopirovano.safecar.utils.Badge;
 import com.example.albertomariopirovano.safecar.utils.CircleTransform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +39,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     private RelativeLayout f1;
     private View v;
     private CardView cardviewelement;
-    private Badges badges;
+    private ArrayList<Badge> badges;
 
     private TableLayout detailsLayout;
 
@@ -161,7 +162,8 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     }
 
     public void populateBadgesView() {
-        badges = new Badges();
+        badges = new ArrayList<>();
+        Badge.loadBadges(badges);
 
         for (int i = 0; i < detailsLayout.getChildCount(); i++) {
             View child = detailsLayout.getChildAt(i);
@@ -175,8 +177,8 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                     ImageView badge_icon = (ImageView) badge.getChildAt(0);
                     TextView badge_name = (TextView) badge.getChildAt(1);
 
-                    badge_icon.setImageResource(badges.getLockedIconAt(x + i * rowElem));
-                    badge_name.setText(badges.getBadgeNameAt(x + i * rowElem));
+                    badge_icon.setImageResource(badges.get(x + i * rowElem).getBadgeIcon());
+                    badge_name.setText(badges.get(x + i * rowElem).getBadgeName());
                 }
             }
         }
