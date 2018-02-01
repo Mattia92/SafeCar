@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:id="@+id/linlayout"
-                android:layout_width="match_parent"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -100,4 +100,5 @@
         android:layout_marginBottom="20dp"
         android:layout_marginRight="20dp"
         android:src="@drawable/ic_clear_black_24dp" />
+
 </RelativeLayout>

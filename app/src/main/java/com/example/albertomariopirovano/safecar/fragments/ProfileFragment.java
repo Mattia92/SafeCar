@@ -64,7 +64,6 @@ public class ProfileFragment extends Fragment implements TAGInterface {
     private TextView levelTextView;
     private LinearLayout layout;
     private RelativeLayout f1;
-    //private LinearLayout f2;
     private View v;
     private CardView cardviewelement;
 
@@ -87,27 +86,6 @@ public class ProfileFragment extends Fragment implements TAGInterface {
         f1 = (RelativeLayout) v.findViewById(R.id.f1);
         detailsLayout = (TableLayout) v.findViewById(R.id.table_layout);
         //f2 = (LinearLayout) v.findViewById(R.id.f2);
-
-        ViewTreeObserver vto = layout.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int width = layout.getWidth();
-                int height = layout.getHeight();
-
-                ViewGroup.LayoutParams params1 = f1.getLayoutParams();
-                //ViewGroup.LayoutParams params2 = f2.getLayoutParams();
-
-                params1.height = height;
-                params1.width = width;
-                f1.requestLayout();
-
-                //params2.height = height / 2;
-                //params2.width = width;
-                //f2.requestLayout();
-            }
-        });
 
         imageView = (ImageView) v.findViewById(R.id.imgProfilePic);
         nameTextView = (TextView) v.findViewById(R.id.txtName);
