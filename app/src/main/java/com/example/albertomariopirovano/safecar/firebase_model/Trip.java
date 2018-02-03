@@ -77,7 +77,7 @@ public class Trip implements Serializable {
             case "duration":
                 return String.valueOf(timeDuration);
             case "date":
-                SimpleDateFormat ft = new SimpleDateFormat ("E MMM dd yyyy 'at' HH:mm:ss");
+                SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss");
                 return ft.format(date);
                 //return String.valueOf(date);
             case "DSI":

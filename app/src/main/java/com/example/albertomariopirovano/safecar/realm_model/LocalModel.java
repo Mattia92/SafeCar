@@ -182,7 +182,7 @@ public class LocalModel {
             {
                 put("key", "Date");
                 Date date = t.getDate();
-                SimpleDateFormat ft = new SimpleDateFormat ("E MMM dd yyyy 'at' HH:mm:ss");
+                SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss");
                 //put("value", String.valueOf(t.getDate()));
                 put("value", ft.format(date));
             }

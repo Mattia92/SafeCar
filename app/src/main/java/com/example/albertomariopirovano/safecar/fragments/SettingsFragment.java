@@ -73,11 +73,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
             }
         };
 
-        Preference preference_sharing = findPreference(getString(R.string.button_sharing));
+        //Preference preference_sharing = findPreference(getString(R.string.button_sharing));
         Preference preference_notifications = findPreference(getString(R.string.button_notifications));
         Preference preference_smartobj = findPreference(getString(R.string.button_smartobj));
 
-        preference_sharing.setOnPreferenceClickListener(l);
+        //preference_sharing.setOnPreferenceClickListener(l);
         preference_notifications.setOnPreferenceClickListener(l);
         preference_smartobj.setOnPreferenceClickListener(l);
 

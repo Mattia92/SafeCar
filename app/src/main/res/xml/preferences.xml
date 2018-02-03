@@ -5,11 +5,13 @@
     <PreferenceCategory
         android:title="Generali">
 
+        <!--
         <Preference
             android:title="@string/button_sharing"
             app:key="@string/button_sharing"
             android:summary="Collega i tuoi account">
         </Preference>
+        -->
 
         <Preference
             android:title="@string/button_notifications"
