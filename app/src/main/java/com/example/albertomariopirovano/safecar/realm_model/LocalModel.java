@@ -13,6 +13,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +181,10 @@ public class LocalModel {
         temp.add(new HashMap<String, String>() {
             {
                 put("key", "Date");
-                put("value", String.valueOf(t.getDate()));
+                Date date = t.getDate();
+                SimpleDateFormat ft = new SimpleDateFormat ("E MMM dd yyyy 'at' HH:mm:ss");
+                //put("value", String.valueOf(t.getDate()));
+                put("value", ft.format(date));
             }
         });
         temp.add(new HashMap<String, String>() {

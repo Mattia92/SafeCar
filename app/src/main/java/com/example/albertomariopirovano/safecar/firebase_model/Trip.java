@@ -6,6 +6,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 
@@ -76,7 +77,9 @@ public class Trip implements Serializable {
             case "duration":
                 return String.valueOf(timeDuration);
             case "date":
-                return String.valueOf(date);
+                SimpleDateFormat ft = new SimpleDateFormat ("E MMM dd yyyy 'at' HH:mm:ss");
+                return ft.format(date);
+                //return String.valueOf(date);
             case "DSI":
                 return String.valueOf(finalDSI);
             case "KM":
