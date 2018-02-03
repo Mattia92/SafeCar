@@ -83,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView emailTextView;
     private ImageView iconImageView;
 
+    private Intent shareIntent;
+    private String shareBody = "This is a great app. You should try !";
+
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener logout_listener;
     private DatabaseReference database;
@@ -142,17 +145,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //Replace the fragment with the selection correspondingly
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                if(position == 2) {
+                    shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    shareIntent.setType("text/plain");
+                    shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "MyApp");
+                    shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(shareIntent, "Share via"));
+                } else {
+                    //Replace the fragment with the selection correspondingly
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-                Log.i(TAG, ((TAGInterface) listFragments.get(position)).getAssignedTag());
+                    Log.i(TAG, ((TAGInterface) listFragments.get(position)).getAssignedTag());
 
-                transaction.replace(R.id.main_content, listFragments.get(position), ((TAGInterface) listFragments.get(position)).getAssignedTag()).commit();
+                    transaction.replace(R.id.main_content, listFragments.get(position), ((TAGInterface) listFragments.get(position)).getAssignedTag()).commit();
 
-                setTitle(listNavItems.get(position).getTitle());
-                lvNav.setItemChecked(position, true);
-                drawerLayout.closeDrawer(drawerPane);
+                    setTitle(listNavItems.get(position).getTitle());
+                    lvNav.setItemChecked(position, true);
+                    drawerLayout.closeDrawer(drawerPane);
+                }
             }
         });
 
