@@ -1,6 +1,7 @@
 package com.example.albertomariopirovano.safecar.settings.fragments;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,13 +60,20 @@ public class SettingsInfoFeedFragment extends Fragment implements TAGInterface {
         facebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                PackageManager packageManager = getContext().getPackageManager();
+                String str;
                 try {
-                    getContext().getPackageManager().getPackageInfo("com.facebook.katana", 0);
-                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("fb://page/")));
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.facebook.com/")));
-                } catch (Exception e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.facebook.com/")));
+                    int versionCode = packageManager.getPackageInfo("com.facebook.katana", 0).versionCode;
+                    if (versionCode >= 3002850) { //newer versions of fb app
+                        str = "fb://facewebmodal/f?href=" + "https://www.facebook.com/CheesyChasing/";
+                    } else { //older versions of fb app
+                        str = "fb://page/" + "CheesyChasing/";
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    str = "https://www.facebook.com/CheesyChasing/"; //normal web url
                 }
+
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(str)));
             }
         });
 
@@ -75,11 +83,11 @@ public class SettingsInfoFeedFragment extends Fragment implements TAGInterface {
             public void onClick(View view) {
                 try {
                     getContext().getPackageManager().getPackageInfo("com.twitter.android", 0);
-                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?screen_name=%s")));
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://user?screen_name=Tia_C__92")));
+                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/")));
                 } catch (Exception e) {
-                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/intent/user?screen_name=%s")));
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/intent/user?screen_name=Tia_C__92")));
+                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://twitter.com/")));
                 }
             }
         });
@@ -90,8 +98,8 @@ public class SettingsInfoFeedFragment extends Fragment implements TAGInterface {
             public void onClick(View view) {
                 final String appPackageName = getContext().getPackageName();
                 try {
-                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://apps/")));
+                    //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/")));
                 } catch (android.content.ActivityNotFoundException anfe) {
                     //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/")));
