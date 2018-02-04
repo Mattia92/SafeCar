@@ -377,8 +377,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 onBackPressed();
-                setEnabledNavigationDrawer(true);
-                setTitle("Home");
+                //setEnabledNavigationDrawer(true);
+                //setTitle("Home");
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -479,14 +479,14 @@ public class MainActivity extends AppCompatActivity {
         f = getSupportFragmentManager().findFragmentByTag("PairPlugFragment");
         if (f != null && f.isVisible()) {
             Log.i(TAG, "PairPlugFragment VISIBLE");
-            setTitle(getString(R.string.action_settings));
+            setTitle(getString(R.string.button_smartobj));
             super.onBackPressed();
             return;
         }
         f = getSupportFragmentManager().findFragmentByTag("ManageplugsFragment");
         if (f != null && f.isVisible()) {
             Log.i(TAG, "ManageplugsFragment VISIBLE");
-            setTitle(getString(R.string.action_settings));
+            setTitle(getString(R.string.button_smartobj));
             super.onBackPressed();
             return;
         }
@@ -512,6 +512,15 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "ReportFragment VISIBLE");
             setEnabledNavigationDrawer(true);
             setTitle("Home");
+            super.onBackPressed();
+            return;
+        }
+
+        f = getSupportFragmentManager().findFragmentByTag("SettingsInfoFeedFragment");
+        if (f != null && f.isVisible()) {
+            Log.i(TAG, "SettingsInfoFeedFragment VISIBLE");
+            setEnabledNavigationDrawer(true);
+            setTitle(getString(R.string.action_settings));
             super.onBackPressed();
             return;
         }
