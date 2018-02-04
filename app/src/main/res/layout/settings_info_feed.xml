@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="0dp">
+
+                <ImageView android:id="@+id/image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/temp_logo"/>
+
+                <TextView android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="SafeCar is an application that has been designed to help the driver in improving its driving style"
+                    android:lineSpacingExtra="8dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textColor="@color/window_background"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_height="0.5dp"
+                android:layout_width="match_parent"
+                android:background="@color/my_divider"
+                android:padding="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"/>
+
+            <LinearLayout
+                android:id="@+id/about_providers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="0dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Version 1.0"
+                    android:lineSpacingExtra="8dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/window_background"/>
+
+                <View
+                    android:layout_height="0.5dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/my_divider"
+                    android:padding="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"/>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:text="Connect with us"
+                    android:lineSpacingExtra="8dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="10dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/my_divider"
+                    android:textSize="18sp"/>
+
+                <LinearLayout
+                    android:id="@+id/feedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="left"
+                    android:clickable="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@mipmap/ic_mail_icon"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Contact us"
+                        android:textColor="@color/window_background"
+                        android:paddingLeft="5dp"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_height="0.5dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/my_divider"
+                    android:padding="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"/>
+
+                <LinearLayout
+                    android:id="@+id/facebook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="left"
+                    android:clickable="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@mipmap/ic_facebook_icon"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Like us on Facebook"
+                        android:textColor="@color/window_background"
+                        android:paddingLeft="5dp"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_height="0.5dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/my_divider"
+                    android:padding="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"/>
+
+                <LinearLayout
+                    android:id="@+id/twitter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="left"
+                    android:clickable="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@mipmap/ic_twitter_icon"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Follow us on Twitter"
+                        android:textColor="@color/window_background"
+                        android:paddingLeft="5dp"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_height="0.5dp"
+                    android:layout_width="match_parent"
+                    android:background="@color/my_divider"
+                    android:padding="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginBottom="0dp"/>
+
+                <LinearLayout
+                    android:id="@+id/play_store"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="left"
+                    android:clickable="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:background="@mipmap/ic_play_store"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Rate us on Play Store"
+                        android:textColor="@color/window_background"
+                        android:paddingLeft="5dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
