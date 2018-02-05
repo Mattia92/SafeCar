@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -57,6 +58,8 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     private Button scanButton;
     private ListView listDevices;
     private TextView entry_text_home;
+    private TextView bluetooth_devices;
+    private TextView current_plug;
     private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
     private ArrayList<Plug> toBeAdded;
     private ArrayList<Plug> found;
@@ -203,6 +206,8 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         v = inflater.inflate(R.layout.bluetoothpair, container, false);
         viewFlipper = (ViewFlipper) v.findViewById(R.id.flipper);
         entry_text_home = (TextView) v.findViewById(R.id.entry_text_home);
+        bluetooth_devices = (TextView) v.findViewById(R.id.bluetooth_devices);
+        current_plug = (TextView) v.findViewById(R.id.current_plug);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBarHome);
         progressBar.setVisibility(View.GONE);
         scanButton = (Button) v.findViewById(R.id.scanButton);
@@ -212,9 +217,14 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         targetPlugLinLay = (LinearLayout) v.findViewById(R.id.targetPlugLinLay);
         targetPlugLinLay.setVisibility(View.GONE);
 
+        scanButton.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
+        reScanButton.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
+        bluetooth_devices.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
+        current_plug.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
+
         if (savedStateHandler.getTargetPlug() != null) {
             scanButton.setText("Change your target plug");
-            entry_text_home.setText("You are already paired with a plug.");
+            entry_text_home.setText("You are already paired with a plug");
 
             TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
             ((TextView) row1.getChildAt(0)).setText("Name");
@@ -225,7 +235,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
 
             targetPlugLinLay.setVisibility(View.VISIBLE);
         } else {
-            scanButton.setText("Pair your target plug");
+            scanButton.setText("Plug scan");
             targetPlugLinLay.setVisibility(View.GONE);
         }
 
