@@ -68,6 +68,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
                 if (MainActivity.isAppResumed()) {
                     Log.i(TAG , "App resumed from background");
                     reloadTaskState();
+                    MainActivity.setIsAppResumed(Boolean.FALSE);
                 }
                 if (viewAvailable || MainActivity.isApplicationSentToBackground(activity)) {
                     if (rebootImageview) {
