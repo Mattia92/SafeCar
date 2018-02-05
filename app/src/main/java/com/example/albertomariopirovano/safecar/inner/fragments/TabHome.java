@@ -33,6 +33,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.example.albertomariopirovano.safecar.R;
+import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.concurrency.DSIEvaluator;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
@@ -481,6 +482,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     public void onResume() {
         mapView.onResume();
         super.onResume();
+        if(MainActivity.isAppResumed()) {
+            tripHandler.reloadTaskState();
+            dsiEvaluator.reloadTaskState();
+            MainActivity.setIsAppResumed(Boolean.FALSE);
+        }
     }
 
     @Override
