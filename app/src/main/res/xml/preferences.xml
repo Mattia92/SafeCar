@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="Generali">
+        android:title="General">
 
         <!--
         <Preference
@@ -16,13 +16,13 @@
         <Preference
             android:title="@string/button_notifications"
             app:key="@string/button_notifications"
-            android:summary="Gestisci le notifiche push">
+            android:summary="Manage push notifications">
         </Preference>
 
         <Preference
             android:title="@string/button_smartobj"
             app:key="@string/button_smartobj"
-            android:summary="Gestisci i tuoi smart objects">
+            android:summary="Manage your smart objects">
         </Preference>
 
     </PreferenceCategory>
@@ -33,7 +33,7 @@
         <Preference
             android:title="@string/button_info"
             app:key="@string/button_info"
-            android:summary="Ottieni assistenza e contribuisci a migliorare l'app">
+            android:summary="Help us to improve our application">
         </Preference>
 
     </PreferenceCategory>

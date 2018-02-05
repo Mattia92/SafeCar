@@ -57,11 +57,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
 
                 getActivity().setTitle(preference.getKey());
 
-                if(preference.getKey().equals("Condivisione")) {
+                if(preference.getKey().equals("Share")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
                     Log.i(TAG, ((TAGInterface) listFragments.get(0)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0), ((TAGInterface) listFragments.get(0)).getAssignedTag()).addToBackStack(null).commit();
-                } else if (preference.getKey().equals("Notifiche")) {
+                } else if (preference.getKey().equals("Notifications")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
                     Log.i(TAG, ((TAGInterface) listFragments.get(1)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1), ((TAGInterface) listFragments.get(1)).getAssignedTag()).addToBackStack(null).commit();
@@ -69,7 +69,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
                     Log.i(TAG, ((TAGInterface) listFragments.get(2)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2), ((TAGInterface) listFragments.get(2)).getAssignedTag()).addToBackStack(null).commit();
-                } else if (preference.getKey().equals("Info e Feedback")) {
+                } else if (preference.getKey().equals("Info and Feedback")) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
                     Log.i(TAG, ((TAGInterface) listFragments.get(3)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(3), ((TAGInterface) listFragments.get(3)).getAssignedTag()).addToBackStack(null).commit();

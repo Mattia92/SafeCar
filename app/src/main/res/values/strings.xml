@@ -11,11 +11,11 @@
     <string name="btn_logout_from_google">Logout from Google</string>
     <string name="btn_revoke_access">Revoke Access</string>
 
-    <string name="button_sharing">Condivisione</string>
-    <string name="button_notifications">Notifiche</string>
+    <string name="button_sharing">Share</string>
+    <string name="button_notifications">Notifications</string>
     <string name="button_smartobj">Smart Objects</string>
 
-    <string name="button_info">Info e Feedback</string>
+    <string name="button_info">Info and Feedback</string>
 
     <string name="action_sign_in_short">Register</string>
     <string name="email">Email</string>

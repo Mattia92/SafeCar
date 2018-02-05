@@ -37,13 +37,13 @@ public class NavListAdapter extends ArrayAdapter<NavItem> {
         View v = View.inflate(context, resLayout, null);
 
         TextView tvTitle = (TextView) v.findViewById(R.id.title);
-        TextView tvSubTitle = (TextView) v.findViewById(R.id.subtitle);
+        //TextView tvSubTitle = (TextView) v.findViewById(R.id.subtitle);
         ImageView navIcon = (ImageView) v.findViewById(R.id.nav_icon);
 
         NavItem navItem = listNavItems.get(position);
 
         tvTitle.setText(navItem.getTitle());
-        tvSubTitle.setText(navItem.getSubtitles());
+        //tvSubTitle.setText(navItem.getSubtitles());
         navIcon.setImageResource(navItem.getResIcon());
 
         return v;
