@@ -1,7 +1,9 @@
 package com.example.albertomariopirovano.safecar.concurrency;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,6 +30,8 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
     private Boolean rebootImageview = Boolean.FALSE;
     private Boolean viewAvailable = Boolean.TRUE;
     private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
+    SharedPreferences sharedPreferences;
+    boolean isChecked;
 
     private int counter = 0;
 
@@ -39,6 +43,8 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         this.lock = lock;
         this.hintsList = new ArrayList<String>();
         setViewElements(hintsListView);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        isChecked = sharedPreferences.getBoolean("notifiche", false);
     }
 
     public void reloadTaskState() {
@@ -58,7 +64,12 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
             public void run() {
                 Log.i(TAG, "runOnUiThread");
                 hintsList.add(0, hint);
-                if (viewAvailable) {
+                Log.i(TAG, String.valueOf(viewAvailable));
+                if (MainActivity.isAppResumed()) {
+                    Log.i(TAG , "App resumed from background");
+                    reloadTaskState();
+                }
+                if (viewAvailable || MainActivity.isApplicationSentToBackground(activity)) {
                     if (rebootImageview) {
                         hintsAdapter.clear();
                         hintsAdapter.addAll(hintsList);
@@ -141,9 +152,11 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         addHint(hint);
         //update the state of the asynctask basing on the state modified by connectWithPlug
 
-        if(MainActivity.isApplicationSentToBackground(activity)) {
-            Log.i(TAG, "App in background");
-            MainActivity.addNotification(activity, hint);
+        if(isChecked) {
+            if(MainActivity.isApplicationSentToBackground(activity)) {
+                Log.i(TAG, "App in background");
+                MainActivity.addNotification(activity, hint);
+            }
         }
     }
 

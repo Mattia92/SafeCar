@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener logout_listener;
     private DatabaseReference database;
 
+    private boolean isAppInBack = Boolean.FALSE;
+    private static boolean isAppResumed = Boolean.FALSE;
 
     private LocalModel localModel = LocalModel.getInstance();
     private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
@@ -529,6 +531,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    public static void setIsAppResumed(boolean isAppResumed) {
+        MainActivity.isAppResumed = isAppResumed;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isAppInBack = Boolean.TRUE;
+        isAppResumed = Boolean.FALSE;
+    }
+
+    public static boolean isAppResumed() {
+        return isAppResumed;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isAppInBack) {
+            isAppInBack = Boolean.FALSE;
+            isAppResumed = Boolean.TRUE;
+        }
     }
 
     /**
