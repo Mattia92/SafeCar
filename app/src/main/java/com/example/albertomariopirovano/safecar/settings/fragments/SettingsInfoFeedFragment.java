@@ -42,7 +42,7 @@ public class SettingsInfoFeedFragment extends Fragment implements TAGInterface {
         TextView description = (TextView) v.findViewById(R.id.description);
         ImageView image = (ImageView) v.findViewById(R.id.image);
 
-        description.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
+        //description.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
 
         final LinearLayout contactUs = (LinearLayout) v.findViewById(R.id.feedback);
         contactUs.setOnClickListener(new View.OnClickListener() {

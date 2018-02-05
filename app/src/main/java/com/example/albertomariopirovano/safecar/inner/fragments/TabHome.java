@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.LocationManager;
 import android.os.Build;
@@ -162,6 +163,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             str = str.substring(0, str.indexOf(" "));
         }
         homepagetext.setText("Welcome " + str + "!");
+        homepagetext.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
 
         if (savedStateHandler.getTargetPlug() != null) {
             detailshomepage.setText("You are using the plug: " + savedStateHandler.getTargetPlug().getName());
@@ -170,6 +172,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         }
 
         startTrip = (Button) v.findViewById(R.id.startTrip);
+        startTrip.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Noteworthy-Bold.ttf"));
         if (savedStateHandler.getTargetPlug() == null) {
             startTrip.setVisibility(View.GONE);
         }
@@ -483,9 +486,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         mapView.onResume();
         super.onResume();
         if(MainActivity.isAppResumed()) {
-            tripHandler.reloadTaskState();
-            dsiEvaluator.reloadTaskState();
-            MainActivity.setIsAppResumed(Boolean.FALSE);
+            if(tripHandler != null && dsiEvaluator != null) {
+                tripHandler.reloadTaskState();
+                dsiEvaluator.reloadTaskState();
+                MainActivity.setIsAppResumed(Boolean.FALSE);
+            }
         }
     }
 
