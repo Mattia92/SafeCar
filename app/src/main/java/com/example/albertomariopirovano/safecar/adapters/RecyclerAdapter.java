@@ -1,8 +1,10 @@
 package com.example.albertomariopirovano.safecar.adapters;
 
 import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +100,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
                 public void onClick(View v) {
                     String element = mDataSet.get(getAdapterPosition());
                     String MAC_key = element.substring(element.length() - 17);
-
                     localModel.dropPlug(MAC_key);
                     mDataSet.remove(getAdapterPosition());
                     notifyItemRemoved(getAdapterPosition());

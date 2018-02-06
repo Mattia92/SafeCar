@@ -3,30 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
-    android:background="@drawable/border"
     android:orientation="vertical"
-    android:weightSum="10">
+    android:weightSum="10"
+    android:background="@drawable/cardview_border">
 
     <TextView
         android:id="@+id/bluetooth_devices"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:layout_marginBottom="30sp"
-        android:layout_weight="1"
-        android:background="@drawable/border"
-        android:gravity="center"
-        android:text="Bluetooth devices"
-        android:textColor="@color/my_primary_text"
-        android:textSize="30sp"
-        android:backgroundTint="@color/colorPrimaryDark" />
+        android:layout_marginBottom="0dp"
+        android:layout_weight="0.5"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/my_primary"
+        android:text="After scan report:" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="30sp"
+        android:layout_weight="0.5"
+        android:textColor="@color/my_primary"
+        android:text="Please, select the device you want to be paired with." />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_margin="20dp"
-        android:layout_weight="7">
+        android:layout_weight="8">
 
         <ListView
             android:id="@+id/listDevices"
@@ -38,10 +42,11 @@
     <Button
         android:id="@+id/rescan_button"
         android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="2"
-        android:text="Re-scan"
-        android:textSize="40dp"
-        android:textStyle="bold"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="30dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/my_primary_text"
+        android:text="Re-scan"/>
 
 </LinearLayout>

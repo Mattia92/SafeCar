@@ -339,6 +339,22 @@ public class MainActivity extends AppCompatActivity {
 
                 FirebaseUser user = auth.getCurrentUser();
 
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to delete the current user ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                MainActivity.super.onBackPressed();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        })
+                        .show();
+
                 if (profilePngFile.exists()) {
                     if (profilePngFile.delete()) {
                         Log.i(TAG, "file Deleted :" + profilePngFile.getPath());
@@ -347,15 +363,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                database.child("users").child(user.getUid()).setValue(null);
-
                 if (user != null) {
+                    database.child("users").child(user.getUid()).setValue(null);
                     user.delete()
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(MainActivity.this, "Your profile is deleted!", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MainActivity.this, "Your profile has been deleted!", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Toast.makeText(MainActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
                                     }

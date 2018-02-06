@@ -1,7 +1,9 @@
 package com.example.albertomariopirovano.safecar.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -28,6 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
@@ -115,6 +118,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
         customProgress.setProgress(Integer.parseInt(localModel.getUser().percentage));
         customProgress.setSecondaryProgress(Integer.parseInt(localModel.getUser().percentage) + 1);
+        customProgress.getProgressDrawable().setColorFilter(getResources().getColor(R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
         progressDisplay.setText(localModel.getUser().percentage + "%");
 
         levelTextView.setText("Level " + localModel.getUser().level);
@@ -178,18 +182,52 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                 int rowElem = row.getChildCount();
 
                 for (int x = 0; x < rowElem; x++) {
-                    LinearLayout badge = (LinearLayout) row.getChildAt(x);
+                    final LinearLayout badge = (LinearLayout) row.getChildAt(x);
                     ImageView badge_icon = (ImageView) badge.getChildAt(0);
                     TextView badge_name = (TextView) badge.getChildAt(1);
-                    Drawable icon = ContextCompat.getDrawable(getContext(), badges.get(x + i * rowElem).getBadgeIcon());
+                    final Badge b = badges.get(x + i * rowElem);
+                    Drawable icon = ContextCompat.getDrawable(getContext(), b.getBadgeIcon());
                     icon = icon.mutate();
 
                     if (badges.get(x + i * rowElem).isUnlocked()) {
-                        icon.setColorFilter(new LightingColorFilter(0xFFD700, 0xFFD700));
+                        icon.setColorFilter(new LightingColorFilter(getResources().getColor(R.color.colorAccent), getResources().getColor(R.color.colorAccent)));
                     } else {
                         icon.setColorFilter(new LightingColorFilter(Color.GRAY, Color.GRAY));
+                        icon.setAlpha(30);
                     }
                     badge_icon.setImageDrawable(icon);
+                    badge_icon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            if (b.isUnlocked()) {
+                                builder.setMessage("You have already unlocked this badge. Good job !")
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        });
+                            } else {
+                                builder.setMessage("This badge is locked. Work on it !")
+                                        .setCancelable(false)
+                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        });
+                            }
+                            builder.setIcon(b.getBadgeIcon());
+                            builder.setTitle(b.getBadgeName());
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
+
+                        }
+                    });
                     badge_name.setText(badges.get(x + i * rowElem).getBadgeName());
                 }
             }
