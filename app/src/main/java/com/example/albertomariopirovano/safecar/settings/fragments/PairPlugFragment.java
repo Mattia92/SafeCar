@@ -100,7 +100,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                         });
                     }
                     SimpleAdapter adapter = new SimpleAdapter(v.getContext(), data,
-                            android.R.layout.simple_list_item_2,
+                            R.layout.white_list_item,
                             new String[]{"name", "MAC"},
                             new int[]{android.R.id.text1, android.R.id.text2});
                     listDevices.setAdapter(adapter);

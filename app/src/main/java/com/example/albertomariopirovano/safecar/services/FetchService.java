@@ -98,7 +98,7 @@ public class FetchService {
             super.onPostExecute(data);
 
             SimpleAdapter adapter = new SimpleAdapter(v.getContext(), data,
-                    android.R.layout.simple_list_item_2,
+                    R.layout.white_list_item,
                     new String[]{"title", "date"},
                     new int[]{android.R.id.text1, android.R.id.text2});
             l.setAdapter(adapter);
