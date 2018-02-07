@@ -27,17 +27,15 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@color/colorPrimary"
-        >
+        android:background="@color/colorPrimaryAlpha">
 
         <TextView
             android:id="@+id/text"
-            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:gravity="center"
             android:layout_gravity="center"
-            android:textColor="@android:color/white"/>
+            android:textColor="@color/colorPrimaryText"/>
     </FrameLayout>
 </com.chauthai.swipereveallayout.SwipeRevealLayout>

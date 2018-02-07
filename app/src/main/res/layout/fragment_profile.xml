@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/application_back">>
 
     <ScrollView
         android:id="@+id/scrollContext"
@@ -50,7 +51,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_below="@+id/header_cover_image"
-                    android:background="@color/my_icons"
                     android:elevation="4dp">
 
                     <TextView
@@ -60,8 +60,9 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="15dip"
                         android:layout_marginTop="15dip"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="20sp" />
+                        android:fontFamily="@string/font_normal"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="@dimen/textFontSize"/>
 
                     <TextView
                         android:id="@+id/txtName"
@@ -69,9 +70,9 @@
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="90dp"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="25sp"
-                        android:textStyle="bold" />
+                        android:fontFamily="@string/font_bold"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="@dimen/titleFontSize" />
 
                     <TextView
                         android:id="@+id/txtEmail"
@@ -80,8 +81,9 @@
                         android:layout_below="@+id/txtName"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="20dp"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="15dp" />
+                        android:fontFamily="@string/font_normal"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="@dimen/textFontSize" />
 
                     <LinearLayout
                     android:layout_width="match_parent"
@@ -100,7 +102,7 @@
                         android:layout_marginRight="15dip"
                         android:layout_weight="0.1"
                         android:src="@drawable/ic_directions_car_black_24dp"
-                        android:tint="@color/colorPrimary" />
+                        android:tint="@color/colorPrimaryText" />
 
                     <ProgressBar
                         android:id="@+id/customProgress"
@@ -119,8 +121,9 @@
                         android:layout_weight="0.002"
                         android:gravity="center_vertical"
                         android:text="90%"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="20sp" />
+                        android:fontFamily="@string/font_bold"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="@dimen/textFontSize" />
 
                 </LinearLayout>
 

@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#009688</color>
-    <color name="colorPrimaryDark">#00695c</color>
-    <color name="colorLightPrimary">#00bcab</color>
-    <color name="colorAccent">#02d27f</color>
+    <color name="colorPrimary">#FF00695c</color>
+    <color name="colorPrimaryDark">#FF003d33</color>
+    <color name="colorLightPrimary">#FF439889</color>
+    <color name="colorAccent">#FF4DB6AC</color>
+    <color name="application_back">@color/colorLightPrimary</color>
+    <color name="borders">#FFc2fcf7</color>
 
-    <color name="my_primary">#009688</color>
-    <color name="my_primary_dark">#00695c</color>
-    <color name="my_primary_light">#00bcab</color>
-    <color name="my_accent">#02d27f</color>
-    <color name="my_primary_text">#ffffff</color>
-    <color name="my_secondary_text">#ffffff</color>
-    <color name="my_icons">#FFFFFF</color>
-    <color name="my_divider">#B6B6B6</color>
-    <color name="window_background">#CC000000</color>
+    <color name="colorPrimaryText">#ffffff</color>
+    <color name="colorSecondaryText">#ffffff</color>
+
+    <color name="colorPrimaryTextAlpha">#37ffffff</color>
+    <color name="colorPrimaryAlpha">#3700695c</color>
+    <color name="colorPrimaryDarkAlpha">#37003d33</color>
+    <color name="colorLightPrimaryAlpha">#37439889</color>
+    <color name="colorAccentAlpha">#9b4DB6AC</color>
+
+    <color name="my_divider">@color/colorPrimaryDark</color>
+
 </resources>

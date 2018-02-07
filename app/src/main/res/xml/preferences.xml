@@ -3,27 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:title="General">
-
-        <!--
-        <Preference
-            android:title="@string/button_sharing"
-            app:key="@string/button_sharing"
-            android:summary="Collega i tuoi account">
-        </Preference>
-        -->
+        android:title="General"
+        android:theme="@style/AppTheme.Preference">
 
         <Preference
             android:title="@string/button_notifications"
             app:key="@string/button_notifications"
-            android:summary="Manage push notifications">
-        </Preference>
+            android:summary="Manage push notifications"/>
 
         <Preference
-            android:title="@string/button_smartobj"
-            app:key="@string/button_smartobj"
-            android:summary="Manage your smart objects">
-        </Preference>
+            android:summary="Connect with a near plug"
+            android:title="@string/button_pair"
+            app:key="@string/button_pair"/>
+
+        <Preference
+            android:summary="Manage your plugs"
+            android:title="@string/button_manage"
+            app:key="@string/button_manage"/>
 
     </PreferenceCategory>
 

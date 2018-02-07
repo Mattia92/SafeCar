@@ -58,13 +58,13 @@
         <activity
             android:name=".activity.ResetPasswordActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- Signup activity -->
         <activity
             android:name=".activity.SignupActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize"/>
 
     </application>
 

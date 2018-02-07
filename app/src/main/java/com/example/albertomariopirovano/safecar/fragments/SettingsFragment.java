@@ -11,11 +11,10 @@ import android.view.View;
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.inner.fragments.TAGInterface;
+import com.example.albertomariopirovano.safecar.settings.fragments.ManageplugsFragment;
+import com.example.albertomariopirovano.safecar.settings.fragments.PairPlugFragment;
 import com.example.albertomariopirovano.safecar.settings.fragments.SettingsInfoFeedFragment;
 import com.example.albertomariopirovano.safecar.settings.fragments.SettingsNotificationFragment;
-import com.example.albertomariopirovano.safecar.settings.fragments.SettingsPlugs;
-import com.example.albertomariopirovano.safecar.settings.fragments.SettingsShareFragment;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,9 +43,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
         addPreferencesFromResource(R.xml.preferences);
 
         listFragments = new ArrayList<>();
-        listFragments.add(new SettingsShareFragment());
         listFragments.add(new SettingsNotificationFragment());
-        listFragments.add(new SettingsPlugs());
+        listFragments.add(new PairPlugFragment());
+        listFragments.add(new ManageplugsFragment());
         listFragments.add(new SettingsInfoFeedFragment());
 
         fragmentManager = getActivity().getSupportFragmentManager();
@@ -57,19 +56,17 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
 
                 getActivity().setTitle(preference.getKey());
 
-                if(preference.getKey().equals("Share")) {
-                    ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    Log.i(TAG, ((TAGInterface) listFragments.get(0)).getAssignedTag());
-                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0), ((TAGInterface) listFragments.get(0)).getAssignedTag()).addToBackStack(null).commit();
-                } else if (preference.getKey().equals("Notifications")) {
+                if (preference.getKey().equals(getString(R.string.button_notifications))) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
                     Log.i(TAG, ((TAGInterface) listFragments.get(1)).getAssignedTag());
+                    fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(0), ((TAGInterface) listFragments.get(0)).getAssignedTag()).addToBackStack(null).commit();
+                } else if (preference.getKey().equals(getString(R.string.button_pair))) {
+                    ((MainActivity) getActivity()).setEnabledNavigationDrawer(false);
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(1), ((TAGInterface) listFragments.get(1)).getAssignedTag()).addToBackStack(null).commit();
-                } else if (preference.getKey().equals("Smart Objects")) {
-                    ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
-                    Log.i(TAG, ((TAGInterface) listFragments.get(2)).getAssignedTag());
+                } else if (preference.getKey().equals(getString(R.string.button_manage))) {
+                    ((MainActivity) getActivity()).setEnabledNavigationDrawer(false);
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(2), ((TAGInterface) listFragments.get(2)).getAssignedTag()).addToBackStack(null).commit();
-                } else if (preference.getKey().equals("Info and Feedback")) {
+                } else if (preference.getKey().equals(getString(R.string.button_info))) {
                     ((MainActivity)getActivity()).setEnabledNavigationDrawer(false);
                     Log.i(TAG, ((TAGInterface) listFragments.get(3)).getAssignedTag());
                     fragmentManager.beginTransaction().replace(R.id.main_content, listFragments.get(3), ((TAGInterface) listFragments.get(3)).getAssignedTag()).addToBackStack(null).commit();
@@ -79,14 +76,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements TAGInt
             }
         };
 
-        //Preference preference_sharing = findPreference(getString(R.string.button_sharing));
         Preference preference_notifications = findPreference(getString(R.string.button_notifications));
-        Preference preference_smartobj = findPreference(getString(R.string.button_smartobj));
         Preference preference_infofeed = findPreference(getString(R.string.button_info));
+        Preference preference_pairplug = findPreference(getString(R.string.button_pair));
+        Preference preference_manageplugs = findPreference(getString(R.string.button_manage));
 
-        //preference_sharing.setOnPreferenceClickListener(l);
+        preference_pairplug.setOnPreferenceClickListener(l);
+        preference_manageplugs.setOnPreferenceClickListener(l);
         preference_notifications.setOnPreferenceClickListener(l);
-        preference_smartobj.setOnPreferenceClickListener(l);
         preference_infofeed.setOnPreferenceClickListener(l);
 
     }

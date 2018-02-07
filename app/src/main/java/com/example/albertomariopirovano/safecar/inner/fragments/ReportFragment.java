@@ -25,6 +25,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -114,7 +115,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
             }
         });
 
-        CardView cv = (CardView) v.findViewById(R.id.details_cardview);
+        LinearLayout cv = (LinearLayout) v.findViewById(R.id.details_cardview);
         cv.setVisibility(View.GONE);
 
         Bundle bundle = this.getArguments();
@@ -233,7 +234,7 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
         googleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
         drawTrip(t.getMarkers());
-        CardView cv = (CardView) v.findViewById(R.id.details_cardview);
+        LinearLayout cv = (LinearLayout) v.findViewById(R.id.details_cardview);
         cv.setVisibility(View.VISIBLE);
 
         switch (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION)) {

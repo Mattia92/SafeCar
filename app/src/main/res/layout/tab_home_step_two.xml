@@ -2,30 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_home_two"
     android:layout_width="match_parent"
-    android:layout_height="500dp"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="10">
+    android:weightSum="10"
+    android:background="@color/application_back">
 
     <TextView
         android:layout_width="match_parent"
+        android:fontFamily="@string/font_normal"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="@dimen/titleFontSize"
         android:layout_height="0px"
         android:layout_marginBottom="30dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_weight="2"
         android:gravity="bottom|center"
-        android:text="Currently driving"
-        android:textColor="#000000"
-        android:textSize="30sp" />
+        android:text="@string/currentlyDriving" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0px"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_weight="5"
-        android:background="@drawable/border"
+        android:layout_weight="6"
+        android:background="@color/application_back"
         android:orientation="vertical">
 
         <TextView
@@ -34,17 +36,19 @@
             android:layout_height="30dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/border"
+            android:background="@color/colorPrimary"
             android:gravity="center"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/textFontSize"
+            android:fontFamily="@string/font_normal"
             android:orientation="vertical"
-            android:text="Hints"
-            android:textColor="@color/my_primary_text"
-            android:textSize="20sp"
-            android:backgroundTint="@color/colorPrimaryDark"/>
+            android:text="@string/hints"
+            android:backgroundTint="@color/colorPrimary"/>
 
         <ListView
             android:id="@+id/hint_list_view"
-            android:layout_width="314dp"
+            android:layout_width="match_parent"
+            android:background="@color/colorPrimaryAlpha"
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:layout_marginTop="5dp"/>
@@ -55,13 +59,13 @@
         android:layout_width="match_parent"
         android:layout_height="0px"
         android:layout_below="@+id/entry_text_home"
-        android:layout_marginBottom="30dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_weight="2.5"
+        android:layout_weight="1.5"
         android:weightSum="10">
 
         <LinearLayout
+            android:id="@+id/takeBreak"
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="5"
@@ -76,6 +80,7 @@
                 android:layout_height="35dp"
                 android:layout_weight="5"
                 android:paddingTop="5dp"
+                android:tint="@color/colorPrimaryText"
                 android:src="@drawable/ic_pause_black_24dp" />
 
             <TextView
@@ -85,13 +90,14 @@
                 android:paddingBottom="15dp"
                 android:layout_weight="5"
                 android:gravity="center"
-                android:text="Take a break"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:textColor="@color/colorPrimaryText"
+                android:text="@string/takeBreak"
+                android:textSize="@dimen/buttonFontSize" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/quit"
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="5"
@@ -105,6 +111,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:paddingTop="5dp"
+                android:tint="@color/colorPrimaryText"
                 android:layout_weight="5"
                 android:src="@drawable/ic_stop_black_24dp" />
 
@@ -114,9 +121,9 @@
                 android:paddingBottom="15dp"
                 android:layout_weight="5"
                 android:gravity="center"
-                android:text="Quit Trip"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:text="@string/quitTrip"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/buttonFontSize" />
 
         </LinearLayout>
 
@@ -127,8 +134,7 @@
         android:layout_width="30dp"
         android:layout_height="20dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_margin="8dp"
         android:layout_weight="0.5" />
 
 </LinearLayout>

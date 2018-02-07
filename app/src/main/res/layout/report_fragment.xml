@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/application_back">
 
     <ScrollView
         android:id="@+id/scrollContext"
@@ -38,19 +39,23 @@
                     android:id="@+id/tripNameVisualization"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="0.2"
-                    android:text="Trip report"
+                    android:layout_weight="0.15"
+                    android:text="@string/tripReportTitle"
                     android:textAlignment="center"
-                    android:textSize="40dp" />
+                    android:fontFamily="@string/font_bold"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/titleFontSize" />
 
                 <TextView
                     android:id="@+id/scrollFroInfo"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
-                    android:layout_weight="0.05"
-                    android:textSize="20dp"
-                    android:text="swipe up for the details"
+                    android:layout_weight="0.1"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/textFontSize"
+                    android:fontFamily="@string/font_normal"
+                    android:text="@string/tripReportHiddenText"
                     android:textAlignment="center" />
 
                 <ImageView
@@ -60,7 +65,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="0.05"
                     android:src="@drawable/ic_arrow_upward_black_24dp"
-                    android:tint="#d7ccc8" />
+                    android:tint="@color/colorPrimaryText" />
 
             </LinearLayout>
 
@@ -74,13 +79,16 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Here we go ! Below you can see the details of this trip."
+                    android:text="@string/tripReportSecondPageText"
                     android:textAlignment="center"
                     android:layout_marginBottom="30dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginRight="30dp"
                     android:layout_marginTop="30dp"
-                    android:textSize="30dp" />
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/textFontSize"
+                    android:fontFamily="@string/font_normal"/>
+
                 <include
                     android:id="@+id/details_cardview"
                     layout="@layout/cardview"/>

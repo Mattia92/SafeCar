@@ -24,22 +24,22 @@
 
     <style name="Base.Theme.HMKCodeApp" parent="Theme.AppCompat.NoActionBar">
 
-        <item name="colorPrimary">@color/my_primary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
 
         <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorPrimaryDark">@color/my_primary_dark</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 
         <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
-        <item name="colorAccent">@color/my_accent</item>
+        <item name="colorAccent">@color/colorAccent</item>
 
         <!-- Title Text Color -->
-        <item name="android:textColorPrimary">@color/my_primary_text</item>
+        <item name="android:textColorPrimary">@color/colorPrimaryText</item>
 
         <!-- color of the menu overflow icon (three vertical dots) -->
-        <item name="android:textColorSecondary">@color/my_secondary_text</item>
+        <item name="android:textColorSecondary">@color/colorSecondaryText</item>
 
 
-        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:windowBackground">@color/application_back</item>
     </style>
 
     <!--
@@ -60,6 +60,10 @@
         <item name="android:paddingTop">24dp</item>
         <item name="android:paddingBottom">24dp</item>
         <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AppTheme.Preference" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColorPrimary">@color/colorPrimaryText</item>
     </style>
 
 </resources>

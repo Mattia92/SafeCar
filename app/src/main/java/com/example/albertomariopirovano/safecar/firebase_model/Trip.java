@@ -4,10 +4,12 @@ import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -22,20 +24,15 @@ public class Trip implements Serializable {
     public Float km;
     public Double timeDuration;
 
-    //public Double departure_latitude;
-    //public Double departure_longitude;
-    //public Double arrival_latitude;
-    //public Double arrival_longitude;
+    private List<MapPoint> markers = new ArrayList<>();
 
-    public List<MapPoint> markers = new ArrayList<MapPoint>();
-
-    public String userId;
+    private String userId;
     public String depName;
     public String arrName;
 
-    public Boolean isnew = Boolean.FALSE;
-    public Boolean isDropped = Boolean.FALSE;
-    public String tripId;
+    private Boolean isnew = Boolean.FALSE;
+    private Boolean isDropped = Boolean.FALSE;
+    private String tripId;
 
     public Trip() {
     }
@@ -73,17 +70,17 @@ public class Trip implements Serializable {
     }
 
     public String getAttr(String attributeToShow) {
+        DecimalFormat df = new DecimalFormat("#.0");
         switch (attributeToShow) {
             case "duration":
-                return String.valueOf(timeDuration);
+                return String.valueOf(df.format(timeDuration)) + " minutes";
             case "date":
-                SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss");
+                SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss", Locale.US);
                 return ft.format(date);
-                //return String.valueOf(date);
             case "DSI":
-                return String.valueOf(finalDSI);
+                return String.valueOf(finalDSI) + " DSI score";
             case "KM":
-                return String.valueOf(km);
+                return String.valueOf(df.format(km)) + " km";
             default:
                 return "error";
         }
@@ -131,14 +128,6 @@ public class Trip implements Serializable {
 
     public List<MapPoint> getMarkers() {
         return markers;
-    }
-
-    public void setMarkers(List<MapPoint> markers) {
-        this.markers = markers;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     public void setUserId(String userId) {

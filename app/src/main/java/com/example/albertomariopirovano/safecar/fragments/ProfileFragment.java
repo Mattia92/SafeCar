@@ -190,9 +190,9 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                     icon = icon.mutate();
 
                     if (badges.get(x + i * rowElem).isUnlocked()) {
-                        icon.setColorFilter(new LightingColorFilter(getResources().getColor(R.color.colorAccent), getResources().getColor(R.color.colorAccent)));
+                        icon.setColorFilter(new LightingColorFilter(getResources().getColor(R.color.colorPrimaryDark), getResources().getColor(R.color.colorPrimaryDark)));
                     } else {
-                        icon.setColorFilter(new LightingColorFilter(Color.GRAY, Color.GRAY));
+                        icon.setColorFilter(new LightingColorFilter(getResources().getColor(R.color.colorPrimaryAlpha), getResources().getColor(R.color.colorPrimaryAlpha)));
                         icon.setAlpha(30);
                     }
                     badge_icon.setImageDrawable(icon);

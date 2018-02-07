@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/application_back">
 
     <TextView
         android:id="@+id/plugsPresent"
@@ -11,24 +12,43 @@
         android:layout_margin="30dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Here you can interact with your plugs, you can see the plugs you used and you can drop them."
+        android:text="@string/managePlugsSplash"
         android:textAlignment="center"
-        android:textColor="#000000"
-        android:textSize="20sp"/>
+        android:fontFamily="@string/font_normal"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="@dimen/textFontSize"/>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
+    <LinearLayout
+        style="@style/Widget.CardContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/cardview_border">
+
+        <TextView
+            android:id="@+id/cardViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/plugsHeader"
+            android:layout_marginBottom="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/colorPrimaryText" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/warningNoPlugIcon"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:src="@drawable/ic_warning_black_24px"/>
+        android:src="@drawable/ic_warning_white_24px"/>
 
     <TextView
         android:id="@+id/warningNoPlugText"
@@ -37,9 +57,10 @@
         android:layout_margin="30dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="You don't have any paired plug. Please go in the dedicated session to pair with a phisical plug."
-        android:textAlignment="center"
-        android:textColor="#000000"
-        android:textSize="20sp"/>
+        android:fontFamily="@string/font_normal"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="@dimen/textFontSize"
+        android:text="@string/noPlugs"
+        android:textAlignment="center"/>
 
 </LinearLayout>

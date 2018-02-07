@@ -2,12 +2,14 @@
 
     <string name="app_name">Safe Car</string>
 
+    <string name="font_normal">sans-serif-light</string>
+    <string name="font_bold">sans-serif-bold</string>
+
     <string name="action_settings">Settings</string>
 
     <string name="drawer_opened">Drawer Opened</string>
     <string name="drawer_closed">Drawer Closed</string>
 
-    <!-- Button text -->
     <string name="btn_logout_from_google">Logout from Google</string>
     <string name="btn_revoke_access">Revoke Access</string>
 
@@ -16,6 +18,9 @@
     <string name="button_smartobj">Smart Objects</string>
 
     <string name="button_info">Info and Feedback</string>
+
+    <string name="button_pair">Pair Plug</string>
+    <string name="button_manage">Manage Plugs</string>
 
     <string name="action_sign_in_short">Register</string>
     <string name="email">Email</string>
@@ -66,5 +71,47 @@
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="initPairPlugTA">Your device is not paired with any plug in your plug list. Please click the button below to start using SafeCar !</string>
+    <string name="justPairedPairPlugTA">You are now paired with a plug. Let\'s start a trip I am sure it will be great ! We will be here, right on your side ! </string>
+    <string name="noBluetoothDevices">No target device in bluetooth range</string>
+
+    <string name="initPairPlugB">Start bluetooth scan</string>
+    <string name="changePairPlugB">Change your target plug</string>
+    <string name="searchPairPlugB">Searching for plugs</string>
+
+    <string name="managePlugsSplash">Here you can interact with your plugs. You can either check or drop them.</string>
+    <string name="noPlugs">You don\'t have any paired plug. Please go in the dedicated section in order to pair a phisical plug.</string>
+
+    <string name="helloPlug">Current Plug</string>
+    <string name="Name">Name</string>
+    <string name="MACAddress">MAC address</string>
+
+    <string name="plugsHeader">Plugs:</string>
+    <string name="badgesHeader">Badges:</string>
+
+    <string name="sampleBadgeDesc">This is a description of the badge</string>
+
+    <string name="pairDevice">Below you can see the detected devices. Please, select the one you want to be paired with.</string>
+    <string name="afterScanReport">After scan report:</string>
+    <string name="reScan">Scan again</string>
+
+    <string name="currentlyDriving">Currently driving</string>
+
+    <string name="hints">Generated hints</string>
+    <string name="quitTrip">Quit Trip</string>
+    <string name="takeBreak">Take a break</string>
+
+    <string name="tripReportTitle">Trip report</string>
+    <string name="tripReportSecondPageText">Here we go ! Below you can see the details of this trip. Read them carefully and try to understand how to improve your driving style !</string>
+    <string name="tripReportHiddenText">swipe to discover the details of this trip !</string>
+    <string name="tripDetails">Details</string>
+
+    <string name="welcomeString">Welcome !</string>
+
+    <string name="shareButton">Share now !</string>
+    <string name="incentiveToShare">We hope that Safecar is helping you to improve your driving style. Please share your feelings with your friends !</string>
+
+    <string name="badgesDetails">Badges</string>
 
 </resources>

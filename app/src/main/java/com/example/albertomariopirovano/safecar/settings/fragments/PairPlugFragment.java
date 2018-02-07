@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -66,8 +67,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     private BluetoothAdapter bluetoothAdapter;
     private FirebaseAuth auth;
     private DatabaseReference database;
-    private LocalModel localModel = LocalModel.getInstance();
-    private Button reScanButton;
+    final private LocalModel localModel = LocalModel.getInstance();
     private TableLayout targetPlugTable;
     private LinearLayout targetPlugLinLay;
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -77,7 +77,6 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 Log.i(TAG, "discovery started");
 
                 isBluetoothScanning = Boolean.TRUE;
-                Log.i(TAG, "Bluetooth is scanning ? " + String.valueOf(isBluetoothScanning));
 
                 progressBar.setVisibility(View.VISIBLE);
                 //discovery starts, we can show progress dialog or perform other tasks
@@ -87,11 +86,11 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 progressBar.setVisibility(View.GONE);
 
                 if (found.isEmpty()) {
-                    entry_text_home.setText("Your device is not paired with any plug in your plug list. Please click the button below to start using SafeCar !");
-                    Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
+                    entry_text_home.setText(R.string.initPairPlugTA);
+                    Toast.makeText(getActivity().getApplicationContext(), R.string.noBluetoothDevices, Toast.LENGTH_SHORT).show();
                 } else if (!found.isEmpty() && (toBeAdded.size() - found.size()) == 0) {
 
-                    List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+                    List<Map<String, String>> data = new ArrayList<>();
                     for (final Plug plug : toBeAdded) {
                         data.add(new HashMap<String, String>() {
                             {
@@ -115,14 +114,14 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                             savedStateHandler.setTargetPlug(clicked);
                             localModel.setActivePlug(clicked.getPlugId());
 
-                            scanButton.setText("Change your target plug");
-                            entry_text_home.setText("You are now paired with a plug. Let's start a trip I am sure it will be great ! We will be there, right on your side ");
+                            scanButton.setText(R.string.changePairPlugB);
+                            entry_text_home.setText(R.string.justPairedPairPlugTA);
 
                             TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
-                            ((TextView) row1.getChildAt(0)).setText("Name");
+                            ((TextView) row1.getChildAt(0)).setText(R.string.Name);
                             ((TextView) row1.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getName());
                             TableRow row2 = (TableRow) targetPlugTable.getChildAt(1);
-                            ((TextView) row2.getChildAt(0)).setText("MAC address");
+                            ((TextView) row2.getChildAt(0)).setText(R.string.MACAddress);
                             ((TextView) row2.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getAddress_MAC());
 
                             targetPlugLinLay.setVisibility(View.VISIBLE);
@@ -143,14 +142,14 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                             }
                         }
                     }
-                    scanButton.setText("Change your target plug");
-                    entry_text_home.setText("You are already paired with a plug.");
+                    scanButton.setText(R.string.changePairPlugB);
+                    entry_text_home.setText(R.string.justPairedPairPlugTA);
 
                     TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
-                    ((TextView) row1.getChildAt(0)).setText("Name");
+                    ((TextView) row1.getChildAt(0)).setText(R.string.Name);
                     ((TextView) row1.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getName());
                     TableRow row2 = (TableRow) targetPlugTable.getChildAt(1);
-                    ((TextView) row2.getChildAt(0)).setText("MAC address");
+                    ((TextView) row2.getChildAt(0)).setText(R.string.MACAddress);
                     ((TextView) row2.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getAddress_MAC());
 
                     targetPlugLinLay.setVisibility(View.VISIBLE);
@@ -219,26 +218,26 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         progressBar.setVisibility(View.GONE);
         scanButton = (Button) v.findViewById(R.id.scanButton);
         listDevices = (ListView) v.findViewById(R.id.listDevices);
-        reScanButton = (Button) v.findViewById(R.id.rescan_button);
+        Button reScanButton = (Button) v.findViewById(R.id.rescan_button);
         targetPlugTable = (TableLayout) v.findViewById(R.id.targetPlug);
         targetPlugLinLay = (LinearLayout) v.findViewById(R.id.targetPlugLinLay);
         targetPlugLinLay.setVisibility(View.GONE);
 
         if (savedStateHandler.getTargetPlug() != null) {
-            scanButton.setText("Change your target plug");
-            entry_text_home.setText("You are already paired with a plug, let's start a trip with SafeCar !");
+            scanButton.setText(R.string.changePairPlugB);
+            entry_text_home.setText(R.string.justPairedPairPlugTA);
 
             TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
-            ((TextView) row1.getChildAt(0)).setText("Name");
+            ((TextView) row1.getChildAt(0)).setText(R.string.Name);
             ((TextView) row1.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getName());
             TableRow row2 = (TableRow) targetPlugTable.getChildAt(1);
-            ((TextView) row2.getChildAt(0)).setText("MAC address");
+            ((TextView) row2.getChildAt(0)).setText(R.string.MACAddress);
             ((TextView) row2.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getAddress_MAC());
 
             targetPlugLinLay.setVisibility(View.VISIBLE);
         } else {
-            entry_text_home.setText("Your device is not paired with any plug in your plug list. Please click the button below to start using SafeCar !");
-            scanButton.setText("Start bluetooth scan");
+            entry_text_home.setText(R.string.initPairPlugTA);
+            scanButton.setText(R.string.initPairPlugB);
             targetPlugLinLay.setVisibility(View.GONE);
         }
 
@@ -254,9 +253,11 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
         reScanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                entry_text_home.setText(R.string.initPairPlugTA);
+                scanButton.setText(R.string.initPairPlugB);
                 targetPlugLinLay.setVisibility(View.GONE);
-                toBeAdded = new ArrayList<Plug>();
-                found = new ArrayList<Plug>();
+                toBeAdded = new ArrayList<>();
+                found = new ArrayList<>();
                 scanButton.setVisibility(View.VISIBLE);
                 entry_text_home.setVisibility(View.VISIBLE);
                 viewFlipper.setDisplayedChild(0);
@@ -269,8 +270,8 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     }
 
     private void startBluetoothScan() {
-        toBeAdded = new ArrayList<Plug>();
-        found = new ArrayList<Plug>();
+        toBeAdded = new ArrayList<>();
+        found = new ArrayList<>();
         if (bluetoothAdapter != null) {
 
             IntentFilter filter = new IntentFilter();
@@ -302,7 +303,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                         break;
                     case PackageManager.PERMISSION_GRANTED:
 
-                        entry_text_home.setText("Searching for plugs ...");
+                        entry_text_home.setText(R.string.searchPairPlugB);
                         bluetoothAdapter.cancelDiscovery();
                         bluetoothAdapter.startDiscovery();
                         break;
@@ -370,20 +371,20 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
             }
 
             if (savedStateHandler.getTargetPlug() != null) {
-                scanButton.setText("Change your target plug");
-                entry_text_home.setText("You are already paired with a plug, let's start a trip I am sure it will be great ! We will be there, right on your side");
+                scanButton.setText(R.string.changePairPlugB);
+                entry_text_home.setText(R.string.justPairedPairPlugTA);
 
                 TableRow row1 = (TableRow) targetPlugTable.getChildAt(0);
-                ((TextView) row1.getChildAt(0)).setText("Name");
+                ((TextView) row1.getChildAt(0)).setText(R.string.Name);
                 ((TextView) row1.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getName());
                 TableRow row2 = (TableRow) targetPlugTable.getChildAt(1);
-                ((TextView) row2.getChildAt(0)).setText("MAC address");
+                ((TextView) row2.getChildAt(0)).setText(R.string.MACAddress);
                 ((TextView) row2.getChildAt(1)).setText(savedStateHandler.getTargetPlug().getAddress_MAC());
 
                 targetPlugLinLay.setVisibility(View.VISIBLE);
             } else {
-                entry_text_home.setText("Your device is not paired with any plug in your plug list. Please click the button below to start using SafeCar !");
-                scanButton.setText("Start bluetooth scan");
+                entry_text_home.setText(R.string.initPairPlugTA);
+                scanButton.setText(R.string.initPairPlugB);
                 targetPlugLinLay.setVisibility(View.GONE);
             }
 
@@ -398,17 +399,17 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_ACCESS_COARSE_LOCATION) {
             if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 bluetoothAdapter.cancelDiscovery();
                 bluetoothAdapter.startDiscovery();
-            } else {
+            }
+            /*else {
 
                 // permission denied, boo! Disable the
                 // functionality that depends on this permission.
-            }
-            return;
+            }*/
         }
     }
 }

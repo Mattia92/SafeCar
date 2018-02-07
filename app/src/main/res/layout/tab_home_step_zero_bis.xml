@@ -1,52 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
-    android:orientation="vertical"
-    android:weightSum="10"
-    android:background="@drawable/cardview_border">
+    android:background="@color/application_back">
 
-    <TextView
-        android:id="@+id/bluetooth_devices"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
-        android:layout_marginBottom="0dp"
-        android:layout_weight="0.5"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
-        android:textColor="@color/my_primary"
-        android:text="After scan report:" />
+        android:background="@drawable/cardview_border"
+        android:orientation="vertical"
+        android:weightSum="10">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_marginBottom="30sp"
-        android:layout_weight="0.5"
-        android:textColor="@color/my_primary"
-        android:text="Please, select the device you want to be paired with." />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="8">
-
-        <ListView
-            android:id="@+id/listDevices"
+        <TextView
+            android:id="@+id/bluetooth_devices"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_marginBottom="0dp"
+            android:layout_weight="0.2"
+            android:fontFamily="@string/font_normal"
+            android:text="@string/afterScanReport"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/titleFontSize" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="0.1"
+            android:fontFamily="@string/font_normal"
+            android:text="@string/pairDevice"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/textFontSize" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:layout_weight="8.3">
+
+            <ListView
+                android:id="@+id/listDevices"
+                android:layout_width="match_parent"
+                android:layout_margin="20dp"
+                android:layout_height="match_parent"
+                android:fontFamily="@string/font_normal"
+                android:background="@color/colorPrimaryAlpha"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/buttonFontSize" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/rescan_button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+            android:fontFamily="@string/font_normal"
+            android:text="@string/reScan"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/buttonFontSize" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/rescan_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_margin="30dp"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/my_primary_text"
-        android:text="Re-scan"/>
 
 </LinearLayout>

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/application_back">
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -36,7 +38,9 @@
                     android:layout_marginBottom="20dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:textColor="@color/window_background"/>
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/textFontSize"
+                    android:fontFamily="@string/font_normal"/>
 
             </LinearLayout>
 
@@ -58,36 +62,16 @@
                 android:padding="0dp">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Version 1.0"
-                    android:lineSpacingExtra="8dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginLeft="10dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/window_background"/>
-
-                <View
-                    android:layout_height="0.5dp"
-                    android:layout_width="match_parent"
-                    android:background="@color/my_divider"
-                    android:padding="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"/>
-
-                <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:text="Connect with us"
                     android:lineSpacingExtra="8dp"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="15dp"
-                    android:layout_marginLeft="10dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/my_divider"
-                    android:textSize="18sp"/>
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/titleFontSize"
+                    android:gravity="bottom|center"
+                    android:fontFamily="@string/font_normal"/>
 
                 <LinearLayout
                     android:id="@+id/feedback"
@@ -95,7 +79,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_gravity="left"
                     android:clickable="true">
 
@@ -109,19 +94,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Contact us"
-                        android:textColor="@color/window_background"
+                        android:text="Email our costumer service"
+                        android:textColor="@color/colorPrimaryText"
                         android:paddingLeft="5dp"/>
                 </LinearLayout>
-
-                <View
-                    android:layout_height="0.5dp"
-                    android:layout_width="match_parent"
-                    android:background="@color/my_divider"
-                    android:padding="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"/>
 
                 <LinearLayout
                     android:id="@+id/facebook"
@@ -129,7 +105,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_gravity="left"
                     android:clickable="true"
                     android:orientation="horizontal">
@@ -145,18 +122,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Like us on Facebook"
-                        android:textColor="@color/window_background"
+                        android:textColor="@color/colorPrimaryText"
                         android:paddingLeft="5dp"/>
                 </LinearLayout>
-
-                <View
-                    android:layout_height="0.5dp"
-                    android:layout_width="match_parent"
-                    android:background="@color/my_divider"
-                    android:padding="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"/>
 
                 <LinearLayout
                     android:id="@+id/twitter"
@@ -164,7 +132,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_gravity="left"
                     android:clickable="true"
                     android:orientation="horizontal">
@@ -180,18 +149,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Follow us on Twitter"
-                        android:textColor="@color/window_background"
+                        android:textColor="@color/colorPrimaryText"
                         android:paddingLeft="5dp"/>
                 </LinearLayout>
-
-                <View
-                    android:layout_height="0.5dp"
-                    android:layout_width="match_parent"
-                    android:background="@color/my_divider"
-                    android:padding="0dp"
-                    android:layout_weight="1"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginBottom="0dp"/>
 
                 <LinearLayout
                     android:id="@+id/play_store"
@@ -199,7 +159,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_gravity="left"
                     android:clickable="true"
                     android:orientation="horizontal">
@@ -215,11 +176,42 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Rate us on Play Store"
-                        android:textColor="@color/window_background"
+                        android:textColor="@color/colorPrimaryText"
                         android:paddingLeft="5dp"/>
                 </LinearLayout>
 
             </LinearLayout>
+
+            <View
+                android:layout_height="0.5dp"
+                android:layout_width="match_parent"
+                android:background="@color/my_divider"
+                android:padding="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Version 1.0"
+                android:lineSpacingExtra="8dp"
+                android:gravity="bottom|center"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="@dimen/textFontSize"
+                android:fontFamily="@string/font_bold"/>
+
+            <View
+                android:layout_height="0.5dp"
+                android:layout_width="match_parent"
+                android:background="@color/my_divider"
+                android:padding="0dp"
+                android:layout_weight="1"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="0dp"/>
 
         </LinearLayout>
     </ScrollView>

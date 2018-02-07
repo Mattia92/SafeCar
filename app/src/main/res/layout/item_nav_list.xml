@@ -16,6 +16,7 @@
             android:id="@+id/nav_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:tint="@color/colorPrimaryText"
             android:src="@drawable/ic_person_black_24dp"/>
 
         <TextView
@@ -25,8 +26,9 @@
             android:layout_gravity="center"
             android:paddingLeft="20dp"
             android:text="Title"
-            android:textColor="#000"
-            android:textSize="18sp" />
+            android:textColor="@color/colorPrimaryText"
+            android:fontFamily="@string/font_normal"
+            android:textSize="@dimen/textFontSize" />
 
     </LinearLayout>
 

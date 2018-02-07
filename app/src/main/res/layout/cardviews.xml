@@ -28,7 +28,7 @@
                     android:layout_height="wrap_content"
                     android:text="Toolbar"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/my_primary" />
+                    android:textColor="@color/colorPrimary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -89,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:text="Snackbar"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/my_primary" />
+                    android:textColor="@color/colorPrimary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:text="Snackbar"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/my_primary" />
+                    android:textColor="@color/colorPrimary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -149,7 +149,7 @@
                     android:layout_height="wrap_content"
                     android:text="Snackbar"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/my_primary" />
+                    android:textColor="@color/colorPrimary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:text="Snackbar"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textColor="@color/my_primary" />
+                    android:textColor="@color/colorPrimary" />
 
                 <TextView
                     android:layout_width="match_parent"

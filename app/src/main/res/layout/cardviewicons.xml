@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cardviewelement"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
     android:layout_marginTop="10dp"
-    android:background="@android:color/white">
+    android:layout_alignParentBottom="true"
+    android:background="@color/application_back">
 
     <LinearLayout
         style="@style/Widget.CardContent"
@@ -17,18 +18,19 @@
         android:background="@drawable/cardview_border">
 
         <TextView
-            android:id="@+id/cardViewTitle"
+            android:id="@+id/bluetooth_devices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Badges:"
-            android:layout_marginBottom="10dp"
+            android:fontFamily="@string/font_normal"
+            android:text="@string/badgesDetails"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:textColor="@color/my_primary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/textFontSize" />
 
         <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/table_layout"
             android:layout_width="match_parent"
-            android:layout_height="650dp">
+            android:layout_height="670dp">
 
             <TableRow
                 android:id="@+id/row_1"
@@ -51,9 +53,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -70,9 +76,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -89,9 +99,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -118,9 +132,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -137,9 +155,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -156,9 +178,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -185,9 +211,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -204,9 +234,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -223,9 +257,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -252,9 +290,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -271,9 +313,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -290,9 +336,13 @@
 
                     <TextView
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="This is a description of the badge"
-                        android:gravity="center"/>
+                        android:layout_height="75dp"
+                        android:text="@string/sampleBadgeDesc"
+                        android:gravity="top|center"
+                        android:fontFamily="@string/font_normal"
+                        android:textSize="@dimen/buttonFontSize"
+                        android:background="@color/colorPrimaryAlpha"
+                        android:textColor="@color/colorPrimaryText"/>
 
                 </LinearLayout>
 
@@ -301,4 +351,5 @@
         </TableLayout>
 
     </LinearLayout>
-</android.support.v7.widget.CardView>
+
+</LinearLayout>
