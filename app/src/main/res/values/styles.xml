@@ -65,6 +65,7 @@
     <style name="AppTheme.Preference" parent="@style/PreferenceThemeOverlay">
         <item name="android:textColorPrimary">@color/colorPrimaryText</item>
         <item name="android:textColorSecondary">@color/colorPrimaryText</item>
+        <item name="android:buttonTint">@color/colorPrimaryText</item>
     </style>
 
 </resources>
