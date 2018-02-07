@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.activity.MainActivity;
 import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 
@@ -163,7 +164,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         } else if (currentDSI >= 650 && currentDSI < 700) {
             hint = "This is not a good driving style !";
         } else if (currentDSI >= 700 && currentDSI < 750) {
-            hint = "Please stop the car and take a breathe";
+            hint = "Please stop the car and take a breath";
         } else if (currentDSI >= 750 && currentDSI < 800) {
             hint = "Take a break, let's have a tea";
         } else if (currentDSI >= 800 && currentDSI < 850) {
@@ -221,7 +222,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
     }
 
     public void setViewElements(ListView hintsListView) {
-        this.hintsAdapter = new ArrayAdapter<String>(activity, android.R.layout.simple_list_item_1, new ArrayList<String>());
+        this.hintsAdapter = new ArrayAdapter<>(activity, R.layout.white_single_list_item, new ArrayList<String>());
         this.hintsAdapter.setNotifyOnChange(true);
         hintsListView.setAdapter(hintsAdapter);
     }

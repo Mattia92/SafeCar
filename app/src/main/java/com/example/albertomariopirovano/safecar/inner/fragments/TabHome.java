@@ -170,7 +170,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         startTrip.setVisibility(View.VISIBLE);
         savedStateHandler.setTargetPlug(new Plug());
         */
-
         progressBarEndTrip = (ProgressBar) v.findViewById(R.id.progressBarEndTrip);
         hintsListView = (ListView) v.findViewById(R.id.hint_list_view);
         //hintsListView.getBackground().setAlpha(Integer.valueOf(R.string.listViewAlpha));

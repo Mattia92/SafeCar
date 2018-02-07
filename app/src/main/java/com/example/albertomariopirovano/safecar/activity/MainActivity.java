@@ -507,14 +507,16 @@ public class MainActivity extends AppCompatActivity {
         f = getSupportFragmentManager().findFragmentByTag("PairPlugFragment");
         if (f != null && f.isVisible()) {
             Log.i(TAG, "PairPlugFragment VISIBLE");
-            setTitle(getString(R.string.button_smartobj));
+            setEnabledNavigationDrawer(true);
+            setTitle(getString(R.string.action_settings));
             super.onBackPressed();
             return;
         }
         f = getSupportFragmentManager().findFragmentByTag("ManageplugsFragment");
         if (f != null && f.isVisible()) {
             Log.i(TAG, "ManageplugsFragment VISIBLE");
-            setTitle(getString(R.string.button_smartobj));
+            setEnabledNavigationDrawer(true);
+            setTitle(getString(R.string.action_settings));
             super.onBackPressed();
             return;
         }

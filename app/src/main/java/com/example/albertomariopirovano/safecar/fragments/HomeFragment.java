@@ -1,6 +1,7 @@
 package com.example.albertomariopirovano.safecar.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabContentFactory;
+import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
 import com.example.albertomariopirovano.safecar.adapters.AppFragmentPagerAdapter;
@@ -112,6 +114,11 @@ public class HomeFragment extends Fragment implements OnPageChangeListener, OnTa
             tabSpec.setIndicator(((TabFragment)listFragments.get(i)).getName());
             tabSpec.setContent(new FakeContent(getActivity()));
             tabHost.addTab(tabSpec);
+        }
+
+        for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
+            TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
+            tv.setTextColor(getResources().getColor(R.color.colorPrimaryText));
         }
 
         tabHost.setOnTabChangedListener(this);

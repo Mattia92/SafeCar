@@ -55,6 +55,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by albertomariopirovano on 26/04/17.
@@ -268,7 +269,10 @@ public class TripHandler extends AsyncTask<Void, Void, Void> implements Serializ
 
         trip.setUserId(auth.getCurrentUser().getUid());
         trip.setDate(new Date());
-        trip.setFinalDSI(fakeDSI);
+        Random r = new Random();
+        int Low = 0;
+        int High = 1000;
+        trip.setFinalDSI(r.nextInt(High-Low) + Low);
         trip.setTimeDuration(elapsedMinutes);
         trip.setTripId(database.child("users").push().getKey());
         trip.setIsnew(Boolean.TRUE);

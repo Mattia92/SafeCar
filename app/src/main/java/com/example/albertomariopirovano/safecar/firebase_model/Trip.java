@@ -73,6 +73,9 @@ public class Trip implements Serializable {
         DecimalFormat df = new DecimalFormat("#.0");
         switch (attributeToShow) {
             case "duration":
+                if (timeDuration > 60) {
+                    return String.valueOf(df.format(timeDuration/60)) + " hours";
+                }
                 return String.valueOf(df.format(timeDuration)) + " minutes";
             case "date":
                 SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss", Locale.US);
