@@ -14,5 +14,5 @@
 
     <include
         android:id="@+id/tab_home_three"
-        layout="@layout/report_fragment" />
+        layout="@layout/home_report_fragment" />
 </ViewFlipper>

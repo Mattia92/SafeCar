@@ -21,11 +21,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -116,6 +119,9 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private TextView homepagetext;
     private Button startTrip;
 
+    private int oldY = 0;
+    private ArrayList<Animation> returnList_tv;
+    private ArrayList<Animation> returnList_iv;
 
     public String getName() {
         return name;
@@ -195,6 +201,41 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         setListeners();
 
+        final TextView tv = (TextView) v.findViewById(R.id.scrollFroInfo);
+        final ImageView iv = (ImageView) v.findViewById(R.id.scrollIcon);
+        final ScrollView scv = (ScrollView) v.findViewById(R.id.scrollContext);
+
+        scv.fullScroll(ScrollView.FOCUS_UP);
+        returnList_tv = setUpFadeAnimation(tv);
+        returnList_iv = setUpFadeAnimation(iv);
+
+        scv.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                if (!(getActivity() == null)) {
+                    int scrollY = scv.getScrollY();
+
+                    if (oldY < scrollY){
+                        scv.fullScroll(ScrollView.FOCUS_DOWN);
+                        returnList_tv.get(0).setAnimationListener(null);
+                        returnList_tv.get(1).setAnimationListener(null);
+                        returnList_iv.get(0).setAnimationListener(null);
+                        returnList_iv.get(1).setAnimationListener(null);
+                        tv.setVisibility(View.GONE);
+                        iv.setVisibility(View.GONE);
+                    } else {
+                        scv.fullScroll(ScrollView.FOCUS_UP);
+                        tv.setVisibility(View.VISIBLE);
+                        iv.setVisibility(View.VISIBLE);
+                        returnList_tv = setUpFadeAnimation(tv);
+                        returnList_iv = setUpFadeAnimation(iv);
+                    }
+
+                    oldY = scrollY;
+                }
+            }
+        });
+
         return v;
     }
 
@@ -266,7 +307,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 startTrip(view);
             }
         });
-
 
     }
 
@@ -681,5 +721,55 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
             }
             return;
         }
+    }
+
+    private ArrayList<Animation> setUpFadeAnimation(final View view) {
+        // Start from 0.1f if you desire 90% fade animation
+        final Animation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(2000);
+        fadeIn.setStartOffset(500);
+        // End to 0.1f if you desire 90% fade animation
+        final Animation fadeOut = new AlphaAnimation(1.0f, 0.0f);
+        fadeOut.setDuration(3000);
+        fadeOut.setStartOffset(1000);
+
+        fadeIn.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                // start fadeOut when fadeIn ends (continue)
+                view.startAnimation(fadeOut);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+        });
+
+        fadeOut.setAnimationListener(new Animation.AnimationListener(){
+            @Override
+            public void onAnimationEnd(Animation arg0) {
+                // start fadeIn when fadeOut ends (repeat)
+                view.startAnimation(fadeIn);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation arg0) {
+            }
+
+            @Override
+            public void onAnimationStart(Animation arg0) {
+            }
+        });
+
+        view.startAnimation(fadeOut);
+        ArrayList<Animation> returnList = new ArrayList<Animation>();
+        returnList.add(fadeIn);
+        returnList.add(fadeOut);
+
+        return returnList;
     }
 }

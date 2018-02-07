@@ -178,8 +178,8 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
     private ArrayList<Animation> setUpFadeAnimation(final View view) {
         // Start from 0.1f if you desire 90% fade animation
         final Animation fadeIn = new AlphaAnimation(0.0f, 1.0f);
-        fadeIn.setDuration(3000);
-        fadeIn.setStartOffset(1000);
+        fadeIn.setDuration(2000);
+        fadeIn.setStartOffset(500);
         // End to 0.1f if you desire 90% fade animation
         final Animation fadeOut = new AlphaAnimation(1.0f, 0.0f);
         fadeOut.setDuration(3000);

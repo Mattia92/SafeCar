@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/application_back">
+
+    <ScrollView
+        android:id="@+id/scrollContext"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        tools:context=".activity.MainActivity">
+
+        <LinearLayout
+            android:id="@+id/linlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/f1"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:weightSum="1">
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/reportMap"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.5">
+
+                </com.google.android.gms.maps.MapView>
+
+                <TextView
+                    android:id="@+id/tripNameVisualization"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.15"
+                    android:text="@string/tripReportTitle"
+                    android:textAlignment="center"
+                    android:fontFamily="@string/font_bold"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/titleFontSize" />
+
+                <TextView
+                    android:id="@+id/scrollFroInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="0.1"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/textFontSize"
+                    android:fontFamily="@string/font_normal"
+                    android:text="@string/tripReportHiddenText"
+                    android:textAlignment="center" />
+
+                <ImageView
+                    android:id="@+id/scrollIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="0.05"
+                    android:src="@drawable/ic_arrow_upward_black_24dp"
+                    android:tint="@color/colorPrimaryText" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/f2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tripReportSecondPageText"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="30dp"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/textFontSize"
+                    android:fontFamily="@string/font_normal"/>
+
+                <include
+                    android:id="@+id/details_cardview"
+                    layout="@layout/cardview"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/rescan_vis"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_clear_black_24dp" />
+
+</RelativeLayout>
