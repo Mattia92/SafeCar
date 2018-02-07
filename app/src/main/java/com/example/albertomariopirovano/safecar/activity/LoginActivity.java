@@ -184,6 +184,8 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                                         Log.i("firebaseAuthWithGoogle", "user not present, let's add him");
                                         //String userID = database.child("users").push().getKey();
                                         database.child("users").child(auth.getCurrentUser().getUid()).setValue(new User(user.getUid(), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString()));
+                                        Log.i(TAG, user.getDisplayName() + "\n" + user.getEmail() + "\n" + user.getPhotoUrl().toString());
+                                        initLocalDB(user);
                                     }
                                 }
 

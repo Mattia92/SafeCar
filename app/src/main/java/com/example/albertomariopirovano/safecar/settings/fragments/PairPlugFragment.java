@@ -77,7 +77,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 Log.i(TAG, "discovery started");
 
                 isBluetoothScanning = Boolean.TRUE;
-                Log.i(TAG, String.valueOf(isBluetoothScanning));
+                Log.i(TAG, "Bluetooth is scanning ? " + String.valueOf(isBluetoothScanning));
 
                 progressBar.setVisibility(View.VISIBLE);
                 //discovery starts, we can show progress dialog or perform other tasks
@@ -87,6 +87,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 progressBar.setVisibility(View.GONE);
 
                 if (found.isEmpty()) {
+                    entry_text_home.setText("Your device is not paired with any plug in your plug list. Please click the button below to start using SafeCar !");
                     Toast.makeText(getActivity().getApplicationContext(), "No target device in bluetooth range", Toast.LENGTH_SHORT).show();
                 } else if (!found.isEmpty() && (toBeAdded.size() - found.size()) == 0) {
 

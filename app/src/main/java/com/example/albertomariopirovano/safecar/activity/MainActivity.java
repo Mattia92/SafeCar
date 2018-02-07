@@ -309,82 +309,93 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.menu_item_logout:
 
-                database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(false);
-
-                if (profilePngFile.exists()) {
-                    if (profilePngFile.delete()) {
-                        Log.i(TAG, "Profile image deleted :" + profilePngFile.getPath());
-                    } else {
-                        Log.i(TAG, "Profile image not delated :" + profilePngFile.getPath());
-                    }
-                }
-
-                auth.signOut();
-
-                localModel.updateCloudModel();
-                localModel.drop();
-
-                savedStateHandler.removeState("TabHome");
-                savedStateHandler.removeTargetPlug();
-
-                Log.i(TAG, "Logging out current user");
-
-                Log.i("> Switching activity <", "Main Activity -> Login Activity");
-
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-
-                return false;
-
-            case R.id.menu_item_delete_account:
-
-                FirebaseUser user = auth.getCurrentUser();
-
                 new AlertDialog.Builder(this)
-                        .setMessage("Are you sure you want to delete the current user ?")
+                        .setMessage("Are you sure you want to logout ?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                MainActivity.super.onBackPressed();
+                                database.child("users").child(auth.getCurrentUser().getUid()).child("active").setValue(false);
+
+                                if (profilePngFile.exists()) {
+                                    if (profilePngFile.delete()) {
+                                        Log.i(TAG, "Profile image deleted :" + profilePngFile.getPath());
+                                    } else {
+                                        Log.i(TAG, "Profile image not delated :" + profilePngFile.getPath());
+                                    }
+                                }
+
+                                auth.signOut();
+
+                                localModel.updateCloudModel();
+                                localModel.drop();
+
+                                savedStateHandler.removeState("TabHome");
+                                savedStateHandler.removeTargetPlug();
+
+                                Log.i(TAG, "Logging out current user");
+
+                                Log.i("> Switching activity <", "Main Activity -> Login Activity");
+
+                                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                return;
+                                Log.i(TAG, "Not logging out");
                             }
                         })
                         .show();
+                return false;
 
-                if (profilePngFile.exists()) {
-                    if (profilePngFile.delete()) {
-                        Log.i(TAG, "file Deleted :" + profilePngFile.getPath());
-                    } else {
-                        Log.i(TAG, "file not Deleted :" + profilePngFile.getPath());
-                    }
-                }
+            case R.id.menu_item_delete_account:
 
-                if (user != null) {
-                    database.child("users").child(user.getUid()).setValue(null);
-                    user.delete()
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(MainActivity.this, "Your profile has been deleted!", Toast.LENGTH_SHORT).show();
+                final FirebaseUser user = auth.getCurrentUser();
+
+                new AlertDialog.Builder(this)
+                        .setMessage("Are you sure you want to delete your account ?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (profilePngFile.exists()) {
+                                    if (profilePngFile.delete()) {
+                                        Log.i(TAG, "file Deleted :" + profilePngFile.getPath());
                                     } else {
-                                        Toast.makeText(MainActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
+                                        Log.i(TAG, "file not Deleted :" + profilePngFile.getPath());
                                     }
-                                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
                                 }
-                            });
-                } else {
-                    Log.i(TAG, "Your are trying to eliminate an account while you already performed logout !");
-                }
 
-                localModel.drop();
+                                if (user != null) {
+                                    database.child("users").child(user.getUid()).setValue(null);
+                                    user.delete()
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(MainActivity.this, "Your profile has been deleted!", Toast.LENGTH_SHORT).show();
+                                                    } else {
+                                                        Toast.makeText(MainActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                                                }
+                                            });
+                                } else {
+                                    Log.i(TAG, "Your are trying to eliminate an account while you already performed logout !");
+                                }
 
-                Log.i(TAG, "Deleting current user");
+                                localModel.drop();
 
+                                Log.i(TAG, "Deleting current user");
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Log.i(TAG, "Not deleting current user");
+                            }
+                        })
+                        .show();
                 return true;
 
             default:

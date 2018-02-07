@@ -13,6 +13,7 @@ import com.example.albertomariopirovano.safecar.services.SavedStateHandler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by albertomariopirovano on 10/06/17.
@@ -123,26 +124,57 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
 
     private void computeDSI() {
         Log.i(TAG, "computeDSI");
-        currentDSI = 1000;
+        Random r = new Random();
+        int Low = 0;
+        int High = 1000;
+        currentDSI = r.nextInt(High-Low) + Low;;
     }
 
     private void updateDSI() {
         Log.i(TAG, "updateDSI");
         computeDSI();
         String hint = "";
-        if (currentDSI >= 100) {
-            hint = "";
-        } else if (currentDSI >= 50) {
-            hint = "";
-        } else if (currentDSI >= 20) {
-            hint = "";
-        } else if (currentDSI >= 10) {
-            hint = "";
+        if (currentDSI >= 0 && currentDSI < 50) {
+            hint = "Wake up man !";
+        } else if (currentDSI >= 50 && currentDSI < 100) {
+            hint = "Be careful !";
+        } else if (currentDSI >= 100 && currentDSI < 150) {
+            hint = "Please, tell me you are still alive !";
+        } else if (currentDSI >= 150 && currentDSI < 200) {
+            hint = "I don't have all the day !";
+        } else if (currentDSI >= 200 && currentDSI < 250) {
+            hint = "This is an ECO drive style !";
+        } else if (currentDSI >= 250 && currentDSI < 300) {
+            hint = "Maybe we shuld go to the mechanic";
+        } else if (currentDSI >= 300 && currentDSI < 350) {
+            hint = "Speed up !";
+        } else if (currentDSI >= 350 && currentDSI < 400) {
+            hint = "Don't brake that often !";
+        } else if (currentDSI >= 400 && currentDSI < 450) {
+            hint = "Come on, you can do better !";
+        } else if (currentDSI >= 450 && currentDSI < 500) {
+            hint = "Come on enjoy your ride !";
+        } else if (currentDSI >= 500 && currentDSI < 550) {
+            hint = "Regular drive style, Ok !";
+        } else if (currentDSI >= 550 && currentDSI < 600) {
+            hint = "Ok man, maybe you should calm down";
+        } else if (currentDSI >= 600 && currentDSI < 650) {
+            hint = "Are you crazy ? Slow down !";
+        } else if (currentDSI >= 650 && currentDSI < 700) {
+            hint = "This is not a good driving style !";
+        } else if (currentDSI >= 700 && currentDSI < 750) {
+            hint = "Please stop the car and take a breathe";
+        } else if (currentDSI >= 750 && currentDSI < 800) {
+            hint = "Take a break, let's have a tea";
+        } else if (currentDSI >= 800 && currentDSI < 850) {
+            hint = "Are you crazy ? Slow down !";
+        } else if (currentDSI >= 850 && currentDSI < 900) {
+            hint = "I am going to call the police !";
+        } else if (currentDSI >= 900 && currentDSI < 950) {
+            hint = "The police is arriving, prepare yourself";
         } else {
-            hint = "";
+            hint = "Are you drunk ?";
         }
-
-        hint = fakeHint();
 
         addHint(hint);
         //update the state of the asynctask basing on the state modified by connectWithPlug
@@ -193,6 +225,4 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         this.hintsAdapter.setNotifyOnChange(true);
         hintsListView.setAdapter(hintsAdapter);
     }
-
-
 }

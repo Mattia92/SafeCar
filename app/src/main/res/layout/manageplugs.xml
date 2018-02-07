@@ -5,12 +5,13 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/plugsPresent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Here you can interact with your plugs: you can see the plugs you used and you can drop them."
+        android:text="Here you can interact with your plugs, you can see the plugs you used and you can drop them."
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="20sp"/>
@@ -22,5 +23,23 @@
         android:layout_marginRight="15dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <ImageView
+        android:id="@+id/warningNoPlugIcon"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/ic_warning_black_24px"/>
+
+    <TextView
+        android:id="@+id/warningNoPlugText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="You don't have any paired plug. Please go in the dedicated session to pair with a phisical plug."
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="20sp"/>
 
 </LinearLayout>

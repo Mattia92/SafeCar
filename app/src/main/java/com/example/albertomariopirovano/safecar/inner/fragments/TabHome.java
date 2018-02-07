@@ -39,7 +39,6 @@ import com.example.albertomariopirovano.safecar.concurrency.DSIEvaluator;
 import com.example.albertomariopirovano.safecar.concurrency.DownloadTask;
 import com.example.albertomariopirovano.safecar.concurrency.TripHandler;
 import com.example.albertomariopirovano.safecar.data_comparators.DateComparator;
-import com.example.albertomariopirovano.safecar.firebase_model.Plug;
 import com.example.albertomariopirovano.safecar.firebase_model.Trip;
 import com.example.albertomariopirovano.safecar.firebase_model.map.MapPoint;
 import com.example.albertomariopirovano.safecar.realm_model.LocalModel;
@@ -87,9 +86,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private FirebaseAuth auth;
     private LocalModel localModel = LocalModel.getInstance();
     private SavedStateHandler savedStateHandler = SavedStateHandler.getInstance();
-    private DatabaseReference database;
     private LocationManager locationManager;
-    private BluetoothAdapter bluetoothAdapter;
     private Criteria criteria = new Criteria();
 
 
@@ -134,11 +131,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         super.onCreate(savedInstanceState);
 
         auth = FirebaseAuth.getInstance();
-
-        database = FirebaseDatabase.getInstance().getReference();
-
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
     }
 

@@ -65,6 +65,8 @@
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="5"
+            android:background="@drawable/cardview_border"
+            android:layout_marginRight="10dp"
             android:orientation="vertical"
             android:weightSum="10">
 
@@ -73,13 +75,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_weight="5"
+                android:paddingTop="5dp"
                 android:src="@drawable/ic_pause_black_24dp" />
 
             <TextView
                 android:id="@+id/pause_resumeTripTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:paddingBottom="15dp"
                 android:layout_weight="5"
                 android:gravity="center"
                 android:text="Take a break"
@@ -92,6 +95,8 @@
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="5"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/cardview_border"
             android:orientation="vertical"
             android:weightSum="10">
 
@@ -99,13 +104,14 @@
                 android:id="@+id/stopTrip"
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
+                android:paddingTop="5dp"
                 android:layout_weight="5"
                 android:src="@drawable/ic_stop_black_24dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:paddingBottom="15dp"
                 android:layout_weight="5"
                 android:gravity="center"
                 android:text="Quit Trip"
