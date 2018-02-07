@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="preferenceTheme">@style/AppTheme.Preference</item>
     </style>
     <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -62,8 +62,9 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="AppTheme.Preference" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Preference" parent="@style/PreferenceThemeOverlay">
         <item name="android:textColorPrimary">@color/colorPrimaryText</item>
+        <item name="android:textColorSecondary">@color/colorPrimaryText</item>
     </style>
 
 </resources>
