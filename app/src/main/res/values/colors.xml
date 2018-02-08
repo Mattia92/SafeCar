@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ffe65100</color>
-    <color name="colorPrimaryDark">#ffac1900</color>
-    <color name="colorLightPrimary">#ffff833a</color>
+    <color name="colorPrimary">#FF00695c</color>
+    <color name="colorPrimaryDark">#FF003d33</color>
+    <color name="colorLightPrimary">#FF439889</color>
     <color name="colorAccent">@color/colorPrimary</color>
     <color name="application_back">@color/colorLightPrimary</color>
-    <color name="borders">#fcc5c2</color>
+    <color name="borders">#FFc2fcf7</color>
 
     <color name="colorPrimaryText">#ffffff</color>
     <color name="colorSecondaryText">#ffffff</color>
 
     <color name="colorPrimaryTextAlpha">#37ffffff</color>
-    <color name="colorPrimaryAlpha">#37e65100</color>
-    <color name="colorPrimaryDarkAlpha">#37ac1900</color>
-    <color name="colorLightPrimaryAlpha">#37ff833a</color>
+    <color name="colorPrimaryAlpha">#3700695c</color>
+    <color name="colorPrimaryDarkAlpha">#37003d33</color>
+    <color name="colorLightPrimaryAlpha">#37439889</color>
     <color name="colorAccentAlpha">@color/colorPrimaryAlpha</color>
 
     <color name="my_divider">@color/colorPrimaryDark</color>
