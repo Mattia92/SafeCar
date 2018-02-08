@@ -99,7 +99,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private ImageView pause_resumeTrip;
     private ImageView quitTrip;
     private TextView pause_resumeTripTextView;
-    private ProgressBar progressBarEndTrip;
     private MapView mapView;
     private GoogleMap map;
     private LinearLayout f1;
@@ -173,10 +172,8 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         startTrip.setVisibility(View.VISIBLE);
         savedStateHandler.setTargetPlug(new Plug());
         */
-        progressBarEndTrip = (ProgressBar) v.findViewById(R.id.progressBarEndTrip);
         hintsListView = (ListView) v.findViewById(R.id.hint_list_view);
         //hintsListView.getBackground().setAlpha(Integer.valueOf(R.string.listViewAlpha));
-        progressBarEndTrip.setVisibility(View.GONE);
         pause_resumeTrip = (ImageView) v.findViewById(R.id.pause_resumeTrip);
         quitTrip = (ImageView) v.findViewById(R.id.stopTrip);
         pause_resumeTripTextView = (TextView) v.findViewById(R.id.pause_resumeTripTextView);
@@ -210,7 +207,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
                 detailshomepage.setVisibility(View.VISIBLE);
                 startTrip.setVisibility(View.VISIBLE);
                 map.clear();
-                progressBarEndTrip.setVisibility(View.GONE);
                 viewFlipper.setDisplayedChild(0);
             }
         });
@@ -296,7 +292,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     }
 
     private void quitTrip() {
-        progressBarEndTrip.setVisibility(View.VISIBLE);
         savedStateHandler.notifyLock();
         tripHandler.stopTask();
         dsiEvaluator.stopTask();

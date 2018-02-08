@@ -24,15 +24,15 @@ public class Trip implements Serializable {
     public Float km;
     public Double timeDuration;
 
-    private List<MapPoint> markers = new ArrayList<>();
+    public List<MapPoint> markers = new ArrayList<>();
 
-    private String userId;
+    public String userId;
     public String depName;
     public String arrName;
 
     private Boolean isnew = Boolean.FALSE;
     private Boolean isDropped = Boolean.FALSE;
-    private String tripId;
+    public String tripId;
 
     public Trip() {
     }
@@ -165,7 +165,9 @@ public class Trip implements Serializable {
                 ", depName='" + depName + '\'' +
                 ", arrName='" + arrName + '\'' +
                 ", isnew=" + isnew +
+                ", isDropped=" + isDropped +
                 ", tripId='" + tripId + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 

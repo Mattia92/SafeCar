@@ -355,6 +355,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     private void loadStateIfNeeded() {
         if (savedStateHandler.hasTag("PairPlugFragment")) {
             Log.i(TAG, "loading previous state");
+            Log.i(TAG, "Size of the plug set: " +String.valueOf(localModel.getPlugs().size()));
 
             if (savedStateHandler.getTargetPlug() != null) {
                 for (int i=0; i < localModel.getPlugs().size(); i++) {

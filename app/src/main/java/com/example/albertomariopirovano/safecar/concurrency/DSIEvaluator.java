@@ -142,9 +142,9 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         } else if (currentDSI >= 100 && currentDSI < 150) {
             hint = "Please, tell me you are still alive !";
         } else if (currentDSI >= 150 && currentDSI < 200) {
-            hint = "I don't have all the day !";
+            hint = "Move on, I don't have all the day !";
         } else if (currentDSI >= 200 && currentDSI < 250) {
-            hint = "This is an ECO drive style !";
+            hint = "Good job ! This is a great ECO drive style !";
         } else if (currentDSI >= 250 && currentDSI < 300) {
             hint = "Maybe we shuld go to the mechanic";
         } else if (currentDSI >= 300 && currentDSI < 350) {
@@ -154,7 +154,7 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         } else if (currentDSI >= 400 && currentDSI < 450) {
             hint = "Come on, you can do better !";
         } else if (currentDSI >= 450 && currentDSI < 500) {
-            hint = "Come on enjoy your ride !";
+            hint = "Come on, enjoy your ride !";
         } else if (currentDSI >= 500 && currentDSI < 550) {
             hint = "Regular drive style, Ok !";
         } else if (currentDSI >= 550 && currentDSI < 600) {
