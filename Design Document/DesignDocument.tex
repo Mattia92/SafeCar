@@ -42,7 +42,7 @@
 
 \begin{center}
 \Large
-\textbf{POLYTECHNIC UNIVERSITY OF MILAN} \\
+\textbf{POLITECNICO DI MILANO} \\
 \Large
 School of Industrial and Information Engineering \\
 Computer Science and Engineering
@@ -52,7 +52,7 @@ Computer Science and Engineering
 %PER INSERIRE IMMAGINE
 \begin{figure}[h]
 \begin{center}
-\includegraphics[width=3cm]{cpt/img/polimi}
+\includegraphics[width=7cm]{cpt/img/polimi.png}
 \end{center}
 \end{figure}
 
@@ -92,6 +92,14 @@ Academic Year 2017--2018
 
 \clearpage
 
+\begin{abstract}
+SafeCar is an application that has been designed to help the driver in improving its driving style. 
+On one side it offers the possibility to inspect the historical user data, and on the other side it provides a during trip hint generation engine.
+The core algorithm of the application communicates in an asynchronous manner with a physical object that has to be plugged into the car. This object is the interface between the car and the application, and once connected with it the application is able to access and process the data about the navigation.
+During the trip the application analyses these data, processing them to profile the driving style. In addition it generates an index representing a summary of a specific moment of the trip. Basing on this index, another algorithm generates an hint message.
+This procedure is performed in loop, so the application generates hints continuously during the trip and through these hints the user can gain some indications about how to improve his driving style.
+\end{abstract}
+
 \tableofcontents
 \clearpage
 
@@ -108,6 +116,9 @@ Academic Year 2017--2018
 \clearpage
 
 \input{cpt/UserInterfaceDesign.tex}
+\clearpage
+
+\input{cpt/FutureDevelopments.tex}
 \clearpage
 
 \end{document}

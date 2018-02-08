@@ -1,2 +1,134 @@
 \chapter{Architectural Design} \label{chap3}
-The System Architecture is a way to give the overall view of a system and to put it in relation to external systems. This allows the reader to have a more complete and general idea of the entire system and at the same time to have a deeper view of the principal components of the system itself.
+This section exposes Safecar Architectural Design in a complete e comprehensible way.
+
+\section{Layers}
+The software architecture that has been chosen follows the principles of the \textit{Model-View-Controller} architectural pattern. Therefore three main software components have been identified and those are without any coup de theatre: the Model, the View and the Controller.
+
+\subsection{View}
+The role of this Layer is the one of processing Clients commands, and of converting them into requests addressed to the Controller layer.
+
+\subsection{Controller}
+In this second Layer are included all the software components that implement the system logic, the authentication logic and the high level data primitives. The application logic is handled by the Firebase cloud authentication services and by some ad hoc authentication components.
+
+\subsection{Model}
+The third and last Layer is the Model, that should guarantee a high level interface to store and manage all the Safecar relevant data. It is provided by Firebase cloud database.
+
+\section{Tiers}
+The system can be divided in two different Tiers, which are the Clients and the Cloud Database
+
+\begin{enumerate}
+	\item \textbf{Clients}: This is the android mobile application. The view and the controller layers are mapped on this Tier. A thin model is also present on the Client Tier
+	\item \textbf{Cloud Database}: In this Tier it is hosted the Database that allows the service data persistence. The Model layer is entirely mapped to this Tier
+\end{enumerate}
+This architecture, with three different Layers and two different Tiers, makes possible to have a Client-Server style with a Fat-Client and a Thin-Server. This is due to the mapping of the View, the Controller and the thin model to the Client and the complete Model to the Server.
+
+\section{Cloud and Local Model}
+Once the user logs in, the application downloads all the user related data from the cloud model and dumps them into a local copy called \textit{Local Model}. \\
+This wrapper is build through the Realm real time database APIs. In particular, when the user modifies some piece of data, the application updates its local model item, leaving the cloud model unchanged.\\
+For example, this happens when the user decides to drop a trip, to add a trip, to drop a plug or to add a new plug. 
+For this, there is no need of internet connection after the login and before the logout procedures, in fact all the modifications are performed locally.\\
+When instead the user decides to log out, the application understands which are the data items that have been modified and uploads their modifications to the cloud model in order to make it consistent with the local one. 
+After pushing the modifications the controller drops the local model and exits the user session.
+
+\section{Application components and their interaction}
+In the following section are deeply covered all the architectural aspects that characterize the software to be. In particular, here it is explained which are all the components of this application and how they interact in order to have a complete functional software.
+
+\subsection{Login component}
+This component handles the user's login procedures and it provides either the \textit{Google+} authentication service or the email and password authentication service.
+
+\subsection{Sign in component}
+It manages the Sign in procedures, that is the generation of a new user object.
+
+\subsection{Reset password component}
+It is in charge of handling the procedure of change password for the user that has been registered through the email and password login procedure.
+
+\subsection{Logout component}
+It has the responsibility of maintaining the consistency between the Cloud Model and the Local Model.
+
+\subsection{Personal data component}
+This is responsible of computing and handling the modifications to the profile information.
+
+\subsection{DSI computation engine}
+This is the most important component, in fact is in charge of:
+
+\begin{itemize}
+	\item Ordering and placing the trips contained in the local model into in the four dedicated tabs. This is done by using four software components, respectively \textit{DateComparator}, \textit{DSIComparator}, \textit{KMComparator} and \textit{DurationComparator}
+	\item Handling the sampling of position pins during the trip. It also stores them into the current trip object. This is done by the \textit{TripHandler} thread, an asynchronous task. It is spawned when the trip starts and it autonomously handles it
+	\item Through a call to the first algorithm, namely \textit{ALG1}, it computes the DSI index through the \textit{DSIevaluator} asynchronous task
+	\item After that, Safecar exploit the feature of the second algorithm, namely \textit{ALG2} to compute the current hint
+\end{itemize}
+
+\subsection{Plug component}
+This component implements the logic for pairing, managing and using the abstract interface of physical plugs.
+
+\subsection{Badges component}
+This components implements the procedure that, by using the user's data, computes the badges that the user currently holds.
+
+\section{External services}
+Safecar is fully integrated with several external services
+
+\subsection{Firebase database}
+Safecar makes use of the great Firebase cloud database to store the data about trips, users and plugs. It represents the persistent storage of the application.
+
+\subsection{Firebase authentication}
+Firebase is also great for the authentication capabilities that it offers. Safecar exploits the Google authentication services but is straightforward to integrate also Facebook, Twitter and GitHub.
+
+\subsection{Bluetooth core service}
+In order to pair the user's device with the selected plug, Safecar uses the core \textit{Bluetooth Adapter} to interface with the physical device plugged in the car.
+
+\subsection{Geolocalization core service}
+During the trip, Safecar periodically samples location data in order to be able to precisely track the trip's route.
+
+\subsection{Realm real-time database}
+In order to ensure consistency , Safecar uses two databases services, one being a cloud one and the other one being a local and real-time one. Realm is used to ensure database queries to be fast, efficient and precise.
+
+\subsection{Gilde image loader}
+In order to have the feature of loading profile images from disk, the application uses a third-party set of APIs, Gilde.
+
+\subsection{Picasso image cropper}
+To provide fancy cropping features to the profile images, Safecar exploits the power of another third-party set of APIs, Picasso.
+
+\section{Algorithms}
+The application wraps the customizable algorithms into pluggable blocks. It is then possible to change those blocks with different and maybe more complex algorithms.\\
+The important fact is that the new algorithm will respect the following interface:
+
+\begin{itemize}
+	\item \textbf{ALG1}: It takes as an input the \textit{MAC} address of the current plug and returns the current DSI. Now we can face two cases:
+	\begin{itemize}
+		\item The application is run on a device paired with a real plug. In this case \textit{ALG1} has to:
+		\begin{enumerate}
+			\item Register itself to the plug
+			\item Connect with the plug
+			\item Periodically ask the plug for some kind of data
+			\item Clean and parse the data and put them into a custom data structure
+			\item Pass the parsed data structure to \textit{ALG2}
+			\item Get the DSI from \textit{ALG2}
+			\item Pass the DSI to \textit{ALG3}
+		\end{enumerate}
+		\item The application is run on a device that has no access to a real plug. In this case \textit{ALG1} has to:
+		\begin{enumerate}
+			\item Stash the current input
+			\item Call \textit{ALG2}
+			\item Get the DSI from \textit{ALG2}
+			\item Pass the DSI to \textit{ALG3}
+		\end{enumerate}
+	\end{itemize}
+	\item \textbf{ALG2}: It takes as an input the parsed data from \textit{ALG1} and returns a DSI. It can be of two types:
+	\begin{enumerate}
+		\item Memory based:
+		\begin{itemize}
+			\item It computes the current DSI from the current input
+			\item It has to store all the previous DSI scores into a data structure and has to generate the current DSI by combining them in some way. An example can be to construct a discounted weighted average of the DSI over time to generate a value of the DSI that could be related to the current sample but also not blind with respect to the past driving style
+		\end{itemize}
+		\item Blind:
+		\begin{itemize}
+			\item It computes the current DSI only from the current data structure in input
+		\end{itemize}
+	\end{enumerate}
+	\item \textbf{ALG3}: It is an agent that takes as input the computed DSI and returns an hint string. It can be viewed as an agent that takes as input a percept and returns a decision. It can be:
+	\begin{enumerate}
+		\item \underline{Simple reflex}: It matches the percept on a rule set and returns the decision related to the matched rule
+		\item \underline{Model based reflex}: It stored the percept sequence and, through a model, matches a rule
+		\item \underline{Goal based}: Basing on the current percept, on the model and on a goal specification, it returns the best hint to reach the goal. In this case the DSI computation can be jumped and this algorithm can work on the factored representation returned by \textit{ALG1}. This algorithm is a tree search or a graph search.
+	\end{enumerate}
+\end{itemize}
