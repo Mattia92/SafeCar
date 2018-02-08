@@ -43,6 +43,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -167,18 +168,19 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 }
             }
         });
+
         return v;
     }
 
     private ArrayList<Animation> setUpFadeAnimation(final View view) {
         // Start from 0.1f if you desire 90% fade animation
         final Animation fadeIn = new AlphaAnimation(0.0f, 1.0f);
-        fadeIn.setDuration(2000);
+        fadeIn.setDuration(1000);
         fadeIn.setStartOffset(500);
         // End to 0.1f if you desire 90% fade animation
         final Animation fadeOut = new AlphaAnimation(1.0f, 0.0f);
-        fadeOut.setDuration(3000);
-        fadeOut.setStartOffset(1000);
+        fadeOut.setDuration(1000);
+        fadeOut.setStartOffset(500);
 
         fadeIn.setAnimationListener(new Animation.AnimationListener(){
             @Override

@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.albertomariopirovano.safecar.R;
@@ -42,12 +44,13 @@ public class ManageplugsFragment extends Fragment implements TAGInterface {
         ImageView warning_imv = (ImageView) v.findViewById(R.id.warningNoPlugIcon);
         TextView warning_tv = (TextView) v.findViewById(R.id.warningNoPlugText);
         RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+        LinearLayout plugscardcontent = (LinearLayout) v.findViewById(R.id.plugscardcontent);
         TextView plugsPresent = (TextView) v.findViewById(R.id.plugsPresent);
 
         if (localModel.getPlugs().size() > 0) {
             warning_imv.setVisibility(View.GONE);
             warning_tv.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+            plugscardcontent.setVisibility(View.VISIBLE);
             plugsPresent.setVisibility(View.VISIBLE);
             RecyclerAdapter plugAdapter;
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -55,9 +58,10 @@ public class ManageplugsFragment extends Fragment implements TAGInterface {
             plugAdapter = new RecyclerAdapter(getActivity(), createList());
             recyclerView.setAdapter(plugAdapter);
         } else {
+            Log.i(TAG, "You don't have any plug !");
             warning_imv.setVisibility(View.VISIBLE);
             warning_tv.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
+            plugscardcontent.setVisibility(View.GONE);
             plugsPresent.setVisibility(View.GONE);
         }
         return v;
