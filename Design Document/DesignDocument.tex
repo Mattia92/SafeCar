@@ -1,0 +1,113 @@
+%Type of document
+\documentclass[a4paper, 12pt]{report}
+
+%For easy management of document margins and the document page size
+\usepackage[right=3.5cm,left=3.5cm,top=3.5cm,bottom=3.5cm]{geometry}
+
+%Allows to insert graphic files within a document
+\usepackage{graphicx}
+
+%Sup­ports com­pressed, sorted lists of nu­mer­i­cal ci­ta­tions, and also deals with var­i­ous punc­tu­a­tion and %other is­sues of rep­re­sen­ta­tion, in­clud­ing com­pre­hen­sive man­age­ment of break points
+\usepackage{cite}
+
+%It gives LaTeX the possibility to manage links within the document or to any URL when you compile in PDF
+\usepackage{hyperref}
+
+%To choose the font encoding of the output text
+\usepackage[T1]{fontenc}
+
+%To choose the encoding of the input text
+%Consente di usare le lettere accentate
+\usepackage[latin1]{inputenc}
+
+%It provides the internationalization of LaTeX. It has to be loaded in any document, and you have to give %as an option the main language you are going to use in the document
+\usepackage[english]{babel}
+
+%Allows to write algorithms
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\normalfont
+%Forza LaTeX ad una spaziatura uniforme, invece di lasciare più spazio
+%alla fine dei punti fermi come da convenzione inglese
+\frenchspacing
+%Modifica della spaziatura interlineare
+\linespread{1.3}
+
+%Inizia il documento
+\begin{document}
+
+%Creazione di un frontespizio personalizzato
+\begin{titlepage}
+
+\begin{center}
+\Large
+\textbf{POLYTECHNIC UNIVERSITY OF MILAN} \\
+\Large
+School of Industrial and Information Engineering \\
+Computer Science and Engineering
+\end{center}
+
+\addvspace{0.8cm}
+%PER INSERIRE IMMAGINE
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=3cm]{cpt/img/polimi}
+\end{center}
+\end{figure}
+
+\addvspace{0.1cm}
+\begin{center}
+\LARGE
+
+\textbf{Design and Implementation of Mobile Application Project: Safe Car \\
+Design Document}
+
+\end{center}
+
+\addvspace{0.5cm}
+\Large
+\begin{center}
+\begin{tabular}{p{1\textwidth}p{0.3\textwidth}}
+Course Professor: Prof. Luciano BARESI \\
+\end{tabular}
+\end{center}
+
+\addvspace{0.6cm}
+\Large
+\begin{center}
+\begin{tabular}{p{0.6\textwidth}p{0.6\textwidth}}
+& Authors: \\
+& Mattia	CRIPPA		1039725\\
+& Alberto PIROVANO	10396610
+\end{tabular}
+\end{center}
+
+\vfill
+\Large
+\begin{center}
+Academic Year 2017--2018
+\end{center}
+\end{titlepage}
+
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\listoffigures
+\clearpage
+
+\input{cpt/Introduction.tex}
+\clearpage
+
+\input{cpt/SystemOverview.tex}
+\clearpage
+
+\input{cpt/ArchitecturalDesign.tex}
+\clearpage
+
+\input{cpt/UserInterfaceDesign.tex}
+\clearpage
+
+\end{document}

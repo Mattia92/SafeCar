@@ -1,0 +1,29 @@
+\chapter{System Overview} \label{chap2}
+Android is the first complete, open and free mobile platform. It is developed and supported by Google and this project uses a Google Android Mobile SDK (VERSIONE) for testing an application. The software development kit contains the emulator and advanced debugging tools to run and test the applications.\\
+\textit{SafeCar} is an application that has been designed to help the driver in improving its driving style. On one side it offers an \textit{after trip} inspection of the data reports about past trips, and on the other side it provides a \textit{during trip} hint generation engine to correct the driving style during the driving experience.
+The aim of our project is to develop an android application which can be used in the real world.\\
+In order to use this application, the driver has to register as a user of the service. The \textit{Registration and Login} procedures can be performed via the custom application functionality or via Google Plus APIs.
+At this point the application flow develops in two different ways: if the user's smartphone is not in the radio scan area of the Plug, he can only navigate data about his history trips or about his profile. If the user's smartphone, instead,  is near the Plug, he can pair his device with that Plug and, after that, he can start a new trip; in the case that the user has already paired his device with his Plug and his smartphone is near it, the application automatically notifies the user he is being detected; this feature is called \textit{Automatic Presence Detection}. Once the user has been detected, the application asks him if he is actually driving. This check is done in order to avoid the application to register the trip of a person if he is not actually driving, for example is near the plug of a friend. If the user answers "Yes" the app understands that the trip is beginning and the \textit{Driving Experience} actually begins. After this moment the driver will be provided with several hints about how to improve his driving style.\\ \\
+As previously told, the application is comprised of two main features:
+
+\begin{enumerate}
+	\item \textbf{After Trip data presentation:} The user can inspect these data from a screen generated after the trip 	has finished. In this screen the user can see:
+	\begin{itemize}
+		\item A GPS trip tracking of his movements during the trip, shown in a custom google maps widget
+		\item A general report about the just finished trip, along with a Driver Safety Index (DSI) that estimates the 		quality of the drive
+	\end{itemize}
+	\item \textbf{During Trip functionalities:} This functionality instead is mainly based on the concept building an engine to estimate a Driver Safety Index by using different data coming from a specific device. This device is a Plug smart object that has to be inserted in the custom car port and that, has the capability of sending cleaned and custom driving style data to a remote Cloud. This cloud is accessible via its custom APIs
+\end{enumerate}
+
+Using all these data the engine builds a weighted sum of all the contributions given by all the data sources, called \textit{Driver Safety Index} (DSI). This basic algorithm is easily extensible, because building a more complex one is only a matter of replacing the specific piece of code (a method) with another one that takes as input the same data and generates a same type index.
+In order to provide the user with an almost continuous feedback about his driving style, this engine recomputes the DSI index once every 30 seconds. Its computation is done in a dedicated separate thread that generates the current piece of advice to be sent to the user by simply switching on the value of the DSI. This hint is conveyed by filling a specific screen on the application.
+
+\clearpage
+\subsubsection{System constraints:}
+These are the constraints which must be met in order to allow the application to work correctly:
+
+\begin{itemize}
+	\item User of the mobile should have internet access
+	\item User's device should support bluetooth
+	\item User's device should support geo-localization
+\end{itemize}
