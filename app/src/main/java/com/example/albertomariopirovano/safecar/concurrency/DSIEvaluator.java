@@ -136,45 +136,45 @@ public class DSIEvaluator extends AsyncTask<Void, Void, Void> implements Seriali
         computeDSI();
         String hint = "";
         if (currentDSI >= 0 && currentDSI < 50) {
-            hint = "Wake up man !";
+            hint = "Wake up man!";
         } else if (currentDSI >= 50 && currentDSI < 100) {
-            hint = "Be careful !";
+            hint = "Be careful!";
         } else if (currentDSI >= 100 && currentDSI < 150) {
-            hint = "Please, tell me you are still alive !";
+            hint = "Please, tell me you are still alive!";
         } else if (currentDSI >= 150 && currentDSI < 200) {
-            hint = "Move on, I don't have all the day !";
+            hint = "Move on, I don't have all the day!";
         } else if (currentDSI >= 200 && currentDSI < 250) {
-            hint = "Good job ! This is a great ECO drive style !";
+            hint = "Good job! This is a great ECO drive style!";
         } else if (currentDSI >= 250 && currentDSI < 300) {
-            hint = "Maybe we shuld go to the mechanic";
+            hint = "Maybe we should go to the mechanic";
         } else if (currentDSI >= 300 && currentDSI < 350) {
-            hint = "Speed up !";
+            hint = "Speed up!";
         } else if (currentDSI >= 350 && currentDSI < 400) {
-            hint = "Don't brake that often !";
+            hint = "Don't brake that often!";
         } else if (currentDSI >= 400 && currentDSI < 450) {
-            hint = "Come on, you can do better !";
+            hint = "Come on, you can do better!";
         } else if (currentDSI >= 450 && currentDSI < 500) {
-            hint = "Come on, enjoy your ride !";
+            hint = "Come on, enjoy your ride!";
         } else if (currentDSI >= 500 && currentDSI < 550) {
-            hint = "Regular drive style, Ok !";
+            hint = "Regular drive style, ok!";
         } else if (currentDSI >= 550 && currentDSI < 600) {
             hint = "Ok man, maybe you should calm down";
         } else if (currentDSI >= 600 && currentDSI < 650) {
-            hint = "Are you crazy ? Slow down !";
+            hint = "Are you crazy? Slow down!";
         } else if (currentDSI >= 650 && currentDSI < 700) {
-            hint = "This is not a good driving style !";
+            hint = "This is not a good driving style!";
         } else if (currentDSI >= 700 && currentDSI < 750) {
-            hint = "Please stop the car and take a breath";
+            hint = "Please stop the car and take a break";
         } else if (currentDSI >= 750 && currentDSI < 800) {
             hint = "Take a break, let's have a tea";
         } else if (currentDSI >= 800 && currentDSI < 850) {
-            hint = "Are you crazy ? Slow down !";
+            hint = "Are you crazy? Slow down!";
         } else if (currentDSI >= 850 && currentDSI < 900) {
-            hint = "I am going to call the police !";
+            hint = "I am going to call the police!";
         } else if (currentDSI >= 900 && currentDSI < 950) {
             hint = "The police is arriving, prepare yourself";
         } else {
-            hint = "Are you drunk ?";
+            hint = "Are you drunk?";
         }
 
         addHint(hint);

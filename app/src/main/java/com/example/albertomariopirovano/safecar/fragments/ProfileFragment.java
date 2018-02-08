@@ -202,7 +202,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             if (b.isUnlocked()) {
-                                builder.setMessage("You have already unlocked this badge. Good job !")
+                                builder.setMessage("You have already unlocked this badge. Good job!")
                                         .setCancelable(false)
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override
@@ -211,7 +211,7 @@ public class ProfileFragment extends Fragment implements TAGInterface {
                                             }
                                         });
                             } else {
-                                builder.setMessage("This badge is locked. Work on it !")
+                                builder.setMessage("This badge is locked. Work on it!")
                                         .setCancelable(false)
                                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                             @Override

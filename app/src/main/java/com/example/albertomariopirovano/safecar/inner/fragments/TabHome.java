@@ -160,7 +160,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         if (savedStateHandler.getTargetPlug() != null) {
             detailshomepage.setText("You are using the plug: " + savedStateHandler.getTargetPlug().getName());
         } else {
-            detailshomepage.setText("You have no paired plugs. Please go in the dedicated section and configure your driving session.");
+            detailshomepage.setText("You have no paired plugs. Please go to the dedicated section and configure your driving session.");
         }
 
         startTrip = (Button) v.findViewById(R.id.startTrip);

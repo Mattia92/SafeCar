@@ -75,6 +75,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 Log.i(TAG, "discovery started");
+                scanButton.setText("searching for bluetooth");
 
                 isBluetoothScanning = Boolean.TRUE;
 
@@ -82,6 +83,8 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
                 //discovery starts, we can show progress dialog or perform other tasks
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.i(TAG, "discovery finished");
+                scanButton.setText("start bluetooth scan");
+                scanButton.setEnabled(true);
 
                 progressBar.setVisibility(View.GONE);
 
@@ -272,6 +275,7 @@ public class PairPlugFragment extends Fragment implements TAGInterface {
     private void startBluetoothScan() {
         toBeAdded = new ArrayList<>();
         found = new ArrayList<>();
+        scanButton.setEnabled(false);
         if (bluetoothAdapter != null) {
 
             IntentFilter filter = new IntentFilter();

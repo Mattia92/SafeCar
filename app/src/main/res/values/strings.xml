@@ -49,8 +49,7 @@
     <string name="btn_remove">Remove</string>
     <string name="btn_sign_out">Sign Out</string>
     <string name="lbl_forgot_password">Forgot password?</string>
-    <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
-
+    <string name="forgot_password_msg">We just need your registered Email ID to send you the password reset instructions.</string>
     <string-array name="sports_array">
         <item>Shuttle Badminton</item>
         <item>Tennis</item>
@@ -72,28 +71,28 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <string name="initPairPlugTA">Your device is not paired with any plug. Please click the button below search the nearby plugs and to start using SafeCar !</string>
-    <string name="justPairedPairPlugTA">You are now paired with a plug. Let\'s start a trip, I am sure it will be great ! We will be here, right on your side ! </string>
+    <string name="initPairPlugTA">Your device is not paired with any plug. Please tap the button below to search for nearby plugs and start using SafeCar!</string>
+    <string name="justPairedPairPlugTA">You are now paired with a plug. Let\'s start a trip, for sure it will be great ! We will be here, right on your side!</string>
     <string name="noBluetoothDevices">No target device in bluetooth range</string>
 
     <string name="initPairPlugB">Start bluetooth scan</string>
     <string name="changePairPlugB">Change your target plug</string>
         <string name="searchPairPlugB">Looking for plugs</string>
 
-    <string name="managePlugsSplash">In this section you can interact with your plugs. You can either check or drop them.</string>
+    <string name="managePlugsSplash">This section lists all your plugs. Swipe to the left if you want to remove any of them.</string>
     <string name="noPlugs">Right now, you are\'t paired with any physical device. Please go in the dedicated section in order to pair with a plug.</string>
 
     <string name="helloPlug">Current Plug</string>
     <string name="Name">Name</string>
     <string name="MACAddress">MAC address</string>
 
-    <string name="plugsHeader">Plugs:</string>
-    <string name="badgesHeader">Badges:</string>
+    <string name="plugsHeader">Plugs</string>
+    <string name="badgesHeader">Badges</string>
 
     <string name="sampleBadgeDesc">This is a description of the badge</string>
 
     <string name="pairDevice">Below you can see the detected devices. Please, select the one you want to be paired with.</string>
-    <string name="afterScanReport">After scan report:</string>
+    <string name="afterScanReport">After scan report</string>
     <string name="reScan">Scan again</string>
 
     <string name="currentlyDriving">Currently driving</string>
@@ -103,15 +102,15 @@
     <string name="takeBreak">Take a break</string>
 
     <string name="tripReportTitle">Trip report</string>
-    <string name="tripReportSecondPageText">Here we go ! Below you can see a set of indicators regarding this trip. Read them carefully and try to understand how to improve your driving style !</string>
-    <string name="tripReportHiddenText">swipe, to discover the details of this trip !</string>
+    <string name="tripReportSecondPageText">Here we go! Below you can see the details of this trip. Read them carefully and they will help you to improve your driving style!</string>
+    <string name="tripReportHiddenText">Swipe to discover the details of this trip!</string>
     <string name="tripDetails">Details</string>
-    <string name="tripJustReportSecondPageText">Awesome! You definitely did a great job. Now let\'s take a look to the details of your just finished trip!</string>
+    <string name="tripJustReportSecondPageText">Awesome! You definitely did a great job. Now let\'s take a look at the details of the trip you just finished!</string>
 
     <string name="welcomeString">Welcome !</string>
 
     <string name="shareButton">Share now !</string>
-    <string name="incentiveToShare">We hope that Safecar is helping you to improve your driving style. Please share your feelings with your friends !</string>
+    <string name="incentiveToShare">We hope that Safecar is helping you to improve your driving style. Please share your experience with your friends!</string>
 
     <string name="badgesDetails">Badges</string>
 

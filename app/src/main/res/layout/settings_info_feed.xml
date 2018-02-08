@@ -34,7 +34,7 @@
                 <TextView android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="SafeCar is an application that has been designed to help the driver in improving its driving style"
+                    android:text="SafeCar is an application designed to help the driver to improve his driving style."
                     android:lineSpacingExtra="8dp"
                     android:layout_marginBottom="20dp"
                     android:layout_marginLeft="10dp"
@@ -95,7 +95,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Email our costumer service"
+                        android:text="Email our customer service"
                         android:textColor="@color/colorPrimaryText"
                         android:paddingLeft="5dp"/>
                 </LinearLayout>
