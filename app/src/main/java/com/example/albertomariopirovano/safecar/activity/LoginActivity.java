@@ -198,6 +198,7 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            progressBar.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -534,11 +535,13 @@ public class LoginActivity extends AppCompatActivity implements Animation.Animat
 
                             Log.i(TAG, "UserHandler -[2]- downloading user trips from cloud firebase database");
                             ArrayList<Trip> tripList = new ArrayList<Trip>();
+                            int i = 0;
                             for (DataSnapshot parsedTrip : dataSnapshot.getChildren()) {
                                 Trip trip = parsedTrip.getValue(Trip.class);
                                 trip.setTripId(parsedTrip.getKey());
-                                Log.i(TAG, trip.toString());
+                                Log.i(TAG, String.valueOf(i) + " ]" + trip.toString());
                                 tripList.add(trip);
+                                i ++;
                             }
 
                             Log.i(TAG, "> Cloud trip-list is empty: " + String.valueOf(tripList.isEmpty()));

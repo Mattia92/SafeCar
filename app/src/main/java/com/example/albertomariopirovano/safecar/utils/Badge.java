@@ -41,7 +41,7 @@ public class Badge {
         badges.add(new Badge("50 Hours Driven", "Duration", R.drawable.ic_timer_black_24px, 50));
         badges.add(new Badge("100 Hours Driven", "Duration", R.drawable.ic_timer_black_24px, 100));
         badges.add(new Badge("100 DSI Trip", "DSI", R.drawable.ic_adjust_black_24dp, 100));
-        badges.add(new Badge("3000 DSI Trip", "DSI", R.drawable.ic_adjust_black_24dp, 300));
+        badges.add(new Badge("300 DSI Trip", "DSI", R.drawable.ic_adjust_black_24dp, 300));
         badges.add(new Badge("700 DSI Trip", "DSI", R.drawable.ic_adjust_black_24dp, 700));
     }
 
