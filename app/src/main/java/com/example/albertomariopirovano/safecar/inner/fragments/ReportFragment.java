@@ -107,11 +107,6 @@ public class ReportFragment extends Fragment implements OnMapReadyCallback, TAGI
                 params1.height = height;
                 params1.width = width;
                 f1.requestLayout();
-                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
-
-                params2.height = height;
-                params2.width = width;
-                f2.requestLayout();
             }
         });
 

@@ -29,16 +29,14 @@
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/reportMap"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.5">
+                    android:layout_height="300dp">
 
                 </com.google.android.gms.maps.MapView>
 
                 <TextView
                     android:id="@+id/tripNameVisualization"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="0.15"
+                    android:layout_height="wrap_content"
                     android:text="@string/tripReportTitle"
                     android:textAlignment="center"
                     android:fontFamily="@string/font_bold"
@@ -46,38 +44,9 @@
                     android:textSize="@dimen/titleFontSize" />
 
                 <TextView
-                    android:id="@+id/scrollFroInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight="0.1"
-                    android:textColor="@color/colorPrimaryText"
-                    android:textSize="@dimen/textFontSize"
-                    android:fontFamily="@string/font_normal"
-                    android:text="@string/tripReportHiddenText"
-                    android:textAlignment="center" />
-
-                <ImageView
-                    android:id="@+id/scrollIcon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.05"
-                    android:src="@drawable/ic_arrow_upward_black_24dp"
-                    android:tint="@color/colorPrimaryText" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/f2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/tripReportSecondPageText"
+                    android:text="@string/tripJustReportSecondPageText"
                     android:textAlignment="center"
                     android:layout_marginBottom="30dp"
                     android:layout_marginLeft="30dp"

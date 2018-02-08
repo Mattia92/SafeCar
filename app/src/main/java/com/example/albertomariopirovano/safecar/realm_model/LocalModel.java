@@ -12,11 +12,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -166,6 +168,7 @@ public class LocalModel {
     public ArrayList<Map<String, String>> getValuesToRender(final Trip t) {
 
         ArrayList<Map<String, String>> temp = new ArrayList<Map<String, String>>();
+        final DecimalFormat df = new DecimalFormat("#.0");
         temp.add(new HashMap<String, String>() {
             {
                 put("key", "Arrival");
@@ -181,28 +184,29 @@ public class LocalModel {
         temp.add(new HashMap<String, String>() {
             {
                 put("key", "Date");
-                Date date = t.getDate();
-                SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss");
-                //put("value", String.valueOf(t.getDate()));
+                Date date = t.getDate();SimpleDateFormat ft = new SimpleDateFormat ("E dd MMM yyyy 'at' HH:mm:ss", Locale.US);
                 put("value", ft.format(date));
             }
         });
         temp.add(new HashMap<String, String>() {
             {
                 put("key", "DSI");
-                put("value", String.valueOf(t.getFinalDSI()));
+                put("value", String.valueOf(t.getFinalDSI()) + " DSI score");
             }
         });
         temp.add(new HashMap<String, String>() {
             {
                 put("key", "KM");
-                put("value", String.valueOf(t.getKm()));
+                put("value", String.valueOf(df.format(t.getKm())) + " km");
             }
         });
         temp.add(new HashMap<String, String>() {
             {
                 put("key", "Duration");
-                put("value", String.valueOf(t.getTimeDuration()));
+                if (t.getTimeDuration() > 60) {
+                    put("value", String.valueOf(df.format(t.getTimeDuration()/60)) + " hours");
+                }
+                put("value", String.valueOf(df.format(t.getTimeDuration())) + " minutes");
             }
         });
         return temp;

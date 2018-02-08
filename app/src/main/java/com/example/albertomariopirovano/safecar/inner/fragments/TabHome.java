@@ -11,6 +11,7 @@ import android.location.Criteria;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -119,10 +120,6 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     private TextView homepagetext;
     private Button startTrip;
 
-    private int oldY = 0;
-    private ArrayList<Animation> returnList_tv;
-    private ArrayList<Animation> returnList_iv;
-
     public String getName() {
         return name;
     }
@@ -201,70 +198,10 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
 
         setListeners();
 
-        final TextView tv = (TextView) v.findViewById(R.id.scrollFroInfo);
-        final ImageView iv = (ImageView) v.findViewById(R.id.scrollIcon);
-        final ScrollView scv = (ScrollView) v.findViewById(R.id.scrollContext);
-
-        scv.fullScroll(ScrollView.FOCUS_UP);
-        returnList_tv = setUpFadeAnimation(tv);
-        returnList_iv = setUpFadeAnimation(iv);
-
-        scv.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                if (!(getActivity() == null)) {
-                    int scrollY = scv.getScrollY();
-
-                    if (oldY < scrollY){
-                        scv.fullScroll(ScrollView.FOCUS_DOWN);
-                        returnList_tv.get(0).setAnimationListener(null);
-                        returnList_tv.get(1).setAnimationListener(null);
-                        returnList_iv.get(0).setAnimationListener(null);
-                        returnList_iv.get(1).setAnimationListener(null);
-                        tv.setVisibility(View.GONE);
-                        iv.setVisibility(View.GONE);
-                    } else {
-                        scv.fullScroll(ScrollView.FOCUS_UP);
-                        tv.setVisibility(View.VISIBLE);
-                        iv.setVisibility(View.VISIBLE);
-                        returnList_tv = setUpFadeAnimation(tv);
-                        returnList_iv = setUpFadeAnimation(iv);
-                    }
-
-                    oldY = scrollY;
-                }
-            }
-        });
-
         return v;
     }
 
     private void setListeners() {
-        ViewTreeObserver vto = layout.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                layout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int width = layout.getMeasuredWidth();
-                int height = layout.getMeasuredHeight();
-
-                ViewGroup.LayoutParams params1 = f1.getLayoutParams();
-                ViewGroup.LayoutParams params2 = f2.getLayoutParams();
-
-                //Log.i(TAG, String.valueOf(height));
-                //Log.i(TAG, String.valueOf(width));
-                //Log.i(TAG, String.valueOf(223 * 8));
-                //Log.i(TAG, String.valueOf(height));
-
-                params1.height = height;
-                params1.width = width;
-                f1.requestLayout();
-
-                params2.height = 880;
-                params2.width = width;
-                f2.requestLayout();
-            }
-        });
 
         rescan_vis.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -670,7 +607,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         // Waypoints
         String waypoints = "waypoints=";
         for (int i = 1; i < markerPoints.size() - 1; i++) {
-            LatLng point = (LatLng) markerPoints.get(i);
+            LatLng point = markerPoints.get(i);
             waypoints += point.latitude + "," + point.longitude + "|";
         }
 
@@ -680,10 +617,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         // Output format
         String output = "json";
 
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
+        return "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
     }
 
     @Override
@@ -710,16 +644,11 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_ACCESS_COARSE_LOCATION) {
             if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 map.setMyLocationEnabled(true);
-            } else {
-
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
             }
-            return;
         }
     }
 
@@ -766,7 +695,7 @@ public class TabHome extends Fragment implements TabFragment, OnMapReadyCallback
         });
 
         view.startAnimation(fadeOut);
-        ArrayList<Animation> returnList = new ArrayList<Animation>();
+        ArrayList<Animation> returnList = new ArrayList<>();
         returnList.add(fadeIn);
         returnList.add(fadeOut);
 

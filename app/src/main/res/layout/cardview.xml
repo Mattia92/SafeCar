@@ -21,7 +21,6 @@
                 android:id="@+id/bluetooth_devices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:fontFamily="@string/font_normal"
                 android:text="@string/tripDetails"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
@@ -29,7 +28,7 @@
                 android:textSize="@dimen/textFontSize" />
 
 
-            <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <TableLayout
                 android:id="@+id/table_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

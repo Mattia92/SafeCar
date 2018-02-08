@@ -78,10 +78,10 @@
 
     <string name="initPairPlugB">Start bluetooth scan</string>
     <string name="changePairPlugB">Change your target plug</string>
-    <string name="searchPairPlugB">Searching for plugs</string>
+        <string name="searchPairPlugB">Looking for plugs</string>
 
     <string name="managePlugsSplash">Here you can interact with your plugs. You can either check or drop them.</string>
-    <string name="noPlugs">You don\'t have any paired plug. Please go in the dedicated section in order to pair a phisical plug.</string>
+    <string name="noPlugs">Right now, you are\'t paired with any physical device. Please go in the dedicated section in order to pair a phisical plug.</string>
 
     <string name="helloPlug">Current Plug</string>
     <string name="Name">Name</string>
@@ -106,6 +106,7 @@
     <string name="tripReportSecondPageText">Here we go ! Below you can see the details of this trip. Read them carefully and try to understand how to improve your driving style !</string>
     <string name="tripReportHiddenText">swipe to discover the details of this trip !</string>
     <string name="tripDetails">Details</string>
+    <string name="tripJustReportSecondPageText">Awesome! You definitely did a great job. Let\'s see now the details of your just finished trip!</string>
 
     <string name="welcomeString">Welcome !</string>
 
