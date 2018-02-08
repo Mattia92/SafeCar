@@ -15,9 +15,9 @@ The application is comprised of two main features:
 	\item \textbf{After Trip data presentation:} The user can inspect inspect the details of the just finished trip once the trip has finished. In this screen the user can see:
 	\begin{itemize}
 		\item The route he followed, shown in a custom google maps widget
-		\item A general report about the just finished trip providing the departure, the arrival, the date of the trip, the kilometres traveled, the time that the trip took and the Driver Safety Index (DSI), that estimates the quality of the drive
+		\item A general report about the just finished trip providing the departure, the arrival, the date of the trip, the kilometres traveled, the time that the trip took and the \textit{Driver Safety Index} (DSI), that estimates the quality of the drive
 	\end{itemize}
-	\item \textbf{During Trip functionalities:} This functionality, instead, is provided by the core Safecar?s algorithm. This algorithm is an engine that has the role of estimating the Driver Safety Index by using navigation data coming from the car. This device is a smart object, a plug, that has to be inserted in the custom car gate and that has the capability of sending cleaned and custom driving style data to the connected device
+	\item \textbf{During Trip functionalities:} This functionality, instead, is provided by the core \textit{Safecar's} algorithm. This algorithm is an engine that has the role of estimating the \textit{Driver Safety Index} by using navigation data coming from the car. This device is a smart object, a plug, that has to be inserted in the custom car gate and that has the capability of sending cleaned and custom driving style data to the connected device
 \end{enumerate}
 Using all these data the algorithm computes the \textit{Driver Safety Index} (DSI). The engine architecture is easily exchangeable, given that the application is built in a parametric way. Building a more complex algorithm is only a matter of replacing the specific piece of code (a method) with another one that takes as input the same data and generates a same type index, but by implementing a different, maybe more complex, logic.
 In order to provide the user with an almost continuous feedback about his driving style, this engine recomputes the DSI index once every 30 seconds.
@@ -30,14 +30,14 @@ These are the constraints which must be met in order to allow the application to
 \begin{itemize}
 	\item User of the mobile should have partial internet access:
 	\begin{itemize}
-		\item The user application has to have the internet access at least during the login and the logout procedure. In fact, during the actual use of the application it doesn?t need the data connection
+		\item The user application has to have the internet access at least during the login and the logout procedure. In fact, during the actual use of the application it doesn't need the data connection
 	\end{itemize}
 	\item User's device should support bluetooth:
 	\begin{itemize}
-		\item The application needs the bluetooth for the interactive part, the one in which the app follows the user during the navigation. During the offline part, it doesn?t need any bluetooth capability
+		\item The application needs the bluetooth for the interactive part, the one in which the app follows the user during the navigation. During the offline part, it doesn't need any bluetooth capability
 	\end{itemize}
 	\item User's device should support geolocalization:
 	\begin{itemize}
-		\item The application needs the geolocalization for the interactive part, the one in which the app follows the user during the navigation. During the offline part, it doesn?t need any geolocalization capability
+		\item The application needs the geolocalization for the interactive part, the one in which the app follows the user during the navigation. During the offline part, it doesn't need any geolocalization capability
 	\end{itemize}
 \end{itemize}

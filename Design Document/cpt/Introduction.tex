@@ -2,39 +2,39 @@
 The \textit{Design Document} is a document meant to provide documentation which will be used to help developers in implementing the entire system by providing a general description of the architecture and the design of the system to be built.
 
 \section{Purpose}
-The purpose of the Design Document is to provide a description of the system detailed enough to understand which are the components of the system, how they interact, which is their architecture and how they will be deployed. The level of the description is high enough for all the stakeholders to capture the information they need in order to decide whether the system meets their requirements or in order to begin the development work.
+The purpose of the \textit{Design Document} is to provide a description of the system detailed enough to understand which are the components of the system, how they interact, which is their architecture and how they will be deployed. The level of the description is high enough for all the stakeholders to capture the information they need in order to decide whether the system meets their requirements or in order to begin the development work.
 
 \section{Scope}
-This document provides a detailed description of \textit{Safe Car} software design and architectural choices. Every portion of the document is designed itself to be comprehensible, but a big picture of the system must be present to the reader in order to obtain the best knowledge on the matter when consulting this document.
+This document provides a detailed description of \textit{Safecar} software design and architectural choices. Every portion of the document is designed itself to be comprehensible, but a big picture of the system must be present to the reader in order to obtain the best knowledge on the matter when consulting this document.
 
 \section{Definitions \& Acronysms}
 We are going to use a set of specific terms, each one referring to a specific abstract or physical object:
 
 \begin{enumerate}
-	\item \underline{Plug}: It is a smart object that the user has to buy and that has to be plugged inside the h732 port of the car. It has to have Bluetooth functionalities enabled
-	\item \underline{Trip}: An abstract concept data structure containing all the information about a travel
-	\item \underline{Badge}: An abstract object that refers to a specific unlocking condition. It can be locked or unlocked
+	\item \textbf{Plug}: It is a smart object that the user has to buy and that has to be plugged inside the h732 port of the car. It has to have Bluetooth functionalities enabled
+	\item \textbf{Trip}: An abstract concept data structure containing all the information about a travel
+	\item \textbf{Badge}: An abstract object that refers to a specific unlocking condition. It can be locked or unlocked
 \end{enumerate}
 In the document are often used some technical terms whose definitions are here reported:
 
 \begin{enumerate}
-	\item \underline{Layer}: A software level in a software system
-	\item \underline{Tier}: An hardware level in a software system
+	\item \textbf{Layer}: A software level in a software system
+	\item \textbf{Tier}: An hardware level in a software system
 \end{enumerate}
 We also need some application specific terminology:
 
 \begin{enumerate}
-	\item \underline{DSI}: Driver Safety Index
-	\item \underline{ALG1}: High-level hint generation algorithm
-	\item \underline{ALG2}: DSI computation engine
-	\item \underline{ALG3}: Low-level hint generator agent
+	\item \textbf{DSI}: Driver Safety Index
+	\item \textbf{ALG1}: High-level hint generation algorithm
+	\item \textbf{ALG2}: DSI computation engine
+	\item \textbf{ALG3}: Low-level hint generator agent
 \end{enumerate}
 
 \section{Document Structure}
-This document is intended for individuals directly involved in the development of Safe Car application. This includes software developers, project consultants, and team managers. This document is not meant to be read sequentially; users are encouraged to jump to any section they find relevant. Below is a brief overview of each part of the document:
+This document is intended for individuals directly involved in the development of \textit{Safecar} application. This includes software developers, project consultants, and team managers. This document is not meant to be read sequentially; users are encouraged to jump to any section they find relevant. Below is a brief overview of each part of the document:
 
 \begin{enumerate}
-	\item \textbf{Introduction:} This section gives general information about the Design Document of Safe Car application
+	\item \textbf{Introduction:} This section gives general information about the \textit{Design Document} of \textit{Safecar} application
 	\item \textbf{System Overview:} This section contains an overview of the application and its primary functionalities. It also contains assumptions and constraints followed during the design of the software
 	\item \textbf{Architectural Design:} This section exposes in details the design chosen for the architecture of the system to be
 	\item \textbf{User Interface Design:} This section provides the detailed design information for each component in the current delivery
