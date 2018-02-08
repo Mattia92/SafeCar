@@ -1,21 +1,21 @@
 \chapter{Introduction} \label{chap1}
-The \textit{Design Document} is a document meant to provide documentation which will be used to help developers in implementing the entire system by providing a general description of the architecture and the design of the system to be built.
+The \textit{Design Document} is meant to provide documentation that developers can use in implementing the entire system, it includes a general description of the architecture and the design of the system to be built.
 
 \section{Purpose}
 The purpose of the \textit{Design Document} is to provide a description of the system detailed enough to understand which are the components of the system, how they interact, which is their architecture and how they will be deployed. The level of the description is high enough for all the stakeholders to capture the information they need in order to decide whether the system meets their requirements or in order to begin the development work.
 
 \section{Scope}
-This document provides a detailed description of \textit{Safecar} software design and architectural choices. Every portion of the document is designed itself to be comprehensible, but a big picture of the system must be present to the reader in order to obtain the best knowledge on the matter when consulting this document.
+This document provides a detailed description of \textit{Safecar} software design and architectural choices. Every portion of the document is designed to be comprehensible, but in order to fully understand the topic, the reader should already have a general idea of the system.
 
-\section{Definitions \& Acronysms}
-We are going to use a set of specific terms, each one referring to a specific abstract or physical object:
+\section{Definitions \& Acronyms}
+We are going to use a set of specific terms, each of them referring to a specific abstract or physical object:
 
 \begin{enumerate}
-	\item \textbf{Plug}: It is a smart object that the user has to buy and that has to be plugged inside the h732 port of the car. It has to have Bluetooth functionalities enabled
+	\item \textbf{Plug}: It is a smart object that the user has to buy and that has to be plugged inside a specific port of the car. It must have Bluetooth functionalities enabled
 	\item \textbf{Trip}: An abstract concept data structure containing all the information about a travel
 	\item \textbf{Badge}: An abstract object that refers to a specific unlocking condition. It can be locked or unlocked
 \end{enumerate}
-In the document are often used some technical terms whose definitions are here reported:
+In the document some technical terms are often used whose definitions are here reported:
 
 \begin{enumerate}
 	\item \textbf{Layer}: A software level in a software system

@@ -1,36 +1,36 @@
 \chapter{System Overview} \label{chap2}
-The aim of our project is to develop an android application which can be used in the real world.\\
+The aim of our project is to develop an Android application which can be used in the real world.\\
 In order to use this application, the driver has to register as a user of the service. The \textit{Registration and Login} procedures can be performed via the custom application functionality or via Google Plus APIs.
-The user can change his password, drop the account and modify data related with his profile whenever he wants.
+The user can change his/her password, drop the account and modify data related to his/her profile whenever he/she wants.
 At this point the application flow develops in two different ways:
 
 \begin{itemize}
-	\item If the user's smartphone is not in the radio scan area of the Plug, he can only inspect user related data about his history usage with the application. He can consult the performed trips, his profile data or the gained badges
-	\item On the other side, if the user's smartphone is close to the Plug, he can pair his device with that Plug and, after the procedure has succeeded, he can start a new trip. Now the \textit{Driving Experience} actually begins. After this moment, the application will follow the user in his driving experience by asking to the plug data about the navigation, for example the acceleration rate or the frequency with which the user is breaking. On the base of these data, the driver will be provided with several hints about how to improve her driving style, until he decides to end the trip
+	\item If the user's smartphone is not in the radio scan area of the Plug, he/she can only inspect user related data about his/her history usage of the application. He can consult the performed trips, his/her profile data or the gained badges
+	\item If the user's smartphone is close to the Plug, he/she can pair his/her device with that Plug and, after the procedure has succeeded, he/she can start a new trip. Now the \textit{Driving Experience} actually begins. After this moment, the application will follow the user in his/her driving experience by asking to the plug data about the navigation, for example the acceleration rate or the frequency with which the user is breaking. On the base of these data, the driver will be provided with several hints about how to improve his/her driving style, until he/she decides to end the trip
 \end{itemize}
-When the trip finishes, the application will provide an after trip report graphical showing the followed route on a custom map.\\	
+When the trip ends, the application will provide an after trip report graphic showing the followed route on a custom map.\\	
 The application is comprised of two main features:
 
 \begin{enumerate}
-	\item \textbf{After Trip data presentation:} The user can inspect inspect the details of the just finished trip once the trip has finished. In this screen the user can see:
+	\item \textbf{After Trip data presentation:} The user can inspect the details of the trip he/she just completed. In this screen the user can see:
 	\begin{itemize}
-		\item The route he followed, shown in a custom google maps widget
-		\item A general report about the just finished trip providing the departure, the arrival, the date of the trip, the kilometres traveled, the time that the trip took and the \textit{Driver Safety Index} (DSI), that estimates the quality of the drive
+		\item The route he/she followed, shown in a custom Google maps widget
+		\item A general report about the completed trip providing the departure, the arrival, the date of the trip, the kilometres traveled, the time that the trip took and the \textit{Driver Safety Index} (DSI), that estimates the quality of the drive
 	\end{itemize}
-	\item \textbf{During Trip functionalities:} This functionality, instead, is provided by the core \textit{Safecar's} algorithm. This algorithm is an engine that has the role of estimating the \textit{Driver Safety Index} by using navigation data coming from the car. This device is a smart object, a plug, that has to be inserted in the custom car gate and that has the capability of sending cleaned and custom driving style data to the connected device
+	\item \textbf{During Trip functionalities:} This functionality, is provided by the core \textit{Safecar's} algorithm. This algorithm is an engine that has the role of estimating the \textit{Driver Safety Index} based on navigation data coming from the car. These data come from a smart object, a plug, that has to be inserted in the custom car gate and has the capability of sending cleaned and custom driving style data to the connected device
 \end{enumerate}
-Using all these data the algorithm computes the \textit{Driver Safety Index} (DSI). The engine architecture is easily exchangeable, given that the application is built in a parametric way. Building a more complex algorithm is only a matter of replacing the specific piece of code (a method) with another one that takes as input the same data and generates a same type index, but by implementing a different, maybe more complex, logic.
-In order to provide the user with an almost continuous feedback about his driving style, this engine recomputes the DSI index once every 30 seconds.
-Its computation is done in a dedicated separate thread that generates the current piece of advice to be sent to the user by simply switching on the value of the DSI. This hint is conveyed by filling a specific screen on the application.
+Based on these data, the algorithm computes the \textit{Driver Safety Index} (DSI). The engine architecture is easily exchangeable, given that the application is built in a parametric way. Building a more complex algorithm is only a matter of replacing the specific piece of code (a method) with another one that takes as input the same data and generates a same type index, but by implementing a different, maybe more complex, logic.
+In order to provide the user with an almost continuous feedback about his/her driving style, this engine recomputes the DSI index once every 30 seconds.
+This computation is done in a dedicated, separate thread that generates the current piece of advice to be sent to the user by simply switching on the value of the DSI. This hint is conveyed by filling a specific screen on the application.
 
 \clearpage
-\section{System constraints:}
+\section{System constraints}
 These are the constraints which must be met in order to allow the application to work correctly:
 
 \begin{itemize}
-	\item User of the mobile should have partial internet access:
+	\item The user of the mobile should have partial internet access:
 	\begin{itemize}
-		\item The user application has to have the internet access at least during the login and the logout procedure. In fact, during the actual use of the application it doesn't need the data connection
+		\item The user application must have the internet access at least during the login and the logout procedure. In fact, during the actual use of the application it doesn't need the data connection
 	\end{itemize}
 	\item User's device should support bluetooth:
 	\begin{itemize}

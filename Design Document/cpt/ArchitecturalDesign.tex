@@ -2,48 +2,48 @@
 This section exposes \textit{Safecar} Architectural Design in a complete e comprehensible way.
 
 \section{Layers}
-The software architecture that has been chosen follows the principles of the \textit{Model-View-Controller} architectural pattern. Therefore three main software components have been identified and those are without any coup de theatre: the Model, the View and the Controller.
+The software architecture that has been chosen follows the principles of the \textit{Model-View-Controller} architectural pattern. Therefore three main software components have been identified, i.e: the Model, the View and the Controller.
 
 \subsection{View}
-The role of this Layer is the one of processing Clients commands, and of converting them into requests addressed to the Controller layer.
+The role of this Layer is that of processing Clients commands, and converting them into requests addressed to the Controller layer.
 
 \subsection{Controller}
 In this second Layer are included all the software components that implement the system logic, the authentication logic and the high level data primitives. The application logic is handled by the Firebase cloud authentication services and by some ad hoc authentication components.
 
 \subsection{Model}
-The third and last Layer is the Model, that should guarantee a high level interface to store and manage all the \textit{Safecar} relevant data. It is provided by Firebase cloud database.
+The third and last Layer is the Model, that should guarantee a high level interface which stores and manages all the \textit{Safecar} relevant data. This is provided by Firebase cloud database.
 
 \section{Tiers}
 The system can be divided in two different Tiers, which are the Clients and the Cloud Database
 
 \begin{enumerate}
-	\item \textbf{Clients}: This is the android mobile application. The view and the controller layers are mapped on this Tier. A thin model is also present on the Client Tier
-	\item \textbf{Cloud Database}: In this Tier it is hosted the Database that allows the service data persistence. The Model layer is entirely mapped to this Tier
+	\item \textbf{Clients}: This is the Android mobile application. The view and the controller layers are mapped on this Tier. A thin model is also present on the Client Tier
+	\item \textbf{Cloud Database}: This Tier hosts the Database that allows the service data persistence. The Model layer is entirely mapped to this Tier
 \end{enumerate}
-This architecture, with three different Layers and two different Tiers, makes possible to have a Client-Server style with a Fat-Client and a Thin-Server. This is due to the mapping of the View, the Controller and the thin model to the Client and the complete Model to the Server.
+This architecture, with three different Layers and two different Tiers, makes it possible to have a Client-Server style with a Fat-Client and a Thin-Server. This is due to the mapping of the View, the Controller and the thin model to the Client and the complete Model to the Server.
 
 \section{Cloud and Local Model}
 Once the user logs in, the application downloads all the user related data from the cloud model and dumps them into a local copy called Local Model. \\
 This wrapper is build through the Realm real time database APIs. In particular, when the user modifies some piece of data, the application updates its local model item, leaving the cloud model unchanged.\\
-For example, this happens when the user decides to drop a trip, to add a trip, to drop a plug or to add a new plug. 
+For example, this happens when the user decides to drop a trip, add a trip, drop a plug or add a new plug. 
 For this, there is no need of internet connection after the login and before the logout procedures, in fact all the modifications are performed locally.\\
 When instead the user decides to log out, the application understands which are the data items that have been modified and uploads their modifications to the cloud model in order to make it consistent with the local one. 
 After pushing the modifications the controller drops the local model and exits the user session.
 
 \section{Application components and their interaction}
-In the following section are deeply covered all the architectural aspects that characterize the software to be. In particular, here it is explained which are all the components of this application and how they interact in order to have a complete functional software.
+The following section details all the architectural aspects that characterize the software to be. Here it is explained which are all the components of this application and how they interact in order to have a complete functional software.
 
 \subsection{Login component}
-This component handles the user's login procedures and it provides either the Google+ authentication service or the email and password authentication service.
+This component handles the user's login procedures and provides either the Google+ authentication service or the email and password authentication service.
 
 \subsection{Sign in component}
 It manages the Sign in procedures, that is the generation of a new user object.
 
 \subsection{Reset password component}
-It is in charge of handling the procedure of change password for the user that has been registered through the email and password login procedure.
+It is in charge of handling the procedure of password change for the user that has been registered through the email and password login procedure.
 
 \subsection{Logout component}
-It has the responsibility of maintaining the consistency between the Cloud Model and the Local Model.
+It ensures the consistency between the Cloud Model and the Local Model.
 
 \subsection{Personal data component}
 This is responsible of computing and handling the modifications to the profile information.
@@ -55,14 +55,14 @@ This is the most important component, in fact is in charge of:
 	\item Ordering and placing the trips contained in the local model into in the four dedicated tabs. This is done by using four software components, respectively \textit{DateComparator}, \textit{DSIComparator}, \textit{KMComparator} and \textit{DurationComparator}
 	\item Handling the sampling of position pins during the trip. It also stores them into the current trip object. This is done by the \textit{TripHandler} thread, an asynchronous task. It is spawned when the trip starts and it autonomously handles it
 	\item Through a call to the first algorithm, namely \textit{ALG1}, it computes the DSI index through the \textit{DSIevaluator} asynchronous task
-	\item After that, \textit{Safecar} exploit the feature of the second algorithm, namely \textit{ALG2} to compute the current hint
+	\item After that, \textit{Safecar} exploits the feature of the second algorithm, namely \textit{ALG2} to compute the current hint
 \end{itemize}
 
 \subsection{Plug component}
 This component implements the logic for pairing, managing and using the abstract interface of physical plugs.
 
 \subsection{Badges component}
-This components implements the procedure that, by using the user's data, computes the badges that the user currently holds.
+This component implements the procedure that, by using the user's data, computes the badges the user is currently holding.
 
 \section{External services}
 \textit{Safecar} is fully integrated with several external services
@@ -71,7 +71,7 @@ This components implements the procedure that, by using the user's data, compute
 \textit{Safecar} makes use of the great Firebase cloud database to store the data about trips, users and plugs. It represents the persistent storage of the application.
 
 \subsection{Firebase authentication}
-Firebase is also great for the authentication capabilities that it offers. \textit{Safecar} exploits the Google authentication services but is straightforward to integrate also Facebook, Twitter and GitHub.
+Firebase is also great for the authentication capabilities that it offers. \textit{Safecar} exploits the Google authentication services but it can also straightforward integrate Facebook, Twitter and GitHub.
 
 \subsection{Bluetooth core service}
 In order to pair the user's device with the selected plug, \textit{Safecar} uses the core \textit{Bluetooth Adapter} to interface with the physical device plugged in the car.
@@ -80,10 +80,10 @@ In order to pair the user's device with the selected plug, \textit{Safecar} uses
 During the trip, \textit{Safecar} periodically samples location data in order to be able to precisely track the trip's route.
 
 \subsection{Realm real-time database}
-In order to ensure consistency, \textit{Safecar} uses two databases services, one being a cloud one and the other one being a local and real-time one. Realm is used to ensure database queries to be fast, efficient and precise.
+In order to ensure consistency, \textit{Safecar} uses two databases services, one in the cloud and the other local. Realm is used to ensure database queries to be fast, efficient and precise.
 
 \subsection{Gilde image loader}
-In order to have the feature of loading profile images from disk, the application uses a third-party set of APIs, Gilde.
+In order to implement the feature of loading profile images from disk, the application uses a third-party set of APIs, Gilde.
 
 \subsection{Picasso image cropper}
 To provide fancy cropping features to the profile images, \textit{Safecar} exploits the power of another third-party set of APIs, Picasso.
@@ -129,6 +129,6 @@ The important fact is that the new algorithm will respect the following interfac
 	\begin{enumerate}
 		\item \underline{Simple reflex}: It matches the percept on a rule set and returns the decision related to the matched rule
 		\item \underline{Model based reflex}: It stored the percept sequence and, through a model, matches a rule
-		\item \underline{Goal based}: Basing on the current percept, on the model and on a goal specification, it returns the best hint to reach the goal. In this case the DSI computation can be jumped and this algorithm can work on the factored representation returned by \textit{ALG1}. This algorithm is a tree search or a graph search.
+		\item \underline{Goal based}: Based on the current percept, on the model and on a goal specification, it returns the best hint to reach the goal. In this case the DSI computation can be skipped and this algorithm can work on the factored representation returned by \textit{ALG1}. This algorithm is a tree search or a graph search.
 	\end{enumerate}
 \end{itemize}
