@@ -72,16 +72,16 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <string name="initPairPlugTA">Your device is not paired with any plug in your plug list. Please click the button below to start using SafeCar !</string>
-    <string name="justPairedPairPlugTA">You are now paired with a plug. Let\'s start a trip I am sure it will be great ! We will be here, right on your side ! </string>
+    <string name="initPairPlugTA">Your device is not paired with any plug. Please click the button below search the nearby plugs and to start using SafeCar !</string>
+    <string name="justPairedPairPlugTA">You are now paired with a plug. Let\'s start a trip, I am sure it will be great ! We will be here, right on your side ! </string>
     <string name="noBluetoothDevices">No target device in bluetooth range</string>
 
     <string name="initPairPlugB">Start bluetooth scan</string>
     <string name="changePairPlugB">Change your target plug</string>
         <string name="searchPairPlugB">Looking for plugs</string>
 
-    <string name="managePlugsSplash">Here you can interact with your plugs. You can either check or drop them.</string>
-    <string name="noPlugs">Right now, you are\'t paired with any physical device. Please go in the dedicated section in order to pair a phisical plug.</string>
+    <string name="managePlugsSplash">In this section you can interact with your plugs. You can either check or drop them.</string>
+    <string name="noPlugs">Right now, you are\'t paired with any physical device. Please go in the dedicated section in order to pair with a plug.</string>
 
     <string name="helloPlug">Current Plug</string>
     <string name="Name">Name</string>
@@ -103,10 +103,10 @@
     <string name="takeBreak">Take a break</string>
 
     <string name="tripReportTitle">Trip report</string>
-    <string name="tripReportSecondPageText">Here we go ! Below you can see the details of this trip. Read them carefully and try to understand how to improve your driving style !</string>
-    <string name="tripReportHiddenText">swipe to discover the details of this trip !</string>
+    <string name="tripReportSecondPageText">Here we go ! Below you can see a set of indicators regarding this trip. Read them carefully and try to understand how to improve your driving style !</string>
+    <string name="tripReportHiddenText">swipe, to discover the details of this trip !</string>
     <string name="tripDetails">Details</string>
-    <string name="tripJustReportSecondPageText">Awesome! You definitely did a great job. Let\'s see now the details of your just finished trip!</string>
+    <string name="tripJustReportSecondPageText">Awesome! You definitely did a great job. Now let\'s take a look to the details of your just finished trip!</string>
 
     <string name="welcomeString">Welcome !</string>
 

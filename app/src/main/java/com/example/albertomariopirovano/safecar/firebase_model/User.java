@@ -29,7 +29,13 @@ public class User {
         this.active = true;
         this.level = "0";
         this.percentage = "0";
-        this.provider = "Google+";
+
+        if(photoURL == null) {
+            this.provider = "password";
+        } else {
+            this.provider = "Google+";
+        }
+
         this.photoURL = photoURL;
         this.authUID = uid;
     }
